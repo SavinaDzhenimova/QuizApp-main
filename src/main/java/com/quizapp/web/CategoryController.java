@@ -48,7 +48,7 @@ public class CategoryController {
     public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
         boolean isDeleted = this.categoryService.deleteCategoryById(id);
 
-        if (isDeleted) {
+        if (!isDeleted) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Категория с ID " + id + " не е намерена, за да бъде премахната."));
         }

@@ -12,4 +12,6 @@ public interface QuestionService {
     QuestionDTO getQuestionById(Long id);
 
     Question addQuestion(AddQuestionDTO addQuestionDTO);
+
+    boolean deleteQuestionById(Long id);
 }

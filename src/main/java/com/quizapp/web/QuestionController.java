@@ -44,5 +44,15 @@ public class QuestionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedQuestion);
     }
 
-    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteQuestionById(@PathVariable Long id) {
+        boolean isDeleted = this.questionService.deleteQuestionById(id);
+
+        if (!isDeleted) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Въпрос с ID " + id + " не е намерен, за да бъде премахнат."));
+        }
+
+        return ResponseEntity.noContent().build();
+    }
 }

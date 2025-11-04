@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,5 +64,16 @@ public class QuestionServiceImpl implements QuestionService {
                 .body(Question.class);
     }
 
-
+    @Override
+    public boolean deleteQuestionById(Long id) {
+        try {
+            restClient.delete()
+                    .uri("/api/questions/{id}", id)
+                    .retrieve()
+                    .toBodilessEntity();
+            return true;
+        } catch (HttpClientErrorException.NotFound e) {
+            return false;
+        }
+    }
 }
