@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+import java.util.Objects;
+
 @RestController
 @RequestMapping("/api/quiz")
 @RequiredArgsConstructor
@@ -17,9 +20,14 @@ public class QuizController {
     private final QuizService quizService;
 
     @PostMapping("/create")
-    public ResponseEntity<Quiz> createQuiz(@RequestParam Long categoryId,
-                                           @RequestParam(defaultValue = "20") int count) {
+    public ResponseEntity<?> createQuiz(@RequestParam Long categoryId,
+                                           @RequestParam(name = "numberOfQuestions", defaultValue = "20") int numberOfQuestions) {
 
-        return ResponseEntity.ok(this.quizService.createQuiz(categoryId, count));
+        Quiz quiz = this.quizService.createQuiz(categoryId, numberOfQuestions);
+
+        return ResponseEntity.ok(Objects.requireNonNullElseGet(quiz, () -> Map.of(
+                "error", "Няма налични въпроси за категория с ID " + categoryId + "."
+        )));
     }
+
 }

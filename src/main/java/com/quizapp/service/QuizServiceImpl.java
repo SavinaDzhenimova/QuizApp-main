@@ -22,7 +22,6 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public Quiz createQuiz(Long categoryId, int numberOfQuestions) {
-        // Извикваме REST API-то чрез RestClient
         List<Question> allQuestions = Arrays.asList(
                 restClient.get()
                         .uri("/api/questions/category/{id}", categoryId)
@@ -31,20 +30,19 @@ public class QuizServiceImpl implements QuizService {
         );
 
         if (allQuestions.isEmpty()) {
-            throw new RuntimeException("Няма въпроси за тази категория.");
+            return null;
         }
 
-        // Разбъркваме и избираме случайни N
         Collections.shuffle(allQuestions);
         List<Long> selectedIds = allQuestions.stream()
                 .limit(numberOfQuestions)
                 .map(Question::getId)
                 .collect(Collectors.toList());
 
-        // Създаваме и записваме Quiz в локалната база
-        Quiz quiz = new Quiz();
-        quiz.setCategoryId(categoryId);
-        quiz.setQuestionsIds(selectedIds);
+        Quiz quiz = Quiz.builder()
+                .categoryId(categoryId)
+                .questionsIds(selectedIds)
+                .build();
 
         return this.quizRepository.saveAndFlush(quiz);
     }
