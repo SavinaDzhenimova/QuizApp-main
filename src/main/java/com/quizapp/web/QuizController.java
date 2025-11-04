@@ -1,13 +1,11 @@
 package com.quizapp.web;
 
+import com.quizapp.model.dto.QuizDTO;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.service.interfaces.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.Objects;
@@ -26,8 +24,15 @@ public class QuizController {
         Quiz quiz = this.quizService.createQuiz(categoryId, numberOfQuestions);
 
         return ResponseEntity.ok(Objects.requireNonNullElseGet(quiz, () -> Map.of(
-                "error", "Няма налични въпроси за категория с ID " + categoryId + "."
-        )));
+                "error", "Няма налични въпроси за категория с ID " + categoryId + ".")));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getQuizById(@PathVariable Long id) {
+        QuizDTO quizDTO = this.quizService.getQuizById(id);
+
+        return ResponseEntity.ok(Objects.requireNonNullElseGet(quizDTO, () -> Map.of(
+                "error", "Куизът с ID " + id + " не е намерен!")));
     }
 
 }

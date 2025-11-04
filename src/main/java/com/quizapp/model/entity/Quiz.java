@@ -23,7 +23,7 @@ public class Quiz {
     @Column(name = "category_id", nullable = false)
     private Long categoryId;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "quiz_questions", joinColumns = @JoinColumn(name = "quiz_id"))
     @Column(name = "question_id")
     private List<Long> questionsIds;

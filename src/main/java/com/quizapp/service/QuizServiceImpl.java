@@ -1,5 +1,8 @@
 package com.quizapp.service;
 
+import com.quizapp.model.dto.QuestionDTO;
+import com.quizapp.model.dto.QuizDTO;
+import com.quizapp.model.entity.Category;
 import com.quizapp.model.entity.Question;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.repository.QuizRepository;
@@ -11,6 +14,7 @@ import org.springframework.web.client.RestClient;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,6 +23,43 @@ public class QuizServiceImpl implements QuizService {
 
     private final QuizRepository quizRepository;
     private final RestClient restClient;
+
+    @Override
+    public QuizDTO getQuizById(Long id) {
+        Optional<Quiz> optionalQuiz = this.quizRepository.findById(id);
+
+        if (optionalQuiz.isEmpty()) {
+            return null;
+        }
+
+        Quiz quiz = optionalQuiz.get();
+
+        List<QuestionDTO> questions = quiz.getQuestionsIds().stream()
+                .map(questionId -> restClient.get()
+                        .uri("/api/questions/{id}", questionId)
+                        .retrieve()
+                        .body(Question.class))
+                .map(question -> QuestionDTO.builder()
+                        .id(question.getId())
+                        .questionText(question.getQuestionText())
+                        .correctAnswer(question.getCorrectAnswer())
+                        .options(question.getOptions())
+                        .build())
+                .toList();
+
+        String categoryName = restClient.get()
+                .uri("/api/categories/{id}", quiz.getCategoryId())
+                .retrieve()
+                .body(Category.class)
+                .getName();
+
+        return QuizDTO.builder()
+                .id(quiz.getId())
+                .categoryId(quiz.getCategoryId())
+                .categoryName(categoryName)
+                .questions(questions)
+                .build();
+    }
 
     @Override
     public Quiz createQuiz(Long categoryId, int numberOfQuestions) {
