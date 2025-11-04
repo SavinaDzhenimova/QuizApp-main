@@ -61,4 +61,17 @@ public class CategoryServiceImpl implements CategoryService {
                 .retrieve()
                 .body(Category.class);
     }
+
+    @Override
+    public boolean deleteCategoryById(Long id) {
+        try {
+            restClient.delete()
+                    .uri("/api/categories/{id}", id)
+                    .retrieve()
+                    .toBodilessEntity();
+            return true;
+        } catch (HttpClientErrorException.NotFound e) {
+            return false;
+        }
+    }
 }

@@ -43,4 +43,16 @@ public class CategoryController {
         Category savedCategory = this.categoryService.addCategory(addCategoryDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
+        boolean isDeleted = this.categoryService.deleteCategoryById(id);
+
+        if (isDeleted) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Категория с ID " + id + " не е намерена, за да бъде премахната."));
+        }
+
+        return ResponseEntity.noContent().build();
+    }
 }
