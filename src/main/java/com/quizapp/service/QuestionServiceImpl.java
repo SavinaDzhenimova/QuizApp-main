@@ -1,5 +1,6 @@
 package com.quizapp.service;
 
+import com.quizapp.model.dto.AddQuestionDTO;
 import com.quizapp.model.dto.QuestionDTO;
 import com.quizapp.model.entity.Question;
 import com.quizapp.service.interfaces.QuestionService;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,4 +55,15 @@ public class QuestionServiceImpl implements QuestionService {
                 .options(question.getOptions())
                 .build();
     }
+
+    @Override
+    public Question addQuestion(AddQuestionDTO addQuestionDTO) {
+        return restClient.post()
+                .uri("/api/questions")
+                .body(addQuestionDTO)
+                .retrieve()
+                .body(Question.class);
+    }
+
+
 }
