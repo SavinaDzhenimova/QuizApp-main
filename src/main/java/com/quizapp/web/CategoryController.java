@@ -39,9 +39,14 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<Category> addCategory(@RequestBody @Valid AddCategoryDTO addCategoryDTO) {
-        Category savedCategory = this.categoryService.addCategory(addCategoryDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
+    public ResponseEntity<?> addCategory(@RequestBody AddCategoryDTO addCategoryDTO) {
+        Object result = this.categoryService.addCategory(addCategoryDTO);
+
+        if (result instanceof Map) {
+            return ResponseEntity.badRequest().body(result);
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @DeleteMapping("/{id}")

@@ -1,5 +1,6 @@
 package com.quizapp.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quizapp.model.dto.AddCategoryDTO;
 import com.quizapp.model.dto.CategoryDTO;
 import com.quizapp.model.entity.Category;
@@ -11,6 +12,7 @@ import org.springframework.web.client.RestClient;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
 
     private final RestClient restClient;
+    private final ObjectMapper objectMapper;
 
     @Override
     public List<CategoryDTO> getAllCategories() {
@@ -54,12 +57,23 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category addCategory(AddCategoryDTO addCategoryDTO) {
-        return restClient.post()
-                .uri("/api/categories")
-                .body(addCategoryDTO)
-                .retrieve()
-                .body(Category.class);
+    public Object addCategory(AddCategoryDTO addCategoryDTO) {
+        try {
+            return restClient.post()
+                    .uri("/api/categories")
+                    .body(addCategoryDTO)
+                    .retrieve()
+                    .body(Category.class);
+        } catch (HttpClientErrorException.BadRequest e) {
+            String responseBody = e.getResponseBodyAsString();
+
+            try {
+                Map<String, String> errors = objectMapper.readValue(responseBody, Map.class);
+                return Map.of("errors", errors);
+            } catch (Exception ex) {
+                return Map.of("errors", Map.of("general", "Нещо се обърка при обработката на грешката"));
+            }
+        }
     }
 
     @Override
