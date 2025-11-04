@@ -34,3 +34,7 @@ logging:
 
 server:
   port: 8090
+
+questions:
+  api:
+    baseUrl: "${OFFERS_VASE_URL:http://localhost:8091}"
