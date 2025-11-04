@@ -1,13 +1,14 @@
 package com.quizapp.web;
 
+import com.quizapp.model.dto.AddCategoryDTO;
 import com.quizapp.model.dto.CategoryDTO;
+import com.quizapp.model.entity.Category;
 import com.quizapp.service.interfaces.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -35,5 +36,11 @@ public class CategoryController {
         }
 
         return ResponseEntity.ok(categoryDTO);
+    }
+
+    @PostMapping
+    public ResponseEntity<Category> addCategory(@RequestBody @Valid AddCategoryDTO addCategoryDTO) {
+        Category savedCategory = this.categoryService.addCategory(addCategoryDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
     }
 }

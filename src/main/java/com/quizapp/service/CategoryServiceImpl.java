@@ -1,5 +1,6 @@
 package com.quizapp.service;
 
+import com.quizapp.model.dto.AddCategoryDTO;
 import com.quizapp.model.dto.CategoryDTO;
 import com.quizapp.model.entity.Category;
 import com.quizapp.service.interfaces.CategoryService;
@@ -50,5 +51,14 @@ public class CategoryServiceImpl implements CategoryService {
                 .name(category.getName())
                 .description(category.getDescription())
                 .build();
+    }
+
+    @Override
+    public Category addCategory(AddCategoryDTO addCategoryDTO) {
+        return restClient.post()
+                .uri("/api/categories")
+                .body(addCategoryDTO)
+                .retrieve()
+                .body(Category.class);
     }
 }
