@@ -7,4 +7,6 @@ public interface QuizService {
     QuizDTO getQuizById(Long id);
 
     Quiz createQuiz(Long categoryId, int numberOfQuestions);
+
+    boolean deleteQuizById(Long id);
 }

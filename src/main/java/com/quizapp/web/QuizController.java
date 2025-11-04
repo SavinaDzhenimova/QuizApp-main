@@ -4,6 +4,7 @@ import com.quizapp.model.dto.QuizDTO;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.service.interfaces.QuizService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,4 +36,15 @@ public class QuizController {
                 "error", "Куизът с ID " + id + " не е намерен!")));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteQuizById(@PathVariable Long id) {
+        boolean isDeleted = this.quizService.deleteQuizById(id);
+
+        if (!isDeleted) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Куизът с ID " + id + " не е намерен, за да бъде премахнат."));
+        }
+
+        return ResponseEntity.noContent().build();
+    }
 }

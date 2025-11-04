@@ -87,4 +87,14 @@ public class QuizServiceImpl implements QuizService {
 
         return this.quizRepository.saveAndFlush(quiz);
     }
+
+    @Override
+    public boolean deleteQuizById(Long id) {
+        if (!this.quizRepository.existsById(id)) {
+            return false;
+        }
+
+        this.quizRepository.deleteById(id);
+        return true;
+    }
 }
