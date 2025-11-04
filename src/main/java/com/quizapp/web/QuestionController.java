@@ -39,9 +39,14 @@ public class QuestionController {
     }
 
     @PostMapping
-    public ResponseEntity<Question> addQuestion(@RequestBody @Valid AddQuestionDTO addQuestionDTO) {
-        Question savedQuestion = this.questionService.addQuestion(addQuestionDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedQuestion);
+    public ResponseEntity<?> addQuestion(@RequestBody AddQuestionDTO addQuestionDTO) {
+        Object result = this.questionService.addQuestion(addQuestionDTO);
+
+        if (result instanceof Map) {
+            return ResponseEntity.badRequest().body(result);
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @DeleteMapping("/{id}")

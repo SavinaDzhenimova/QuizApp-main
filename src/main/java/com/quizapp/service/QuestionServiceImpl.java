@@ -1,5 +1,6 @@
 package com.quizapp.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quizapp.model.dto.AddQuestionDTO;
 import com.quizapp.model.dto.QuestionDTO;
 import com.quizapp.model.entity.Question;
@@ -11,6 +12,7 @@ import org.springframework.web.client.RestClient;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 public class QuestionServiceImpl implements QuestionService {
 
     private final RestClient restClient;
+    private final ObjectMapper objectMapper;
 
     @Override
     public List<QuestionDTO> getAllQuestions() {
@@ -56,12 +59,23 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Question addQuestion(AddQuestionDTO addQuestionDTO) {
-        return restClient.post()
-                .uri("/api/questions")
-                .body(addQuestionDTO)
-                .retrieve()
-                .body(Question.class);
+    public Object addQuestion(AddQuestionDTO addQuestionDTO) {
+        try {
+            return restClient.post()
+                    .uri("/api/questions")
+                    .body(addQuestionDTO)
+                    .retrieve()
+                    .body(Question.class);
+        } catch (HttpClientErrorException.BadRequest e) {
+            String responseBody = e.getResponseBodyAsString();
+
+            try {
+                Map<String, String> errors = objectMapper.readValue(responseBody, Map.class);
+                return Map.of("errors", errors);
+            } catch (Exception ex) {
+                return Map.of("errors", Map.of("general", "Нещо се обърка при обработката на грешката"));
+            }
+        }
     }
 
     @Override
