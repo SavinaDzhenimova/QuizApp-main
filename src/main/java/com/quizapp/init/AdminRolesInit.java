@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -73,7 +74,7 @@ public class AdminRolesInit implements CommandLineRunner {
                 .username("admin")
                 .password(this.passwordEncoder.encode("Admin1234"))
                 .email("admin@gmail.com")
-                .role(optionalRole.get())
+                .roles(Set.of(optionalRole.get()))
                 .solvedQuizzes(new ArrayList<>())
                 .build();
 
