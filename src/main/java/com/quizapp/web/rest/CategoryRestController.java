@@ -1,10 +1,8 @@
-package com.quizapp.web;
+package com.quizapp.web.rest;
 
 import com.quizapp.model.dto.AddCategoryDTO;
 import com.quizapp.model.dto.CategoryDTO;
-import com.quizapp.model.entity.Category;
 import com.quizapp.service.interfaces.CategoryService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +14,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
-public class CategoryController {
+public class CategoryRestController {
 
     private final CategoryService categoryService;
 

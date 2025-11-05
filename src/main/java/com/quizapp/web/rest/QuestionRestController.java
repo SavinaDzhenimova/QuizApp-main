@@ -1,10 +1,8 @@
-package com.quizapp.web;
+package com.quizapp.web.rest;
 
 import com.quizapp.model.dto.AddQuestionDTO;
 import com.quizapp.model.dto.QuestionDTO;
-import com.quizapp.model.entity.Question;
 import com.quizapp.service.interfaces.QuestionService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +14,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/questions")
 @RequiredArgsConstructor
-public class QuestionController {
+public class QuestionRestController {
 
     private final QuestionService questionService;
 

@@ -1,4 +1,4 @@
-package com.quizapp.web;
+package com.quizapp.web.rest;
 
 import com.quizapp.model.dto.QuizDTO;
 import com.quizapp.model.entity.Quiz;
@@ -14,7 +14,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/api/quiz")
 @RequiredArgsConstructor
-public class QuizController {
+public class QuizRestController {
 
     private final QuizService quizService;
 

@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,11 +18,23 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
         return httpSecurity
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/users/login", "/users/register", "/api/**").permitAll()
                         .anyRequest().authenticated()
+                )
+                .formLogin(formLogin -> formLogin
+                        .loginPage("/users/login").permitAll()
+                        .usernameParameter("username")
+                        .passwordParameter("password")
+                        .defaultSuccessUrl("/home", true)
+                        .failureUrl("/users/login-error")
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/users/logout")
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true)
                 )
                 .build();
     }
