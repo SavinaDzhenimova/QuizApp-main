@@ -1,6 +1,6 @@
 package com.quizapp.service;
 
-import com.quizapp.model.dto.UserDetailsDTO;
+import com.quizapp.model.dto.user.UserDetailsDTO;
 import com.quizapp.model.entity.Role;
 import com.quizapp.model.entity.User;
 import com.quizapp.repository.UserRepository;

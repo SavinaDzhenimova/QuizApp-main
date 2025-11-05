@@ -1,4 +1,4 @@
-package com.quizapp.model.dto;
+package com.quizapp.model.dto.user;
 
 import com.quizapp.model.entity.SolvedQuiz;
 import lombok.AllArgsConstructor;
