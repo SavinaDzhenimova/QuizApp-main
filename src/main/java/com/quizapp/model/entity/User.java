@@ -30,6 +30,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    private Role role;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id")
     private List<SolvedQuiz> solvedQuizzes = new ArrayList<>();
