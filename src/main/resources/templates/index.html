@@ -4,19 +4,40 @@
 
 <head>
     <th:block th:replace="~{fragments/commons::head}"></th:block>
-    <link rel="stylesheet" href="/css/index-styles.css">
+    <link rel="stylesheet" href="/static/css/index-styles.css">
+    <link rel="stylesheet" href="/static/css/commons-styles.css">
+    <link rel="stylesheet" href="/static/css/reset.css">
     <title>Начална страница</title>
 </head>
 
 <body>
 
-    <header th:replace="~{fragments/commons::header}"></header>
+    <!-- <header th:replace="~{fragments/commons::header}"></header> -->
+
+    <header>
+        <nav>
+            <section class="logo-container">
+              <img class="logo-img" src="/static/images/logo.png">
+            </section>
+
+            <section class="menu">
+              <ul>
+                <li><a href="#">Вход</a></li>
+                <li><a href="#">Регистрация</a></li>
+              </ul>
+            </section>
+        </nav>
+    </header>
 
     <main>
 
     </main>
 
-    <footer th:replace="~{fragments/commons::footer}"></footer>
+    <!-- <footer th:replace="~{fragments/commons::footer}"></footer> -->
+
+    <footer>
+
+    </footer>
 
     <script>
 
