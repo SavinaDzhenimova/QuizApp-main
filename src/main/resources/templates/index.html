@@ -1,10 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <link rel="stylesheet" href="/css/index-styles.css">
+    <title>Начална страница</title>
 </head>
+
 <body>
+
+    <header th:replace="~{fragments/commons::header}"></header>
+
+    <main>
+
+    </main>
+
+    <footer th:replace="~{fragments/commons::footer}"></footer>
+
+    <script>
+
+    </script>
 
 </body>
 </html>
