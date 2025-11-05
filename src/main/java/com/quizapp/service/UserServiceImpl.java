@@ -1,6 +1,6 @@
 package com.quizapp.service;
 
-import com.quizapp.model.dto.user.RegisterUserDTO;
+import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.model.entity.Role;
 import com.quizapp.model.entity.User;
@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public Result registerUser(RegisterUserDTO registerUserDTO) {
+    public Result registerUser(UserRegisterDTO registerUserDTO) {
         if (registerUserDTO == null) {
             return new Result(false, "Не е намерен потребител!");
         }

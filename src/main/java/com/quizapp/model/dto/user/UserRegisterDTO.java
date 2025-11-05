@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RegisterUserDTO {
+public class UserRegisterDTO {
 
     @NotBlank(message = "Моля въведете потребителско име!")
     @Size(min = 4, max = 15, message = "Потребителското име трябва да бъде между 4 и 15 символа!")
