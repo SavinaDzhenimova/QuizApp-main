@@ -36,13 +36,11 @@ public class UserServiceImpl implements UserService {
             return new Result(false, "Паролите не съвпадат!");
         }
 
-        Optional<User> optionalUserByUsername = this.userRepository.findByUsername(registerUserDTO.getUsername());
-        if (optionalUserByUsername.isPresent()) {
+        if (this.userRepository.existsByUsername(registerUserDTO.getUsername())) {
             return new Result(false,"Вече съществува потребител с това потребителско име!");
         }
 
-        Optional<User> optionalUserByEmail = this.userRepository.findByEmail(registerUserDTO.getEmail());
-        if (optionalUserByEmail.isPresent()) {
+        if (this.userRepository.existsByEmail(registerUserDTO.getEmail())) {
             return new Result(false, "Вече съществува потребител с този имейл!");
         }
 
