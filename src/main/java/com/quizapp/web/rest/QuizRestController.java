@@ -20,7 +20,7 @@ public class QuizRestController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createQuiz(@RequestParam Long categoryId,
-                                           @RequestParam(name = "numberOfQuestions", defaultValue = "20") int numberOfQuestions) {
+                                        @RequestParam(defaultValue = "5") int numberOfQuestions) {
 
         Quiz quiz = this.quizService.createQuiz(categoryId, numberOfQuestions);
 

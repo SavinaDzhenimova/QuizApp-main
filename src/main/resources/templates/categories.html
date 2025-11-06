@@ -13,14 +13,24 @@
   <header th:replace="~{fragments/commons::header}"></header>
 
   <main>
-    <h1 class="page-title">Избери категория</h1>
-
     <section class="categories-grid">
-      <div th:each="category : ${categories}" class="category-card">
-        <img th:src="${category.imageUrl}" th:alt="${category.name}">
-        <h2 th:text="${category.name}">Категория</h2>
-        <p th:text="${category.description}">Описание</p>
-      </div>
+      <h1 class="page-title">Избери категория</h1>
+
+      <form th:action="@{/quiz/category}"
+            th:method="POST">
+
+        <div class="categories-container">
+          <label th:each="category : ${categories}" class="category-card">
+            <input type="radio" th:name="categoryId" th:value="${category.getId()}" required>
+            <div class="card-content">
+              <h2 th:text="${category.getName()}">Категория</h2>
+              <p th:text="${category.getDescription()}">Описание</p>
+            </div>
+          </label>
+        </div>
+
+        <button type="submit">Започни куиза</button>
+      </form>
     </section>
   </main>
 
