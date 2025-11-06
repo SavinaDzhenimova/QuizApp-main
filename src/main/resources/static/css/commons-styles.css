@@ -1,26 +1,74 @@
 header nav {
   background-color: rgba(128, 0, 128, 0.5);
   backdrop-filter: blur(5px);
+  color: white;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 6em;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
 }
 
 header .logo-container {
-  padding-left: 4em;
-  color: white;
-  padding-top: 0.7em;
+  display: flex;
+  align-items: center;
+  padding: 0.7em 4em;
 }
 
 header .logo-container .logo-img {
   width: 150px;
+  object-fit: cover;
 }
 
 header .menu ul {
   font-size: 18px;
   display: flex;
   justify-content: space-between;
-  gap: 2em;
+  gap: 4em;
   font-weight: 500;
+}
+
+header .menu ul li a {
+  transition: color 0.3s ease;
+}
+
+header .menu ul li a:hover,
+footer .footer-menu a:hover {
+  color: #e0b3ff;
+}
+
+footer {
+  background-color: #b37de2;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+footer {
+  padding: 2em 6em 1em 6em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+footer .links-section {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+footer .footer-menu,
+footer .social-links {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+footer .social-links a img {
+  width: 30px;
+  aspect-ratio: 1 / 1;
 }

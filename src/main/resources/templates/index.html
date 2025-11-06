@@ -14,29 +14,65 @@
 
     <!-- <header th:replace="~{fragments/commons::header}"></header> -->
 
-    <header>
-        <nav>
-            <section class="logo-container">
-              <img class="logo-img" src="/static/images/logo.png">
-            </section>
+    <header class="header-container">
+      <nav>
+        <section class="logo-container">
+          <img class="logo-img" src="/static/images/logo.png">
+        </section>
 
-            <section class="menu">
-              <ul>
-                <li><a href="#">Вход</a></li>
-                <li><a href="#">Регистрация</a></li>
-              </ul>
-            </section>
-        </nav>
+        <section class="menu">
+          <ul>
+            <li><a href="#">Начало</a></li>
+            <li><a href="#">Категории</a></li>
+            <li><a href="#">Вход</a></li>
+            <li><a href="#">Регистрация</a></li>
+          </ul>
+        </section>
+      </nav>
     </header>
 
     <main>
+      <section class="hero">
+        <h2>Предизвикай себе си с QuizTime!</h2>
 
+        <p>Разнообразни категории, стотици въпроси и безкрайно забавление за всеки!</p>
+        <a href="/quiz" class="btn-start">Започни сега</a>
+      </section>
+
+      <div class="sections">
+        <section id="section1" class="feature-section">
+          <h2>Нови въпроси всяка седмица</h2>
+          <p>Поддържаме играта свежа и интересна с нови въпроси всеки понеделник.</p>
+        </section>
+  
+        <section id="section2" class="feature-section">
+          <h2>10+ категории въпроси</h2>
+          <p>От наука и история до забавни и развлекателни въпроси — има по нещо за всеки!</p>
+        </section>
+      
+        <section id="section3" class="feature-section">
+          <h2>500+ въпроса в разнообразни категории</h2>
+          <p>Голямо разнообразие, за да можеш да тестваш знанията си и да се забавляваш.</p>
+        </section>
+      </div>
     </main>
 
     <!-- <footer th:replace="~{fragments/commons::footer}"></footer> -->
-
     <footer>
-
+      <div class="links-section">
+        <div class="footer-menu">
+          <a href="#">За нас</a>
+          <a href="#">Контакти</a>
+          <a href="#">Докладвай грешка</a>
+        </div>
+        <div class="social-links">
+          <p>Намерете ни и в</p>
+          <a href="#"><img src="/static/images/facebook-icon.png" alt="Facebook"></a>
+          <a href="#"><img src="/static/images/instagram-icon.png" alt="Instagram"></a>
+          <a href="#"><img src="/static/images/github-icon.png" alt="GitHub"></a>
+        </div>
+      </div>
+      <p>&copy; 2025 QuizApp. Всички права запазени.</p>
     </footer>
 
     <script>

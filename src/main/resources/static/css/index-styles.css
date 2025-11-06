@@ -1,3 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Doodle+Shadow&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Neucha&display=swap');
+
 body {
   margin: 0;
   padding: 0;
@@ -8,4 +12,104 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+main {
+  font-family: 'Tinos', serif;
+  font-size: 14px;
+  padding-top: 20em;
+}
+
+main .hero {
+  font-size: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 8em;
+}
+
+main .hero h2 {
+  font-family: 'Rubik Doodle Shadow', system-ui;
+  font-size: 50px;
+}
+
+main .hero p {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+main .hero .btn-start {
+  display: inline-block;
+  background: linear-gradient(145deg, #d4a7ec, #b37de2);
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35), inset 0 -3px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 1em;
+  padding: 0.5em 1.2em;
+  margin-top: 2em;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+main .hero .btn-start:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45), inset 0 -2px 5px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(145deg, #b37de2, #d4a7ec);
+}
+
+main .hero .btn-start:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), inset 0 -2px 3px rgba(0, 0, 0, 0.2);
+}
+
+main .sections {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4em;
+  padding: 2em 0 4em 0;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+main .sections .feature-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  border-radius: 4em;
+  padding: 2em 0;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+  background: linear-gradient(135deg,
+      rgba(212, 167, 236, 0.8),
+      rgba(128, 0, 128, 0.8));
+  background-size: 200% 200%;
+  animation: gradientShift 10s ease infinite;
+
+  backdrop-filter: blur(5px);
+}
+
+main .feature-section h2 {
+  font-family: 'Neucha', cursive;
+  font-size: 40px;
+}
+
+main .feature-section p {
+  font-size: 18px;
 }
