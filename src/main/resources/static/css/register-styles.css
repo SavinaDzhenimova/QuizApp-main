@@ -4,7 +4,20 @@ main {
   justify-content: center;
   align-items: center;
   min-height: calc(100vh - 80px);
-  /* 80px е височината на fixed header */
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 form {
@@ -13,9 +26,16 @@ form {
   width: 50%;
   padding: 2em;
   padding-top: 0.5em;
-  background: rgba(212, 167, 236, 0.15);
   border-radius: 2em;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+  background: linear-gradient(135deg,
+      rgba(232, 179, 235, 0.8),
+      rgba(175, 144, 247, 0.8));
+  background-size: 200% 200%;
+  animation: gradientShift 5s ease infinite;
+
+  backdrop-filter: blur(5px);
 }
 
 form .row {
