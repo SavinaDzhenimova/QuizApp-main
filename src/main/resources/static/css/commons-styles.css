@@ -1,3 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Doodle+Shadow&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Neucha&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Tinos', serif;
+  color: #fff;
+  background: url("../images/background.jpg") no-repeat center center fixed;
+  background-size: cover;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 header nav {
   background-color: rgba(128, 0, 128, 0.5);
   backdrop-filter: blur(5px);
@@ -10,7 +26,12 @@ header nav {
   top: 0;
   left: 0;
   width: 100%;
+  height: 120px;
   z-index: 1000;
+}
+
+main {
+  padding-top: 120px;
 }
 
 header .logo-container {
@@ -74,4 +95,31 @@ footer .social-links {
 footer .social-links a img {
   width: 30px;
   aspect-ratio: 1 / 1;
+}
+
+button[type="submit"],
+.btn-start {
+  padding: 0.8em 1.5em;
+  border: none;
+  border-radius: 1em;
+  background: linear-gradient(135deg, #d4a7ec, #b57edc);
+  color: #fff;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+  transition: all 0.3s ease;
+}
+
+button[type="submit"]:hover,
+.btn-start:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+  background: linear-gradient(135deg, #b57edc, #d4a7ec);
+}
+
+button[type="submit"]:active,
+.btn-start:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
 }

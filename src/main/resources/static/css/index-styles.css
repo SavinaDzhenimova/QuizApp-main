@@ -1,32 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik+Doodle+Shadow&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Neucha&display=swap');
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', sans-serif;
-  color: #fff;
-  background: url("../images/background.jpg") no-repeat center center fixed;
-  background-size: cover;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
 main {
-  font-family: 'Tinos', serif;
   font-size: 14px;
-  padding-top: 20em;
 }
 
 main .hero {
+  font-family: 'Tinos', serif;
   font-size: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-bottom: 8em;
+  padding: 7.5em 0;
 }
 
 main .hero h2 {
@@ -41,27 +24,7 @@ main .hero p {
 
 main .hero .btn-start {
   display: inline-block;
-  background: linear-gradient(145deg, #d4a7ec, #b37de2);
-  color: #fff;
-  text-decoration: none;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35), inset 0 -3px 5px rgba(0, 0, 0, 0.1);
-  border-radius: 1em;
-  padding: 0.5em 1.2em;
   margin-top: 2em;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  text-align: center;
-}
-
-main .hero .btn-start:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45), inset 0 -2px 5px rgba(0, 0, 0, 0.1);
-  background: linear-gradient(145deg, #b37de2, #d4a7ec);
-}
-
-main .hero .btn-start:active {
-  transform: translateY(1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), inset 0 -2px 3px rgba(0, 0, 0, 0.2);
 }
 
 main .sections {

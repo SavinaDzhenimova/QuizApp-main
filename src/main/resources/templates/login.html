@@ -1,19 +1,76 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Login</title>
+    <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <link rel="stylesheet" href="/static/css/login-styles.css">
+    <link rel="stylesheet" href="/static/css/commons-styles.css">
+    <link rel="stylesheet" href="/static/css/reset.css">
+    <title>QuizTime</title>
 </head>
+
 <body>
-<h2>Login</h2>
-<form th:action="@{/users/login}" method="post">
-    <label>Username:</label>
-    <input type="text" name="username"/><br/>
 
-    <label>Password:</label>
-    <input type="password" name="password"/><br/>
+  <!-- <header th:replace="~{fragments/commons::header}"></header> -->
 
-    <button type="submit">Login</button>
-</form>
+  <header class="header-container">
+    <nav>
+      <section class="logo-container">
+        <img class="logo-img" src="/static/images/logo.png">
+      </section>
+
+      <section class="menu">
+        <ul>
+          <li><a href="index.html">Начало</a></li>
+          <li><a href="#">Категории</a></li>
+          <li><a href="login.html">Вход</a></li>
+          <li><a href="register.html">Регистрация</a></li>
+        </ul>
+      </section>
+    </nav>
+  </header>
+
+  <main>
+    <div class="login-form">
+      <form th:action="@{/users/login}" method="post">
+        <h2>Вход</h2>
+
+        <div class="field">
+          <label>Потребителско име</label>
+          <input type="text" name="username"/><br/>
+        </div>
+
+        <div class="field">
+          <label>Парола</label>
+          <input type="password" name="password"/><br/>
+        </div>
+
+        <button type="submit">Вход</button>
+      </form>
+    </div>
+  </main>
+
+  <!-- <footer th:replace="~{fragments/commons::footer}"></footer> -->
+  <footer>
+    <div class="links-section">
+      <div class="footer-menu">
+        <a href="#">За нас</a>
+        <a href="#">Контакти</a>
+        <a href="#">Докладвай грешка</a>
+      </div>
+      <div class="social-links">
+        <p>Намерете ни и в</p>
+        <a href="#"><img src="/static/images/facebook-icon.png" alt="Facebook"></a>
+        <a href="#"><img src="/static/images/instagram-icon.png" alt="Instagram"></a>
+        <a href="#"><img src="/static/images/github-icon.png" alt="GitHub"></a>
+      </div>
+    </div>
+    <p>&copy; 2025 QuizApp. Всички права запазени.</p>
+  </footer>
+
+  <script>
+
+  </script>
 </body>
 </html>
