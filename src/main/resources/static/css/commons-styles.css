@@ -42,13 +42,13 @@ footer .footer-menu a:hover {
 }
 
 footer {
-  background-color: #b37de2;
+  background-color: #8D3EAB;
   font-size: 16px;
   font-weight: 500;
 }
 
 footer {
-  padding: 2em 6em 1em 6em;
+  padding: 2em 8em 1em 8em;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -61,10 +61,13 @@ footer .links-section {
   justify-content: space-between;
 }
 
-footer .footer-menu,
+footer .footer-menu {
+  display: flex;
+  gap: 4em;
+}
+
 footer .social-links {
   display: flex;
-  align-items: center;
   gap: 1em;
 }
 
