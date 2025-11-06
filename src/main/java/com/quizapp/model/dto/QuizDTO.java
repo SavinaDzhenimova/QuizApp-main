@@ -18,7 +18,5 @@ public class QuizDTO {
 
     private Long categoryId;
 
-    private String categoryName;
-
     private List<QuestionDTO> questions;
 }

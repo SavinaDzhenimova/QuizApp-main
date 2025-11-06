@@ -2,10 +2,10 @@ package com.quizapp.service;
 
 import com.quizapp.model.dto.QuestionDTO;
 import com.quizapp.model.dto.QuizDTO;
-import com.quizapp.model.entity.Category;
 import com.quizapp.model.entity.Question;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.repository.QuizRepository;
+import com.quizapp.service.interfaces.QuestionService;
 import com.quizapp.service.interfaces.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class QuizServiceImpl implements QuizService {
 
     private final QuizRepository quizRepository;
+    private final QuestionService questionService;
     private final RestClient restClient;
 
     @Override
@@ -47,16 +48,9 @@ public class QuizServiceImpl implements QuizService {
                         .build())
                 .toList();
 
-        String categoryName = restClient.get()
-                .uri("/api/categories/{id}", quiz.getCategoryId())
-                .retrieve()
-                .body(Category.class)
-                .getName();
-
         return QuizDTO.builder()
                 .id(quiz.getId())
                 .categoryId(quiz.getCategoryId())
-                .categoryName(categoryName)
                 .questions(questions)
                 .build();
     }
@@ -86,6 +80,20 @@ public class QuizServiceImpl implements QuizService {
                 .build();
 
         return this.quizRepository.saveAndFlush(quiz);
+    }
+
+    @Override
+    public QuizDTO mapQuizToDTO(Quiz quiz) {
+        List<QuestionDTO> questionDTOs = quiz.getQuestionsIds()
+                .stream()
+                .map(this.questionService::getQuestionById)
+                .toList();
+
+        return QuizDTO.builder()
+                .id(quiz.getId())
+                .categoryId(quiz.getCategoryId())
+                .questions(questionDTOs)
+                .build();
     }
 
     @Override
