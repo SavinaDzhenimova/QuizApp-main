@@ -12,6 +12,10 @@ main .hero {
   padding: 7.5em 0;
 }
 
+main .hero .btn-start {
+  font-family: 'Noto Sans', sans-serif;
+}
+
 main .hero h2 {
   font-family: 'Rubik Doodle Shadow', system-ui;
   font-size: 50px;

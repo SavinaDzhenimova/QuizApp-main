@@ -15,14 +15,40 @@
 
 <body>
 
-    <header>
+    <header class="header-container">
         <nav>
-            <
+            <section class="logo-container">
+                <img class="logo-img" src="/images/logo.png">
+            </section>
+
+            <section class="menu">
+                <ul>
+                    <li><a th:href="@{/}">Начало</a></li>
+                    <li><a href="#">Категории</a></li>
+                    <li><a th:href="@{/users/login}">Вход</a></li>
+                    <li><a th:href="@{/users/register}">Регистрация</a></li>
+                </ul>
+            </section>
         </nav>
     </header>
 
     <footer>
-
+        <div class="links-section">
+            <div class="footer-menu">
+                <a href="#">За нас</a>
+                <a href="#">Контакти</a>
+                <a href="#">Докладвай грешка</a>
+            </div>
+            <div class="social-links">
+                <p>Намерете ни и в</p>
+                <a href="#"><img src="/images/facebook-icon.png" th:alt="Facebook"></a>
+                <a href="#"><img src="/images/instagram-icon.png" th:alt="Instagram"></a>
+                <a href="https://github.com/SavinaDzhenimova/QuizApp-main">
+                    <img src="/images/github-icon.png" th:alt="GitHub">
+                </a>
+            </div>
+        </div>
+        <p>&copy; 2025 QuizApp. Всички права запазени.</p>
     </footer>
 
 </body>

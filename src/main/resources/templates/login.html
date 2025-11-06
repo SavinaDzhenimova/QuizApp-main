@@ -4,36 +4,18 @@
 
 <head>
     <th:block th:replace="~{fragments/commons::head}"></th:block>
-    <link rel="stylesheet" href="/static/css/login-styles.css">
-    <link rel="stylesheet" href="/static/css/commons-styles.css">
-    <link rel="stylesheet" href="/static/css/reset.css">
-    <title>QuizTime</title>
+    <link rel="stylesheet" href="/css/login-styles.css">
+    <title>Вход</title>
 </head>
 
 <body>
 
-  <!-- <header th:replace="~{fragments/commons::header}"></header> -->
-
-  <header class="header-container">
-    <nav>
-      <section class="logo-container">
-        <img class="logo-img" src="/static/images/logo.png">
-      </section>
-
-      <section class="menu">
-        <ul>
-          <li><a href="index.html">Начало</a></li>
-          <li><a href="#">Категории</a></li>
-          <li><a href="login.html">Вход</a></li>
-          <li><a href="register.html">Регистрация</a></li>
-        </ul>
-      </section>
-    </nav>
-  </header>
+  <header th:replace="~{fragments/commons::header}"></header>
 
   <main>
     <div class="form-section">
-      <form th:action="@{/users/login}" method="post">
+      <form th:action="@{/users/login}"
+            th:method="POST">
         <h2>Вход</h2>
 
         <div class="field">
@@ -51,23 +33,7 @@
     </div>
   </main>
 
-  <!-- <footer th:replace="~{fragments/commons::footer}"></footer> -->
-  <footer>
-    <div class="links-section">
-      <div class="footer-menu">
-        <a href="#">За нас</a>
-        <a href="#">Контакти</a>
-        <a href="#">Докладвай грешка</a>
-      </div>
-      <div class="social-links">
-        <p>Намерете ни и в</p>
-        <a href="#"><img src="/static/images/facebook-icon.png" alt="Facebook"></a>
-        <a href="#"><img src="/static/images/instagram-icon.png" alt="Instagram"></a>
-        <a href="#"><img src="/static/images/github-icon.png" alt="GitHub"></a>
-      </div>
-    </div>
-    <p>&copy; 2025 QuizApp. Всички права запазени.</p>
-  </footer>
+  <footer th:replace="~{fragments/commons::footer}"></footer>
 
   <script>
 

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <link rel="stylesheet" href="/css/categories-styles.css">
+    <title>Категории</title>
+</head>
+
+<body>
+
+  <header th:replace="~{fragments/commons::header}"></header>
+
+  <main>
+    <h1 class="page-title">Избери категория</h1>
+
+    <section class="categories-grid">
+      <div th:each="category : ${categories}" class="category-card">
+        <img th:src="${category.imageUrl}" th:alt="${category.name}">
+        <h2 th:text="${category.name}">Категория</h2>
+        <p th:text="${category.description}">Описание</p>
+      </div>
+    </section>
+  </main>
+
+  <footer th:replace="~{fragments/commons::footer}"></footer>
+
+  <script>
+
+  </script>
+</body>
+</html>
