@@ -2,6 +2,7 @@ package com.quizapp.service;
 
 import com.quizapp.model.dto.QuestionDTO;
 import com.quizapp.model.dto.QuizDTO;
+import com.quizapp.model.dto.QuizResultDTO;
 import com.quizapp.model.entity.Question;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.repository.QuizRepository;
@@ -12,10 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -104,6 +102,58 @@ public class QuizServiceImpl implements QuizService {
                 .categoryId(categoryId)
                 .categoryName(categoryName)
                 .questions(questionDTOs)
+                .build();
+    }
+
+    private Map<Long, String> mapUserAnswers(Map<String, String> formData) {
+        Map<Long, String> userAnswers = new HashMap<>();
+
+        formData.forEach((key, value) -> {
+            if (key.startsWith("answers[")) {
+                Long questionId = Long.valueOf(key.replaceAll("[^0-9]", ""));
+                userAnswers.put(questionId, value);
+            }
+        });
+
+        return userAnswers;
+    }
+
+    @Override
+    public QuizResultDTO evaluateQuiz(Long quizId, Map<String, String> formData) {
+        Optional<Quiz> optionalQuiz = this.quizRepository.findById(quizId);
+
+        if (optionalQuiz.isEmpty()) {
+            return null;
+        }
+
+        Quiz quiz = optionalQuiz.get();
+
+        Map<Long, String> userAnswers = this.mapUserAnswers(formData);
+
+        List<Question> questions = quiz.getQuestionsIds().stream()
+                .map(questionId -> restClient.get()
+                        .uri("/api/questions/{id}", questionId)
+                        .retrieve()
+                        .body(Question.class))
+                .toList();
+
+        int correctAnswers = 0;
+        int totalQuestions = questions.size();
+        
+        for (Question q : questions) {
+            String userAnswer = userAnswers.get(q.getId());
+
+            if (userAnswer != null && userAnswer.equals(q.getCorrectAnswer())) {
+                correctAnswers++;
+            }
+        }
+
+        double scorePercent = ((double) correctAnswers / totalQuestions) * 100;
+
+        return QuizResultDTO.builder()
+                .totalQuestions(totalQuestions)
+                .correctAnswers(correctAnswers)
+                .scorePercent(scorePercent)
                 .build();
     }
 

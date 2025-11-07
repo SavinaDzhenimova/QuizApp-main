@@ -1,7 +1,7 @@
 package com.quizapp.web.view;
 
-import com.quizapp.model.dto.QuestionDTO;
 import com.quizapp.model.dto.QuizDTO;
+import com.quizapp.model.dto.QuizResultDTO;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.service.interfaces.QuizService;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/quiz")
@@ -43,4 +44,17 @@ public class QuizController {
 
         return modelAndView;
     }
+
+    @PostMapping("/submit")
+    public ModelAndView submitQuiz(@RequestParam("quizId") Long quizId,
+                                   @RequestParam Map<String, String> formData) {
+
+        ModelAndView modelAndView = new ModelAndView("result");
+
+        QuizResultDTO result = this.quizService.evaluateQuiz(quizId, formData);
+        modelAndView.addObject("result", result);
+
+        return modelAndView;
+    }
+
 }

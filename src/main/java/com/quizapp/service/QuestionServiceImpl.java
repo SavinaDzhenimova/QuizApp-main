@@ -24,24 +24,17 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<QuestionDTO> getAllQuestions() {
-        Question[] questions = restClient.get()
-                .uri("/api/questions")
-                .retrieve()
-                .body(Question[].class);
+        Question[] questions = this.makeGetRequestAll();
 
         return Arrays.stream(questions)
                 .map(this::questionToDTO)
                 .collect(Collectors.toList());
-
     }
 
     @Override
     public QuestionDTO getQuestionById(Long id) {
         try {
-            Question question = restClient.get()
-                    .uri("/api/questions/{id}", id)
-                    .retrieve()
-                    .body(Question.class);
+            Question question = this.makeGetRequest(id);
 
             return this.questionToDTO(question);
         } catch (HttpClientErrorException.NotFound e) {
@@ -61,11 +54,8 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Object addQuestion(AddQuestionDTO addQuestionDTO) {
         try {
-            return restClient.post()
-                    .uri("/api/questions")
-                    .body(addQuestionDTO)
-                    .retrieve()
-                    .body(Question.class);
+            return this.makePostRequest(addQuestionDTO);
+
         } catch (HttpClientErrorException.BadRequest e) {
             String responseBody = e.getResponseBodyAsString();
 
@@ -81,13 +71,43 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public boolean deleteQuestionById(Long id) {
         try {
-            restClient.delete()
-                    .uri("/api/questions/{id}", id)
-                    .retrieve()
-                    .toBodilessEntity();
+            this.makeDeleteRequest(id);
             return true;
         } catch (HttpClientErrorException.NotFound e) {
             return false;
         }
+    }
+
+    @Override
+    public Question makeGetRequest(Long id) {
+        return this.restClient.get()
+                .uri("/api/questions/{id}", id)
+                .retrieve()
+                .body(Question.class);
+    }
+
+    @Override
+    public Question[] makeGetRequestAll() {
+        return this.restClient.get()
+                .uri("/api/questions")
+                .retrieve()
+                .body(Question[].class);
+    }
+
+    @Override
+    public Question makePostRequest(AddQuestionDTO addQuestionDTO) {
+        return this.restClient.post()
+                .uri("/api/questions")
+                .body(addQuestionDTO)
+                .retrieve()
+                .body(Question.class);
+    }
+
+    @Override
+    public void makeDeleteRequest(Long id) {
+        this.restClient.delete()
+                .uri("/api/questions/{id}", id)
+                .retrieve()
+                .toBodilessEntity();
     }
 }
