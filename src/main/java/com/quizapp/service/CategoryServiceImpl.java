@@ -24,10 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDTO> getAllCategories() {
-        Category[] categories = restClient.get()
-                .uri("/api/categories")
-                .retrieve()
-                .body(Category[].class);
+        Category[] categories = this.makeGetRequestAll();
 
         return Arrays.stream(categories)
                 .map(this::categoryToDTO)
@@ -37,10 +34,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDTO getCategoryById(Long id) {
         try {
-            Category category = restClient.get()
-                    .uri("/api/categories/{id}", id)
-                    .retrieve()
-                    .body(Category.class);
+            Category category = this.makeGetRequest(id);
 
             return this.categoryToDTO(category);
         } catch (HttpClientErrorException.NotFound e) {
@@ -59,11 +53,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Object addCategory(AddCategoryDTO addCategoryDTO) {
         try {
-            return restClient.post()
-                    .uri("/api/categories")
-                    .body(addCategoryDTO)
-                    .retrieve()
-                    .body(Category.class);
+            return this.makePostRequest(addCategoryDTO);
+
         } catch (HttpClientErrorException.BadRequest e) {
             String responseBody = e.getResponseBodyAsString();
 
@@ -79,10 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public boolean deleteCategoryById(Long id) {
         try {
-            restClient.delete()
-                    .uri("/api/categories/{id}", id)
-                    .retrieve()
-                    .toBodilessEntity();
+            this.makeDeleteRequest(id);
             return true;
         } catch (HttpClientErrorException.NotFound e) {
             return false;
@@ -92,13 +80,42 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public String getCategoryNameById(Long id) {
         try {
-           return restClient.get()
-                    .uri("/api/categories/{id}", id)
-                    .retrieve()
-                    .body(Category.class)
-                    .getName();
+           return this.makeGetRequest(id).getName();
         } catch (HttpClientErrorException.NotFound e) {
             return null;
         }
+    }
+
+    @Override
+    public Category makeGetRequest(Long id) {
+        return this.restClient.get()
+                .uri("/api/categories/{id}", id)
+                .retrieve()
+                .body(Category.class);
+    }
+
+    @Override
+    public Category[] makeGetRequestAll() {
+        return this.restClient.get()
+                .uri("/api/categories")
+                .retrieve()
+                .body(Category[].class);
+    }
+
+    @Override
+    public Category makePostRequest(AddCategoryDTO addCategoryDTO) {
+        return this.restClient.post()
+                .uri("/api/categories")
+                .body(addCategoryDTO)
+                .retrieve()
+                .body(Category.class);
+    }
+
+    @Override
+    public void makeDeleteRequest(Long id) {
+        this.restClient.delete()
+                .uri("/api/categories/{id}", id)
+                .retrieve()
+                .toBodilessEntity();
     }
 }

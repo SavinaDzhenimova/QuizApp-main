@@ -22,4 +22,6 @@ public interface QuestionService {
     Question makePostRequest(AddQuestionDTO addQuestionDTO);
 
     void makeDeleteRequest(Long id);
+
+    Question[] makeGetRequestByCategoryId(Long categoryId);
 }

@@ -2,6 +2,7 @@ package com.quizapp.service.interfaces;
 
 import com.quizapp.model.dto.AddCategoryDTO;
 import com.quizapp.model.dto.CategoryDTO;
+import com.quizapp.model.entity.Category;
 
 import java.util.List;
 
@@ -16,4 +17,12 @@ public interface CategoryService {
     boolean deleteCategoryById(Long id);
 
     String getCategoryNameById(Long id);
+
+    Category makeGetRequest(Long id);
+
+    Category[] makeGetRequestAll();
+
+    Category makePostRequest(AddCategoryDTO addCategoryDTO);
+
+    void makeDeleteRequest(Long id);
 }

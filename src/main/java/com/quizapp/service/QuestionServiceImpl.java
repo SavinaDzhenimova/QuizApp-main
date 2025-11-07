@@ -110,4 +110,12 @@ public class QuestionServiceImpl implements QuestionService {
                 .retrieve()
                 .toBodilessEntity();
     }
+
+    @Override
+    public Question[] makeGetRequestByCategoryId(Long categoryId) {
+        return this.restClient.get()
+                .uri("/api/questions/category/{id}", categoryId)
+                .retrieve()
+                .body(Question[].class);
+    }
 }

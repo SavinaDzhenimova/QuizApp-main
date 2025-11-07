@@ -11,7 +11,6 @@ import com.quizapp.service.interfaces.QuestionService;
 import com.quizapp.service.interfaces.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,7 +22,6 @@ public class QuizServiceImpl implements QuizService {
     private final QuizRepository quizRepository;
     private final QuestionService questionService;
     private final CategoryService categoryService;
-    private final RestClient restClient;
 
     @Override
     public QuizDTO getQuizById(Long id) {
@@ -36,10 +34,7 @@ public class QuizServiceImpl implements QuizService {
         Quiz quiz = optionalQuiz.get();
 
         List<QuestionDTO> questions = quiz.getQuestionsIds().stream()
-                .map(questionId -> restClient.get()
-                        .uri("/api/questions/{id}", questionId)
-                        .retrieve()
-                        .body(Question.class))
+                .map(this.questionService::makeGetRequest)
                 .map(question -> QuestionDTO.builder()
                         .id(question.getId())
                         .questionText(question.getQuestionText())
@@ -57,12 +52,7 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public Quiz createQuiz(Long categoryId, int numberOfQuestions) {
-        List<Question> allQuestions = Arrays.asList(
-                restClient.get()
-                        .uri("/api/questions/category/{id}", categoryId)
-                        .retrieve()
-                        .body(Question[].class)
-        );
+        List<Question> allQuestions = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
 
         if (allQuestions.isEmpty()) {
             return null;
@@ -131,15 +121,12 @@ public class QuizServiceImpl implements QuizService {
         Map<Long, String> userAnswers = this.mapUserAnswers(formData);
 
         List<Question> questions = quiz.getQuestionsIds().stream()
-                .map(questionId -> restClient.get()
-                        .uri("/api/questions/{id}", questionId)
-                        .retrieve()
-                        .body(Question.class))
+                .map(this.questionService::makeGetRequest)
                 .toList();
 
         int correctAnswers = 0;
         int totalQuestions = questions.size();
-        
+
         for (Question q : questions) {
             String userAnswer = userAnswers.get(q.getId());
 
