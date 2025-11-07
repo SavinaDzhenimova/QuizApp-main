@@ -68,7 +68,10 @@ form input::placeholder {
 }
 
 button[type="submit"],
-.btn-start {
+.btn-start,
+#prevBtn,
+#nextBtn,
+#submitBtn {
   margin-top: 2em;
   padding: 0.8em 1.5em;
   border: none;

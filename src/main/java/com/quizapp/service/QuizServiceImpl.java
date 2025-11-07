@@ -85,8 +85,14 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    public QuizDTO mapQuizToDTO(Quiz quiz, Long categoryId) {
-        List<QuestionDTO> questionDTOs = quiz.getQuestionsIds()
+    public QuizDTO mapQuizToDTO(Long quizId, Long categoryId) {
+        Optional<Quiz> optionalQuiz = this.quizRepository.findById(quizId);
+
+        if (optionalQuiz.isEmpty()) {
+            return null;
+        }
+
+        List<QuestionDTO> questionDTOs = optionalQuiz.get().getQuestionsIds()
                 .stream()
                 .map(this.questionService::getQuestionById)
                 .toList();
@@ -94,8 +100,8 @@ public class QuizServiceImpl implements QuizService {
         String categoryName = this.categoryService.getCategoryNameById(categoryId);
 
         return QuizDTO.builder()
-                .id(quiz.getId())
-                .categoryId(quiz.getCategoryId())
+                .id(quizId)
+                .categoryId(categoryId)
                 .categoryName(categoryName)
                 .questions(questionDTOs)
                 .build();

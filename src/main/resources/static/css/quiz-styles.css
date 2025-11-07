@@ -1,0 +1,85 @@
+#quizForm {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+    margin: 2em auto;
+}
+
+.question-pages {
+    width: 100%;
+}
+
+.question-page {
+    display: none;
+}
+
+.question-page.active {
+    display: flex;;
+    flex-direction: column;
+    gap: 2em;
+}
+
+.answers {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2em;
+}
+
+.answer-option input {
+    display: none;
+}
+
+.answer-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% / 2 - 2em);
+    cursor: pointer;
+    border-radius: 2em;
+    padding: 1em;
+    display: flex;
+    align-items: center;
+    transition: 0.3s ease;
+    backdrop-filter: blur(3px);
+    background: linear-gradient(135deg,
+        rgba(212, 167, 236, 0.4),
+        rgba(128, 0, 128, 0.4));
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 10px;
+}
+
+.question-text {
+    width: 100%;
+    padding: 1em;
+    border-radius: 2em;
+    text-align: center;
+    backdrop-filter: blur(3px);
+    background: linear-gradient(135deg,
+        rgba(212, 167, 236, 0.4),
+        rgba(128, 0, 128, 0.4));
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 10px;
+}
+
+.answer-option:hover {
+    transform: translateY(-4px);
+    box-shadow: rgba(128, 0, 128, 0.6) 0px 6px 20px;
+}
+
+.answer-option:has(input:checked) {
+    background: linear-gradient(135deg,
+    rgba(230, 190, 255, 0.7),
+    rgba(180, 120, 255, 0.7));
+    box-shadow: 0 0 20px 4px rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease;
+}
+
+.pagination-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+    margin-top: 2em;
+}

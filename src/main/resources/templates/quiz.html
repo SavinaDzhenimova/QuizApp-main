@@ -4,7 +4,7 @@
 
 <head>
     <th:block th:replace="~{fragments/commons::head}"></th:block>
-    <link rel="stylesheet" href="/css/categories-styles.css">
+    <link rel="stylesheet" href="/css/quiz-styles.css">
     <title>It's Quiz Time</title>
 </head>
 
@@ -13,43 +13,72 @@
     <header th:replace="~{fragments/commons::header}"></header>
 
     <main>
-      <h2 th:text="'Куиз по категория ' + ${quiz.categoryId}"></h2>
+        <form th:action="@{/quiz/submit}" th:method="POST" id="quizForm">
+            <h2 th:text="'Куиз в категория ' + ${quiz.categoryName}"></h2>
 
-      <form th:action="@{/quiz/submit}" method="post" id="quizForm">
-        <input type="hidden" th:name="quizId" th:value="${quiz.id}" />
+            <input type="hidden" th:name="quizId" th:value="${quiz.id}" />
 
-        <div class="question-pages">
-          <div th:each="question, iter : ${quiz.questions}"
-               th:id="'q' + ${iter.index}"
-               class="question-page"
-               th:classappend="${iter.index == 0} ? 'active' : ''">
+            <div class="question-pages">
+                <div th:each="question, iter : ${quiz.questions}"
+                     th:id="'q' + ${iter.index}"
+                     class="question-page"
+                     th:classappend="${iter.index == 0} ? ' active' : ''">
 
-            <h3 th:text="${question.text}" class="question-text"></h3>
+                    <h3 th:text="${question.questionText}" class="question-text"></h3>
 
-            <div class="answers">
-              <label class="answer-option" th:each="answer, aIdx : ${question.answers}">
-                <input type="radio"
-                       th:name="'answers[' + ${question.id} + ']'"
-                       th:value="${answer.id}"
-                       required>
-                <span th:text="${answer.text}"></span>
-              </label>
+                    <div class="answers">
+                        <label class="answer-option" th:each="option, aIdx : ${question.options}">
+                            <input type="radio"
+                                   th:name="'answers[' + ${question.id} + ']'"
+                                   th:value="${option}"
+                                   required>
+                            <span th:text="${option}"></span>
+                        </label>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
 
-        <div class="pagination-buttons">
-          <button type="button" id="prevBtn">Предишен</button>
-          <button type="button" id="nextBtn">Следващ</button>
-          <button type="submit" id="submitBtn" style="display:none;">Изпрати</button>
-        </div>
-      </form>
+            <div class="pagination-buttons">
+                <button type="button" id="prevBtn">⬅ Предишен</button>
+                <button type="button" id="nextBtn">Следващ ➡</button>
+                <button type="submit" id="submitBtn" style="display:none;">Изпрати</button>
+            </div>
+        </form>
     </main>
 
     <footer th:replace="~{fragments/commons::footer}"></footer>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const questions = document.querySelectorAll(".question-page");
+            const nextBtn = document.getElementById("nextBtn");
+            const prevBtn = document.getElementById("prevBtn");
+            const submitBtn = document.getElementById("submitBtn");
 
+            let current = 0;
+
+            function showQuestion(index) {
+                questions.forEach((q, i) => {
+                    q.classList.toggle("active", i === index);
+                });
+
+                prevBtn.style.display = index === 0 ? "none" : "inline-block";
+                nextBtn.style.display = index === questions.length - 1 ? "none" : "inline-block";
+                submitBtn.style.display = index === questions.length - 1 ? "inline-block" : "none";
+            }
+
+            nextBtn.addEventListener("click", () => {
+                if (current < questions.length - 1) current++;
+                showQuestion(current);
+            });
+
+            prevBtn.addEventListener("click", () => {
+                if (current > 0) current--;
+                showQuestion(current);
+            });
+
+            showQuestion(current);
+        });
     </script>
 </body>
 </html>

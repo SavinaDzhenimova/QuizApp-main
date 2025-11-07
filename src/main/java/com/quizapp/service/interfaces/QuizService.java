@@ -8,7 +8,7 @@ public interface QuizService {
 
     Quiz createQuiz(Long categoryId, int numberOfQuestions);
 
-    QuizDTO mapQuizToDTO(Quiz quiz, Long categoryId);
+    QuizDTO mapQuizToDTO(Long quizId, Long categoryId);
 
     boolean deleteQuizById(Long id);
 }
