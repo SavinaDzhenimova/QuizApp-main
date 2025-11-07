@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <link rel="stylesheet" href="/css/categories-styles.css">
+    <title>It's Quiz Time</title>
+</head>
+
+<body>
+
+    <header th:replace="~{fragments/commons::header}"></header>
+
+    <main>
+      <h2 th:text="'Куиз по категория ' + ${quiz.categoryId}"></h2>
+
+      <form th:action="@{/quiz/submit}" method="post" id="quizForm">
+        <input type="hidden" th:name="quizId" th:value="${quiz.id}" />
+
+        <div class="question-pages">
+          <div th:each="question, iter : ${quiz.questions}"
+               th:id="'q' + ${iter.index}"
+               class="question-page"
+               th:classappend="${iter.index == 0} ? 'active' : ''">
+
+            <h3 th:text="${question.text}" class="question-text"></h3>
+
+            <div class="answers">
+              <label class="answer-option" th:each="answer, aIdx : ${question.answers}">
+                <input type="radio"
+                       th:name="'answers[' + ${question.id} + ']'"
+                       th:value="${answer.id}"
+                       required>
+                <span th:text="${answer.text}"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="pagination-buttons">
+          <button type="button" id="prevBtn">Предишен</button>
+          <button type="button" id="nextBtn">Следващ</button>
+          <button type="submit" id="submitBtn" style="display:none;">Изпрати</button>
+        </div>
+      </form>
+    </main>
+
+    <footer th:replace="~{fragments/commons::footer}"></footer>
+
+    <script>
+
+    </script>
+</body>
+</html>

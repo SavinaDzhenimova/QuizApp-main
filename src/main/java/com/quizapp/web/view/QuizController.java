@@ -23,7 +23,7 @@ public class QuizController {
         int numberOfQuestions = 5;
 
         Quiz quiz = this.quizService.createQuiz(categoryId, numberOfQuestions);
-        QuizDTO quizDTO = this.quizService.mapQuizToDTO(quiz);
+        QuizDTO quizDTO = this.quizService.mapQuizToDTO(quiz, categoryId);
 
         modelAndView.addObject("quiz", quizDTO);
 

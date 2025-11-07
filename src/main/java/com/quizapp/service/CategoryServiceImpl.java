@@ -88,4 +88,17 @@ public class CategoryServiceImpl implements CategoryService {
             return false;
         }
     }
+
+    @Override
+    public String getCategoryNameById(Long id) {
+        try {
+           return restClient.get()
+                    .uri("/api/categories/{id}", id)
+                    .retrieve()
+                    .body(Category.class)
+                    .getName();
+        } catch (HttpClientErrorException.NotFound e) {
+            return null;
+        }
+    }
 }

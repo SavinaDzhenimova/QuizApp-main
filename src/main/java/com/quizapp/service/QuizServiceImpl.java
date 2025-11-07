@@ -5,6 +5,7 @@ import com.quizapp.model.dto.QuizDTO;
 import com.quizapp.model.entity.Question;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.repository.QuizRepository;
+import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.QuestionService;
 import com.quizapp.service.interfaces.QuizService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class QuizServiceImpl implements QuizService {
 
     private final QuizRepository quizRepository;
     private final QuestionService questionService;
+    private final CategoryService categoryService;
     private final RestClient restClient;
 
     @Override
@@ -83,15 +85,18 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    public QuizDTO mapQuizToDTO(Quiz quiz) {
+    public QuizDTO mapQuizToDTO(Quiz quiz, Long categoryId) {
         List<QuestionDTO> questionDTOs = quiz.getQuestionsIds()
                 .stream()
                 .map(this.questionService::getQuestionById)
                 .toList();
 
+        String categoryName = this.categoryService.getCategoryNameById(categoryId);
+
         return QuizDTO.builder()
                 .id(quiz.getId())
                 .categoryId(quiz.getCategoryId())
+                .categoryName(categoryName)
                 .questions(questionDTOs)
                 .build();
     }

@@ -14,4 +14,6 @@ public interface CategoryService {
     Object addCategory(AddCategoryDTO addCategoryDTO);
 
     boolean deleteCategoryById(Long id);
+
+    String getCategoryNameById(Long id);
 }
