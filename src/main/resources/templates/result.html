@@ -12,17 +12,19 @@
 
     <header th:replace="~{fragments/commons::header}"></header>
 
-    <main class="quiz-result">
-        <h2>Резултат от куиза</h2>
+    <main>
+        <div class="quiz-result">
+            <h2>Резултат от куиза</h2>
 
-        <div>
-          <p>Верни отговори:
-            <span th:text="${result.correctAnswers}"></span> / <span th:text="${result.totalQuestions}"></span>
-          </p>
+            <div>
+                <p>Верни отговори:
+                    <span th:text="${result.correctAnswers}"></span> / <span th:text="${result.totalQuestions}"></span>
+                </p>
+            </div>
+            <p>Резултат: <span th:text="${#numbers.formatDecimal(result.scorePercent, 0, 2)}"></span>%</p>
+
+            <a th:href="@{/categories}" class="btn-start">Започни нов куиз</a>
         </div>
-        <p>Резултат: <span th:text="${#numbers.formatDecimal(result.scorePercent, 0, 2)}"></span>%</p>
-
-        <a th:href="@{/categories}" class="btn-start">Започни нов куиз</a>
     </main>
 
 

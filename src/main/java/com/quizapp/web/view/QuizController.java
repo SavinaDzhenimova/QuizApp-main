@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Controller
@@ -51,8 +50,8 @@ public class QuizController {
 
         ModelAndView modelAndView = new ModelAndView("result");
 
-        QuizResultDTO result = this.quizService.evaluateQuiz(quizId, formData);
-        modelAndView.addObject("result", result);
+        QuizResultDTO quizResultDTO = this.quizService.evaluateQuiz(quizId, formData);
+        modelAndView.addObject("result", quizResultDTO);
 
         return modelAndView;
     }
