@@ -13,4 +13,6 @@ public interface UserService {
     Result registerUser(UserRegisterDTO registerUserDTO);
 
     Optional<User> getUserByUsername(String username);
+
+    User saveAndFlushUser(User user);
 }

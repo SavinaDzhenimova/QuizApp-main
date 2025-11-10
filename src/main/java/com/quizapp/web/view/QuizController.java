@@ -72,7 +72,7 @@ public class QuizController {
         if (userDetails == null) {
             quizResultDTO = this.guestQuizService.evaluateQuiz(quizId, formData);
         } else {
-            quizResultDTO = this.userQuizService.evaluateQuiz(quizId, formData);
+            quizResultDTO = this.userQuizService.evaluateQuiz(quizId, formData, userDetails.getUsername());
         }
 
         modelAndView.addObject("result", quizResultDTO);

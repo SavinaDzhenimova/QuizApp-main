@@ -20,7 +20,7 @@ public class UserDTO {
 
     private String email;
 
-    private List<SolvedQuiz> solvedQuizzes;
+    private List<SolvedQuizDTO> solvedQuizzes;
 
     private int totalQuizzes;
 

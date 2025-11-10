@@ -4,7 +4,6 @@ import com.quizapp.model.dto.UserDTO;
 import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.UserService;
-import com.quizapp.service.interfaces.UserStatisticsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,7 +24,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class UserController {
 
     private final UserService userService;
-    private final UserStatisticsService userStatisticsService;
 
     @GetMapping("/home")
     public ModelAndView showHomePage(@AuthenticationPrincipal UserDetails userDetails) {

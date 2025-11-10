@@ -12,7 +12,7 @@ public interface UserQuizService {
 
     SolvedQuiz createQuiz(Long categoryId, int numberOfQuestions, String username);
 
-    QuizResultDTO evaluateQuiz(Long quizId, Map<String, String> answers);
+    QuizResultDTO evaluateQuiz(Long quizId, Map<String, String> answers, String username);
 
     boolean deleteQuizById(Long id);
 }

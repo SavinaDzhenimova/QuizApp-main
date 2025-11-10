@@ -6,11 +6,10 @@ import com.quizapp.model.dto.SolvedQuizDTO;
 import com.quizapp.model.entity.Question;
 import com.quizapp.model.entity.SolvedQuiz;
 import com.quizapp.model.entity.User;
+import com.quizapp.model.entity.UserStatistics;
 import com.quizapp.repository.SolvedQuizRepository;
-import com.quizapp.service.interfaces.CategoryService;
-import com.quizapp.service.interfaces.QuestionService;
-import com.quizapp.service.interfaces.UserQuizService;
-import com.quizapp.service.interfaces.UserService;
+import com.quizapp.service.interfaces.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +25,7 @@ public class UserQuizServiceImpl implements UserQuizService {
     private final QuestionService questionService;
     private final CategoryService categoryService;
     private final UserService userService;
+    private final UserStatisticsService userStatisticsService;
 
     @Override
     public SolvedQuizDTO getSolvedQuizById(Long id) {
@@ -93,13 +93,18 @@ public class UserQuizServiceImpl implements UserQuizService {
     }
 
     @Override
-    public QuizResultDTO evaluateQuiz(Long quizId, Map<String, String> formData) {
-        Optional<SolvedQuiz> optionalSolvedQuiz = this.solvedQuizRepository.findById(quizId);
+    @Transactional
+    public QuizResultDTO evaluateQuiz(Long quizId, Map<String, String> formData, String username) {
+        Optional<User> optionalUser = this.userService.getUserByUsername(username);
+        if (optionalUser.isEmpty()) {
+            return null;
+        }
+        User user = optionalUser.get();
 
+        Optional<SolvedQuiz> optionalSolvedQuiz = this.solvedQuizRepository.findById(quizId);
         if (optionalSolvedQuiz.isEmpty()) {
             return null;
         }
-
         SolvedQuiz solvedQuiz = optionalSolvedQuiz.get();
 
         Map<Long, String> userAnswers = this.mapUserAnswers(formData);
@@ -120,6 +125,13 @@ public class UserQuizServiceImpl implements UserQuizService {
         solvedQuiz.setScore((int) correctAnswers);
         solvedQuiz.setMaxScore(totalQuestions);
         this.solvedQuizRepository.saveAndFlush(solvedQuiz);
+
+        UserStatistics userStatistics = this.userStatisticsService
+                .updateUserStatistics(user.getUserStatistics(), correctAnswers, totalQuestions);
+
+        user.setUserStatistics(userStatistics);
+        user.getSolvedQuizzes().add(solvedQuiz);
+        this.userService.saveAndFlushUser(user);
 
         return QuizResultDTO.builder()
                 .totalQuestions(totalQuestions)

@@ -1,5 +1,6 @@
 package com.quizapp.service;
 
+import com.quizapp.model.dto.SolvedQuizDTO;
 import com.quizapp.model.dto.UserDTO;
 import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.entity.Result;
@@ -8,15 +9,16 @@ import com.quizapp.model.entity.User;
 import com.quizapp.model.entity.UserStatistics;
 import com.quizapp.model.enums.RoleName;
 import com.quizapp.repository.UserRepository;
+import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.RoleService;
 import com.quizapp.service.interfaces.UserService;
-import com.quizapp.service.interfaces.UserStatisticsService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -25,7 +27,7 @@ import java.util.Set;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final UserStatisticsService userStatisticsService;
+    private final CategoryService categoryService;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
 
@@ -40,11 +42,26 @@ public class UserServiceImpl implements UserService {
 
         User user = optionalUser.get();
 
+        List<SolvedQuizDTO> solvedQuizDTOs = user.getSolvedQuizzes().stream()
+                .map(solvedQuiz -> SolvedQuizDTO.builder()
+                        .id(solvedQuiz.getId())
+                        .categoryId(solvedQuiz.getCategoryId())
+                        .categoryName(this.categoryService.getCategoryNameById(solvedQuiz.getCategoryId()))
+                        .score(solvedQuiz.getScore())
+                        .maxScore(solvedQuiz.getMaxScore())
+                        .solvedAt(solvedQuiz.getSolvedAt())
+                        .build())
+                .toList();
+
         return UserDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
-                .totalQuizzes(user.getSolvedQuizzes().size())
+                .solvedQuizzes(solvedQuizDTOs)
+                .totalQuizzes(user.getUserStatistics().getTotalQuizzes())
+                .score(user.getUserStatistics().getTotalCorrectAnswers())
+                .maxScore(user.getUserStatistics().getMaxScore())
+                .averageScore(user.getUserStatistics().getAverageScore())
                 .build();
     }
 
@@ -97,5 +114,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> getUserByUsername(String username) {
         return this.userRepository.findByUsername(username);
+    }
+
+    @Override
+    public User saveAndFlushUser(User user) {
+        return this.userRepository.saveAndFlush(user);
     }
 }

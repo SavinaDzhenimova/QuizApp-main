@@ -1,7 +1,5 @@
 package com.quizapp.service;
 
-import com.quizapp.model.entity.SolvedQuiz;
-import com.quizapp.model.entity.User;
 import com.quizapp.model.entity.UserStatistics;
 import com.quizapp.repository.UserStatisticsRepository;
 import com.quizapp.service.interfaces.UserStatisticsService;
@@ -14,26 +12,13 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 
     private final UserStatisticsRepository userStatisticsRepository;
 
-    public UserStatistics getUserStatistics(User user) {
-        long totalCorrectAnswers = user.getSolvedQuizzes().stream()
-                .mapToInt(SolvedQuiz::getScore)
-                .count();
+    @Override
+    public UserStatistics updateUserStatistics(UserStatistics userStatistics, long correctAnswers, int totalQuestions) {
+        userStatistics.setTotalQuizzes(userStatistics.getTotalQuizzes() + 1);
+        userStatistics.setTotalCorrectAnswers(userStatistics.getTotalCorrectAnswers() + (int) correctAnswers);
+        userStatistics.setMaxScore(userStatistics.getMaxScore() + totalQuestions);
+        userStatistics.setAverageScore((double) userStatistics.getTotalCorrectAnswers() / userStatistics.getMaxScore() * 100);
 
-        double averageScore = user.getSolvedQuizzes().stream()
-                .mapToDouble(solvedQuiz -> (double) solvedQuiz.getScore() / solvedQuiz.getMaxScore() * 100)
-                .average()
-                .orElse(0);
-
-        long maxScore = user.getSolvedQuizzes().stream()
-                .mapToInt(SolvedQuiz::getMaxScore)
-                .count();
-
-        return UserStatistics.builder()
-                .user(user)
-                .totalQuizzes(user.getSolvedQuizzes().size())
-                .totalCorrectAnswers((int) totalCorrectAnswers)
-                .maxScore((int) maxScore)
-                .averageScore(averageScore)
-                .build();
+        return this.userStatisticsRepository.saveAndFlush(userStatistics);
     }
 }
