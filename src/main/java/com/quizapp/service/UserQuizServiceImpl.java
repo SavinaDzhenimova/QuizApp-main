@@ -121,13 +121,14 @@ public class UserQuizServiceImpl implements UserQuizService {
 
         double scorePercent = ((double) correctAnswers / totalQuestions) * 100;
 
-        solvedQuiz.setSolvedAt(LocalDateTime.now());
+        LocalDateTime solvedAt = LocalDateTime.now();
+        solvedQuiz.setSolvedAt(solvedAt);
         solvedQuiz.setScore((int) correctAnswers);
         solvedQuiz.setMaxScore(totalQuestions);
         this.solvedQuizRepository.saveAndFlush(solvedQuiz);
 
         UserStatistics userStatistics = this.userStatisticsService
-                .updateUserStatistics(user.getUserStatistics(), correctAnswers, totalQuestions);
+                .updateUserStatistics(user.getUserStatistics(), correctAnswers, totalQuestions, solvedAt);
 
         user.setUserStatistics(userStatistics);
         user.getSolvedQuizzes().add(solvedQuiz);

@@ -26,6 +26,11 @@
                     <li>Среден резултат: <span th:text="${user.averageScore} + '%'">0%</span></li>
                     <li>Общо верни отговори: <span th:text="${user.score}">0</span></li>
                     <li>Общо решени въпроси: <span th:text="${user.maxScore}">0</span></li>
+                    <li>Последно решавал на:
+                        <span th:if="${user.lastSolvedAt != null}"
+                              th:text="${#temporals.format(user.lastSolvedAt, 'dd.MM.yyyy г. HH:mm')}"></span>
+                        <span th:if="${user.lastSolvedAt == null}">Все още не сте решавали куизове</span>
+                    </li>
                 </ul>
             </section>
 

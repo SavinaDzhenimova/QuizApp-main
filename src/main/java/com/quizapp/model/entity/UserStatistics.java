@@ -35,4 +35,7 @@ public class UserStatistics {
 
     @Column(name = "average_score", nullable = false)
     private double averageScore;
+
+    @Column(name = "last_solved_at")
+    private LocalDateTime lastSolvedAt;
 }

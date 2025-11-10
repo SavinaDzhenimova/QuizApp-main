@@ -62,6 +62,7 @@ public class UserServiceImpl implements UserService {
                 .score(user.getUserStatistics().getTotalCorrectAnswers())
                 .maxScore(user.getUserStatistics().getMaxScore())
                 .averageScore(user.getUserStatistics().getAverageScore())
+                .lastSolvedAt(user.getUserStatistics().getLastSolvedAt())
                 .build();
     }
 
