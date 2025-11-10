@@ -1,9 +1,14 @@
 package com.quizapp.web.view;
 
 import com.quizapp.model.dto.QuizResultDTO;
+import com.quizapp.model.dto.SolvedQuizDTO;
 import com.quizapp.model.entity.Quiz;
+import com.quizapp.model.entity.SolvedQuiz;
 import com.quizapp.service.interfaces.GuestQuizService;
+import com.quizapp.service.interfaces.UserQuizService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,36 +22,59 @@ import java.util.Map;
 public class QuizController {
 
     private final GuestQuizService guestQuizService;
+    private final UserQuizService userQuizService;
 
     @PostMapping("/category")
-    public String createQuiz(@RequestParam("categoryId") Long categoryId, RedirectAttributes redirectAttributes) {
+    public String createQuiz(@RequestParam("categoryId") Long categoryId,
+                             @AuthenticationPrincipal UserDetails userDetails,
+                             RedirectAttributes redirectAttributes) {
         int numberOfQuestions = 5;
-        Quiz quiz = this.guestQuizService.createQuiz(categoryId, numberOfQuestions);
+        Long id;
+
+        if (userDetails == null) {
+            Quiz quiz = this.guestQuizService.createQuiz(categoryId, numberOfQuestions);
+            id = quiz.getId();
+        } else {
+            SolvedQuiz solvedQuiz = this.userQuizService.createQuiz(categoryId, numberOfQuestions);
+            id = solvedQuiz.getId();
+        }
 
         redirectAttributes.addAttribute("page", 0);
 
-        return "redirect:/quiz/" + quiz.getId();
+        return "redirect:/quiz/" + id;
     }
 
     @GetMapping("/{quizId}")
-    public ModelAndView showQuiz(@PathVariable Long quizId) {
+    public ModelAndView showQuiz(@PathVariable Long quizId,
+                                 @AuthenticationPrincipal UserDetails userDetails) {
 
         ModelAndView modelAndView = new ModelAndView("quiz");
 
-        Quiz quiz = this.guestQuizService.getSolvedQuizById(quizId);
-
-        modelAndView.addObject("quiz", quiz);
+        if (userDetails == null) {
+            Quiz quiz = this.guestQuizService.getSolvedQuizById(quizId);
+            modelAndView.addObject("quiz", quiz);
+        } else {
+            SolvedQuizDTO solvedQuizDTO = this.userQuizService.getSolvedQuizById(quizId);
+            modelAndView.addObject("quiz", solvedQuizDTO);
+        }
 
         return modelAndView;
     }
 
     @PostMapping("/submit")
     public ModelAndView submitQuiz(@RequestParam("quizId") Long quizId,
+                                   @AuthenticationPrincipal UserDetails userDetails,
                                    @RequestParam Map<String, String> formData) {
 
         ModelAndView modelAndView = new ModelAndView("result");
+        QuizResultDTO quizResultDTO;
 
-        QuizResultDTO quizResultDTO = this.guestQuizService.evaluateQuiz(quizId, formData);
+        if (userDetails == null) {
+            quizResultDTO = this.guestQuizService.evaluateQuiz(quizId, formData);
+        } else {
+            quizResultDTO = this.userQuizService.evaluateQuiz(quizId, formData);
+        }
+
         modelAndView.addObject("result", quizResultDTO);
 
         return modelAndView;
