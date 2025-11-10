@@ -35,7 +35,7 @@ public class QuizController {
             Quiz quiz = this.guestQuizService.createQuiz(categoryId, numberOfQuestions);
             id = quiz.getId();
         } else {
-            SolvedQuiz solvedQuiz = this.userQuizService.createQuiz(categoryId, numberOfQuestions);
+            SolvedQuiz solvedQuiz = this.userQuizService.createQuiz(categoryId, numberOfQuestions, userDetails.getUsername());
             id = solvedQuiz.getId();
         }
 

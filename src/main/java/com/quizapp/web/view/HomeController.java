@@ -11,6 +11,4 @@ public class HomeController {
     public ModelAndView getIndexPage() {
         return new ModelAndView("index");
     }
-
-
 }

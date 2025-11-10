@@ -1,10 +1,14 @@
 package com.quizapp.web.view;
 
+import com.quizapp.model.dto.UserDTO;
 import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.UserService;
+import com.quizapp.service.interfaces.UserStatisticsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,15 +25,33 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class UserController {
 
     private final UserService userService;
+    private final UserStatisticsService userStatisticsService;
+
+    @GetMapping("/home")
+    public ModelAndView showHomePage(@AuthenticationPrincipal UserDetails userDetails) {
+        ModelAndView modelAndView = new ModelAndView("home");
+
+        UserDTO userDTO = this.userService.getUserInfo(userDetails.getUsername());
+
+        modelAndView.addObject("user", userDTO);
+
+        return modelAndView;
+    }
 
     @GetMapping("/login")
     public ModelAndView login() {
         return new ModelAndView("login");
     }
 
+    @GetMapping("/login-error")
+    public ModelAndView loginError(RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("errorMessage", "Invalid username or password!");
+
+        return new ModelAndView("redirect:/users/login");
+    }
+
     @GetMapping("/register")
     public ModelAndView register(Model model) {
-
         if (!model.containsAttribute("userRegisterDTO")) {
             model.addAttribute("userRegisterDTO", new UserRegisterDTO());
         }
@@ -46,7 +68,7 @@ public class UserController {
                     .addFlashAttribute("org.springframework.validation.BindingResult.userRegisterDTO",
                             bindingResult);
 
-            return new ModelAndView("register-form");
+            return new ModelAndView("register");
         }
 
         Result result = this.userService.registerUser(userRegisterDTO);

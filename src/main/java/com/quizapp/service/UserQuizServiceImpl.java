@@ -5,12 +5,16 @@ import com.quizapp.model.dto.QuizResultDTO;
 import com.quizapp.model.dto.SolvedQuizDTO;
 import com.quizapp.model.entity.Question;
 import com.quizapp.model.entity.SolvedQuiz;
+import com.quizapp.model.entity.User;
 import com.quizapp.repository.SolvedQuizRepository;
+import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.QuestionService;
 import com.quizapp.service.interfaces.UserQuizService;
+import com.quizapp.service.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,6 +24,8 @@ public class UserQuizServiceImpl implements UserQuizService {
 
     private final SolvedQuizRepository solvedQuizRepository;
     private final QuestionService questionService;
+    private final CategoryService categoryService;
+    private final UserService userService;
 
     @Override
     public SolvedQuizDTO getSolvedQuizById(Long id) {
@@ -37,13 +43,21 @@ public class UserQuizServiceImpl implements UserQuizService {
                 .toList();
 
         return SolvedQuizDTO.builder()
+                .id(solvedQuiz.getId())
                 .categoryId(solvedQuiz.getCategoryId())
+                .categoryName(this.categoryService.getCategoryNameById(solvedQuiz.getCategoryId()))
                 .questions(questions)
                 .build();
     }
 
     @Override
-    public SolvedQuiz createQuiz(Long categoryId, int numberOfQuestions) {
+    public SolvedQuiz createQuiz(Long categoryId, int numberOfQuestions, String username) {
+        Optional<User> optionalUser = this.userService.getUserByUsername(username);
+
+        if (optionalUser.isEmpty()) {
+            return null;
+        }
+
         List<Question> allQuestions = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
 
         if (allQuestions.isEmpty()) {
@@ -57,6 +71,7 @@ public class UserQuizServiceImpl implements UserQuizService {
                 .collect(Collectors.toList());
 
         SolvedQuiz solvedQuiz = SolvedQuiz.builder()
+                .user(optionalUser.get())
                 .categoryId(categoryId)
                 .questionIds(selectedIds)
                 .build();
@@ -99,15 +114,12 @@ public class UserQuizServiceImpl implements UserQuizService {
 
         int totalQuestions = questions.size();
 
-        for (Question q : questions) {
-            String userAnswer = userAnswers.get(q.getId());
-
-            if (userAnswer != null && userAnswer.equals(q.getCorrectAnswer())) {
-                correctAnswers++;
-            }
-        }
-
         double scorePercent = ((double) correctAnswers / totalQuestions) * 100;
+
+        solvedQuiz.setSolvedAt(LocalDateTime.now());
+        solvedQuiz.setScore((int) correctAnswers);
+        solvedQuiz.setMaxScore(totalQuestions);
+        this.solvedQuizRepository.saveAndFlush(solvedQuiz);
 
         return QuizResultDTO.builder()
                 .totalQuestions(totalQuestions)

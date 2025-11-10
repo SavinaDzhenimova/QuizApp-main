@@ -10,7 +10,7 @@ public interface UserQuizService {
 
     SolvedQuizDTO getSolvedQuizById(Long id);
 
-    SolvedQuiz createQuiz(Long categoryId, int numberOfQuestions);
+    SolvedQuiz createQuiz(Long categoryId, int numberOfQuestions, String username);
 
     QuizResultDTO evaluateQuiz(Long quizId, Map<String, String> answers);
 

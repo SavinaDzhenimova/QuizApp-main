@@ -78,6 +78,8 @@ public class AdminRolesInit implements CommandLineRunner {
                 .solvedQuizzes(new ArrayList<>())
                 .build();
 
+
+
         this.userRepository.saveAndFlush(adminUser);
         log.info("Admin user created successfully");
     }

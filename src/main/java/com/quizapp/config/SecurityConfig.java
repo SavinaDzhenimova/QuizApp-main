@@ -23,13 +23,14 @@ public class SecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/api/**", "/", "/users/login", "/users/register",
                                 "/categories", "/quiz/**").permitAll()
+                        .requestMatchers("/users/logout", "/users/home").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin
                         .loginPage("/users/login").permitAll()
                         .usernameParameter("username")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/home", true)
+                        .defaultSuccessUrl("/users/home", true)
                         .failureUrl("/users/login-error")
                 )
                 .logout(logout -> logout

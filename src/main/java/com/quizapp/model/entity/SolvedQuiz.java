@@ -22,7 +22,7 @@ public class SolvedQuiz {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
@@ -34,12 +34,12 @@ public class SolvedQuiz {
     @Column(name = "question_id")
     private List<Long> questionIds = new ArrayList<>();
 
-    @Column(nullable = false)
+    @Column
     private int score;
 
-    @Column(name = "max_score", nullable = false)
+    @Column(name = "max_score")
     private int maxScore;
 
-    @Column(name = "solved_at", nullable = false)
+    @Column(name = "solved_at")
     private LocalDateTime solvedAt;
 }

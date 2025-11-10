@@ -6,6 +6,8 @@ import com.quizapp.service.interfaces.UserQuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -20,9 +22,10 @@ public class QuizRestController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createQuiz(@RequestParam Long categoryId,
+                                        @AuthenticationPrincipal UserDetails userDetails,
                                         @RequestParam(defaultValue = "5") int numberOfQuestions) {
 
-        SolvedQuiz solvedQuiz = this.userQuizService.createQuiz(categoryId, numberOfQuestions);
+        SolvedQuiz solvedQuiz = this.userQuizService.createQuiz(categoryId, numberOfQuestions, userDetails.getUsername());
 
         return ResponseEntity.ok(Objects.requireNonNullElseGet(solvedQuiz, () -> Map.of(
                 "error", "Няма налични въпроси за категория с ID " + categoryId + ".")));

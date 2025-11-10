@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <link rel="stylesheet" href="/css/home-styles.css">
+    <title>Профил</title>
+</head>
+
+<body>
+
+    <header th:replace="~{fragments/commons::header}"></header>
+
+    <main>
+        <div class="profile-container">
+            <section class="profile-info">
+                <h2 th:text="${user.username}">Username</h2>
+                <p>Email: <span th:text="${user.email}">user@example.com</span></p>
+            </section>
+
+            <section class="profile-stats">
+                <h3>Статистика</h3>
+                <ul>
+                    <li>Общо решени куизове: <span th:text="${user.totalQuizzes}">0</span></li>
+                    <li>Среден резултат: <span th:text="${user.averageScore}">0%</span></li>
+                    <li>Общо верни отговори: <span th:text="${user.score}">0</span></li>
+                    <li>Общо въпроси решени: <span th:text="${user.maxScore}">0</span></li>
+                </ul>
+            </section>
+
+            <section class="solved-quizzes">
+                <h3>История на куизовете</h3>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Категория</th>
+                        <th>Резултат</th>
+                        <th>Макс. резултат</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="sq : ${user.solvedQuizzes}">
+                        <td th:text="${#dates.format(sq.solvedAt, 'dd.MM.yyyy HH:mm')}">01.01.2025</td>
+                        <td th:text="${sq.categoryName}">Наука</td>
+                        <td th:text="${sq.score}">4</td>
+                        <td th:text="${sq.maxScore}">5</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/commons::footer}"></footer>
+
+</body>
+</html>
