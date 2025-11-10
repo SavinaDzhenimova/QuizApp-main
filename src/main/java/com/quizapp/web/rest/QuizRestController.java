@@ -2,7 +2,7 @@ package com.quizapp.web.rest;
 
 import com.quizapp.model.dto.QuizDTO;
 import com.quizapp.model.entity.Quiz;
-import com.quizapp.service.interfaces.QuizService;
+import com.quizapp.service.interfaces.UserQuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +16,13 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class QuizRestController {
 
-    private final QuizService quizService;
+    private final UserQuizService userQuizService;
 
     @PostMapping("/create")
     public ResponseEntity<?> createQuiz(@RequestParam Long categoryId,
                                         @RequestParam(defaultValue = "5") int numberOfQuestions) {
 
-        Quiz quiz = this.quizService.createQuiz(categoryId, numberOfQuestions);
+        Quiz quiz = this.userQuizService.createQuiz(categoryId, numberOfQuestions);
 
         return ResponseEntity.ok(Objects.requireNonNullElseGet(quiz, () -> Map.of(
                 "error", "Няма налични въпроси за категория с ID " + categoryId + ".")));
@@ -30,7 +30,7 @@ public class QuizRestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getQuizById(@PathVariable Long id) {
-        QuizDTO quizDTO = this.quizService.getQuizById(id);
+        QuizDTO quizDTO = this.userQuizService.getQuizById(id);
 
         return ResponseEntity.ok(Objects.requireNonNullElseGet(quizDTO, () -> Map.of(
                 "error", "Куизът с ID " + id + " не е намерен!")));
@@ -38,7 +38,7 @@ public class QuizRestController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteQuizById(@PathVariable Long id) {
-        boolean isDeleted = this.quizService.deleteQuizById(id);
+        boolean isDeleted = this.userQuizService.deleteQuizById(id);
 
         if (!isDeleted) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

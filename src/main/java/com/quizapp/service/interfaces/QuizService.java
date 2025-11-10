@@ -13,7 +13,5 @@ public interface QuizService {
 
     QuizDTO mapQuizToDTO(Long quizId, Long categoryId);
 
-    boolean deleteQuizById(Long id);
-
     QuizResultDTO evaluateQuiz(Long quizId, Map<String, String> answers);
 }

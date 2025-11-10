@@ -9,6 +9,7 @@ import com.quizapp.repository.QuizRepository;
 import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.QuestionService;
 import com.quizapp.service.interfaces.QuizService;
+import com.quizapp.service.interfaces.UserQuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class QuizServiceImpl implements QuizService {
+public class UserQuizServiceImpl implements UserQuizService {
 
     private final QuizRepository quizRepository;
     private final QuestionService questionService;
