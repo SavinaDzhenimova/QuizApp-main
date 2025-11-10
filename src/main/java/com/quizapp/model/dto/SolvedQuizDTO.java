@@ -11,13 +11,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class QuizDTO {
+public class SolvedQuizDTO {
 
     private Long id;
 
     private Long categoryId;
-
-    private String categoryName;
 
     private List<QuestionDTO> questions;
 }

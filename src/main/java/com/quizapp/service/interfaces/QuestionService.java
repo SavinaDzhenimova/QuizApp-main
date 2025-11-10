@@ -11,6 +11,8 @@ public interface QuestionService {
 
     QuestionDTO getQuestionById(Long id);
 
+    QuestionDTO questionToDTO(Question question);
+
     Object addQuestion(AddQuestionDTO addQuestionDTO);
 
     boolean deleteQuestionById(Long id);

@@ -1,7 +1,7 @@
 package com.quizapp.web.rest;
 
-import com.quizapp.model.dto.QuizDTO;
-import com.quizapp.model.entity.Quiz;
+import com.quizapp.model.dto.SolvedQuizDTO;
+import com.quizapp.model.entity.SolvedQuiz;
 import com.quizapp.service.interfaces.UserQuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,17 +22,17 @@ public class QuizRestController {
     public ResponseEntity<?> createQuiz(@RequestParam Long categoryId,
                                         @RequestParam(defaultValue = "5") int numberOfQuestions) {
 
-        Quiz quiz = this.userQuizService.createQuiz(categoryId, numberOfQuestions);
+        SolvedQuiz solvedQuiz = this.userQuizService.createQuiz(categoryId, numberOfQuestions);
 
-        return ResponseEntity.ok(Objects.requireNonNullElseGet(quiz, () -> Map.of(
+        return ResponseEntity.ok(Objects.requireNonNullElseGet(solvedQuiz, () -> Map.of(
                 "error", "Няма налични въпроси за категория с ID " + categoryId + ".")));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getQuizById(@PathVariable Long id) {
-        QuizDTO quizDTO = this.userQuizService.getQuizById(id);
+        SolvedQuizDTO solvedQuizDTO = this.userQuizService.getSolvedQuizById(id);
 
-        return ResponseEntity.ok(Objects.requireNonNullElseGet(quizDTO, () -> Map.of(
+        return ResponseEntity.ok(Objects.requireNonNullElseGet(solvedQuizDTO, () -> Map.of(
                 "error", "Куизът с ID " + id + " не е намерен!")));
     }
 

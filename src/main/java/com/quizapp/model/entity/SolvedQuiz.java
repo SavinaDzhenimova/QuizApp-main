@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "solved_quizzes")
@@ -21,8 +23,16 @@ public class SolvedQuiz {
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "quiz_id", referencedColumnName = "id")
-    private Quiz quiz;
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
+    @Column(name = "category_id", nullable = false)
+    private Long categoryId;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "solved_quiz_questions", joinColumns = @JoinColumn(name = "solved_quiz_id"))
+    @Column(name = "question_id")
+    private List<Long> questionIds = new ArrayList<>();
 
     @Column(nullable = false)
     private int score;

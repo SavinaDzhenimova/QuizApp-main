@@ -42,7 +42,8 @@ public class QuestionServiceImpl implements QuestionService {
         }
     }
 
-    private QuestionDTO questionToDTO(Question question) {
+    @Override
+    public QuestionDTO questionToDTO(Question question) {
         return QuestionDTO.builder()
                 .id(question.getId())
                 .questionText(question.getQuestionText())

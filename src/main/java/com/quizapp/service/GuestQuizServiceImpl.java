@@ -1,13 +1,11 @@
 package com.quizapp.service;
 
 import com.quizapp.model.dto.QuestionDTO;
-import com.quizapp.model.dto.QuizDTO;
 import com.quizapp.model.dto.QuizResultDTO;
 import com.quizapp.model.entity.Question;
 import com.quizapp.model.entity.Quiz;
-import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.QuestionService;
-import com.quizapp.service.interfaces.QuizService;
+import com.quizapp.service.interfaces.GuestQuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,38 +14,26 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
-public class GuestQuizServiceImpl implements QuizService {
+public class GuestQuizServiceImpl implements GuestQuizService {
 
-    private final CategoryService categoryService;
     private final QuestionService questionService;
     private final Map<Long, Quiz> tempQuizzes = new ConcurrentHashMap<>();
     private static long TEMP_ID_COUNTER = 1L;
 
     @Override
-    public QuizDTO getQuizById(Long id) {
-        Quiz quiz = this.tempQuizzes.get(id);
-        if (quiz == null) return null;
-
-        List<QuestionDTO> questions = quiz.getQuestionsIds().stream()
-                .map(this.questionService::getQuestionById)
-                .toList();
-
-        return QuizDTO.builder()
-                .id(id)
-                .categoryId(quiz.getCategoryId())
-                .categoryName(this.categoryService.getCategoryNameById(quiz.getCategoryId()))
-                .questions(questions)
-                .build();
+    public Quiz getSolvedQuizById(Long id) {
+        return this.tempQuizzes.get(id);
     }
 
     @Override
     public Quiz createQuiz(Long categoryId, int numberOfQuestions) {
         List<Question> allQuestions = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
+
         Collections.shuffle(allQuestions);
 
-        List<Long> questionIds = allQuestions.stream()
+        List<QuestionDTO> questionDTOs = allQuestions.stream()
                 .limit(numberOfQuestions)
-                .map(Question::getId)
+                .map(this.questionService::questionToDTO)
                 .toList();
 
         Long tempId = TEMP_ID_COUNTER++;
@@ -55,16 +41,11 @@ public class GuestQuizServiceImpl implements QuizService {
         Quiz quiz = Quiz.builder()
                 .id(tempId)
                 .categoryId(categoryId)
-                .questionsIds(questionIds)
+                .questions(questionDTOs)
                 .build();
 
         this.tempQuizzes.put(tempId, quiz);
         return quiz;
-    }
-
-    @Override
-    public QuizDTO mapQuizToDTO(Long quizId, Long categoryId) {
-        return null;
     }
 
     @Override
@@ -73,26 +54,27 @@ public class GuestQuizServiceImpl implements QuizService {
 
         if (quiz == null) return null;
 
-        Map<Long, String> userAnswers = this.parseAnswers(formData);
+        Map<Long, String> userAnswers = this.parseUserAnswers(formData);
 
-        List<Question> questions = quiz.getQuestionsIds().stream()
-                .map(this.questionService::makeGetRequest)
-                .toList();
-
-        long correctAnswers = questions.stream()
-                .filter(q -> q.getCorrectAnswer().equals(userAnswers.get(q.getId())))
-                .count();
+        int totalQuestions = quiz.getQuestions().size();
+        long correctAnswers = this.getCorrectAnswers(quiz, userAnswers);
 
         this.tempQuizzes.remove(quizId);
 
         return QuizResultDTO.builder()
-                .totalQuestions(questions.size())
+                .totalQuestions(totalQuestions)
                 .correctAnswers((int) correctAnswers)
-                .scorePercent((double) correctAnswers / questions.size() * 100)
+                .scorePercent((double) correctAnswers / totalQuestions * 100)
                 .build();
     }
 
-    private Map<Long, String> parseAnswers(Map<String, String> formData) {
+    private Long getCorrectAnswers(Quiz quiz, Map<Long, String> userAnswers) {
+        return quiz.getQuestions().stream()
+                .filter(q -> q.getCorrectAnswer().equals(userAnswers.get(q.getId())))
+                .count();
+    }
+
+    private Map<Long, String> parseUserAnswers(Map<String, String> formData) {
         Map<Long, String> result = new HashMap<>();
 
         formData.forEach((key, val) -> {

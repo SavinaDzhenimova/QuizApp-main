@@ -1,9 +1,8 @@
 package com.quizapp.web.view;
 
-import com.quizapp.model.dto.QuizDTO;
 import com.quizapp.model.dto.QuizResultDTO;
 import com.quizapp.model.entity.Quiz;
-import com.quizapp.service.interfaces.QuizService;
+import com.quizapp.service.interfaces.GuestQuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -17,15 +16,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class QuizController {
 
-    private final QuizService quizService;
-    private Long CATEGORY_ID;
+    private final GuestQuizService guestQuizService;
 
     @PostMapping("/category")
     public String createQuiz(@RequestParam("categoryId") Long categoryId, RedirectAttributes redirectAttributes) {
-        CATEGORY_ID = categoryId;
-
         int numberOfQuestions = 5;
-        Quiz quiz = quizService.createQuiz(categoryId, numberOfQuestions);
+        Quiz quiz = this.guestQuizService.createQuiz(categoryId, numberOfQuestions);
 
         redirectAttributes.addAttribute("page", 0);
 
@@ -37,9 +33,9 @@ public class QuizController {
 
         ModelAndView modelAndView = new ModelAndView("quiz");
 
-        QuizDTO quizDTO = quizService.mapQuizToDTO(quizId, CATEGORY_ID);
+        Quiz quiz = this.guestQuizService.getSolvedQuizById(quizId);
 
-        modelAndView.addObject("quiz", quizDTO);
+        modelAndView.addObject("quiz", quiz);
 
         return modelAndView;
     }
@@ -50,10 +46,9 @@ public class QuizController {
 
         ModelAndView modelAndView = new ModelAndView("result");
 
-        QuizResultDTO quizResultDTO = this.quizService.evaluateQuiz(quizId, formData);
+        QuizResultDTO quizResultDTO = this.guestQuizService.evaluateQuiz(quizId, formData);
         modelAndView.addObject("result", quizResultDTO);
 
         return modelAndView;
     }
-
 }

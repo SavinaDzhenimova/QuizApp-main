@@ -1,14 +1,12 @@
 package com.quizapp.service;
 
 import com.quizapp.model.dto.QuestionDTO;
-import com.quizapp.model.dto.QuizDTO;
 import com.quizapp.model.dto.QuizResultDTO;
+import com.quizapp.model.dto.SolvedQuizDTO;
 import com.quizapp.model.entity.Question;
-import com.quizapp.model.entity.Quiz;
-import com.quizapp.repository.QuizRepository;
-import com.quizapp.service.interfaces.CategoryService;
+import com.quizapp.model.entity.SolvedQuiz;
+import com.quizapp.repository.SolvedQuizRepository;
 import com.quizapp.service.interfaces.QuestionService;
-import com.quizapp.service.interfaces.QuizService;
 import com.quizapp.service.interfaces.UserQuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,39 +18,32 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserQuizServiceImpl implements UserQuizService {
 
-    private final QuizRepository quizRepository;
+    private final SolvedQuizRepository solvedQuizRepository;
     private final QuestionService questionService;
-    private final CategoryService categoryService;
 
     @Override
-    public QuizDTO getQuizById(Long id) {
-        Optional<Quiz> optionalQuiz = this.quizRepository.findById(id);
+    public SolvedQuizDTO getSolvedQuizById(Long id) {
+        Optional<SolvedQuiz> optionalSolvedQuiz = this.solvedQuizRepository.findById(id);
 
-        if (optionalQuiz.isEmpty()) {
+        if (optionalSolvedQuiz.isEmpty()) {
             return null;
         }
 
-        Quiz quiz = optionalQuiz.get();
+        SolvedQuiz solvedQuiz = optionalSolvedQuiz.get();
 
-        List<QuestionDTO> questions = quiz.getQuestionsIds().stream()
+        List<QuestionDTO> questions = solvedQuiz.getQuestionIds().stream()
                 .map(this.questionService::makeGetRequest)
-                .map(question -> QuestionDTO.builder()
-                        .id(question.getId())
-                        .questionText(question.getQuestionText())
-                        .correctAnswer(question.getCorrectAnswer())
-                        .options(question.getOptions())
-                        .build())
+                .map(this.questionService::questionToDTO)
                 .toList();
 
-        return QuizDTO.builder()
-                .id(quiz.getId())
-                .categoryId(quiz.getCategoryId())
+        return SolvedQuizDTO.builder()
+                .categoryId(solvedQuiz.getCategoryId())
                 .questions(questions)
                 .build();
     }
 
     @Override
-    public Quiz createQuiz(Long categoryId, int numberOfQuestions) {
+    public SolvedQuiz createQuiz(Long categoryId, int numberOfQuestions) {
         List<Question> allQuestions = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
 
         if (allQuestions.isEmpty()) {
@@ -65,35 +56,12 @@ public class UserQuizServiceImpl implements UserQuizService {
                 .map(Question::getId)
                 .collect(Collectors.toList());
 
-        Quiz quiz = Quiz.builder()
+        SolvedQuiz solvedQuiz = SolvedQuiz.builder()
                 .categoryId(categoryId)
-                .questionsIds(selectedIds)
+                .questionIds(selectedIds)
                 .build();
 
-        return this.quizRepository.saveAndFlush(quiz);
-    }
-
-    @Override
-    public QuizDTO mapQuizToDTO(Long quizId, Long categoryId) {
-        Optional<Quiz> optionalQuiz = this.quizRepository.findById(quizId);
-
-        if (optionalQuiz.isEmpty()) {
-            return null;
-        }
-
-        List<QuestionDTO> questionDTOs = optionalQuiz.get().getQuestionsIds()
-                .stream()
-                .map(this.questionService::getQuestionById)
-                .toList();
-
-        String categoryName = this.categoryService.getCategoryNameById(categoryId);
-
-        return QuizDTO.builder()
-                .id(quizId)
-                .categoryId(categoryId)
-                .categoryName(categoryName)
-                .questions(questionDTOs)
-                .build();
+        return this.solvedQuizRepository.saveAndFlush(solvedQuiz);
     }
 
     private Map<Long, String> mapUserAnswers(Map<String, String> formData) {
@@ -111,21 +79,24 @@ public class UserQuizServiceImpl implements UserQuizService {
 
     @Override
     public QuizResultDTO evaluateQuiz(Long quizId, Map<String, String> formData) {
-        Optional<Quiz> optionalQuiz = this.quizRepository.findById(quizId);
+        Optional<SolvedQuiz> optionalSolvedQuiz = this.solvedQuizRepository.findById(quizId);
 
-        if (optionalQuiz.isEmpty()) {
+        if (optionalSolvedQuiz.isEmpty()) {
             return null;
         }
 
-        Quiz quiz = optionalQuiz.get();
+        SolvedQuiz solvedQuiz = optionalSolvedQuiz.get();
 
         Map<Long, String> userAnswers = this.mapUserAnswers(formData);
 
-        List<Question> questions = quiz.getQuestionsIds().stream()
+        List<Question> questions = solvedQuiz.getQuestionIds().stream()
                 .map(this.questionService::makeGetRequest)
                 .toList();
 
-        int correctAnswers = 0;
+        long correctAnswers = questions.stream()
+                .filter(q -> q.getCorrectAnswer().equals(userAnswers.get(q.getId())))
+                .count();
+
         int totalQuestions = questions.size();
 
         for (Question q : questions) {
@@ -140,18 +111,18 @@ public class UserQuizServiceImpl implements UserQuizService {
 
         return QuizResultDTO.builder()
                 .totalQuestions(totalQuestions)
-                .correctAnswers(correctAnswers)
+                .correctAnswers((int) correctAnswers)
                 .scorePercent(scorePercent)
                 .build();
     }
 
     @Override
     public boolean deleteQuizById(Long id) {
-        if (!this.quizRepository.existsById(id)) {
+        if (!this.solvedQuizRepository.existsById(id)) {
             return false;
         }
 
-        this.quizRepository.deleteById(id);
+        this.solvedQuizRepository.deleteById(id);
         return true;
     }
 }
