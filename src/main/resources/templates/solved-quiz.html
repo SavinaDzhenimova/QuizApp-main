@@ -25,10 +25,7 @@
         </div>
 
         <div class="question-pages">
-          <div th:each="question, iter : ${solvedQuiz.questions}"
-               th:id="'q' + ${iter.index}"
-               class="question-page"
-               th:classappend="${iter.index == 0} ? ' active' : ''">
+          <div th:each="question : ${solvedQuiz.questions}" class="question-page">
 
             <h3 th:text="${question.questionText}" class="question-text"></h3>
 

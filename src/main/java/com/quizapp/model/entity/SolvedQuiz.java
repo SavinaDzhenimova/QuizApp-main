@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "solved_quizzes")
@@ -42,4 +44,10 @@ public class SolvedQuiz {
 
     @Column(name = "solved_at")
     private LocalDateTime solvedAt;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "solved_quiz_answers", joinColumns = @JoinColumn(name = "solved_quiz_id"))
+    @MapKeyColumn(name = "question_id")
+    @Column(name = "user_answer")
+    private Map<Long, String> userAnswers = new HashMap<>();
 }

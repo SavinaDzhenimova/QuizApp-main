@@ -2,7 +2,7 @@ package com.quizapp.web.rest;
 
 import com.quizapp.model.dto.SolvedQuizDTO;
 import com.quizapp.model.entity.SolvedQuiz;
-import com.quizapp.service.interfaces.UserQuizService;
+import com.quizapp.service.interfaces.SolvedQuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,14 +18,14 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class QuizRestController {
 
-    private final UserQuizService userQuizService;
+    private final SolvedQuizService solvedQuizService;
 
     @PostMapping("/create")
     public ResponseEntity<?> createQuiz(@RequestParam Long categoryId,
                                         @AuthenticationPrincipal UserDetails userDetails,
                                         @RequestParam(defaultValue = "5") int numberOfQuestions) {
 
-        SolvedQuiz solvedQuiz = this.userQuizService.createQuiz(categoryId, numberOfQuestions, userDetails.getUsername());
+        SolvedQuiz solvedQuiz = this.solvedQuizService.createQuiz(categoryId, numberOfQuestions, userDetails.getUsername());
 
         return ResponseEntity.ok(Objects.requireNonNullElseGet(solvedQuiz, () -> Map.of(
                 "error", "Няма налични въпроси за категория с ID " + categoryId + ".")));
@@ -33,7 +33,7 @@ public class QuizRestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getQuizById(@PathVariable Long id) {
-        SolvedQuizDTO solvedQuizDTO = this.userQuizService.getSolvedQuizById(id);
+        SolvedQuizDTO solvedQuizDTO = this.solvedQuizService.getSolvedQuizById(id);
 
         return ResponseEntity.ok(Objects.requireNonNullElseGet(solvedQuizDTO, () -> Map.of(
                 "error", "Куизът с ID " + id + " не е намерен!")));
@@ -41,7 +41,7 @@ public class QuizRestController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteQuizById(@PathVariable Long id) {
-        boolean isDeleted = this.userQuizService.deleteQuizById(id);
+        boolean isDeleted = this.solvedQuizService.deleteQuizById(id);
 
         if (!isDeleted) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

@@ -5,7 +5,7 @@ import com.quizapp.model.dto.SolvedQuizDTO;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.model.entity.SolvedQuiz;
 import com.quizapp.service.interfaces.GuestQuizService;
-import com.quizapp.service.interfaces.UserQuizService;
+import com.quizapp.service.interfaces.SolvedQuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +22,7 @@ import java.util.Map;
 public class QuizController {
 
     private final GuestQuizService guestQuizService;
-    private final UserQuizService userQuizService;
+    private final SolvedQuizService solvedQuizService;
 
     @PostMapping("/category")
     public String createQuiz(@RequestParam("categoryId") Long categoryId,
@@ -35,7 +35,7 @@ public class QuizController {
             Quiz quiz = this.guestQuizService.createQuiz(categoryId, numberOfQuestions);
             id = quiz.getId();
         } else {
-            SolvedQuiz solvedQuiz = this.userQuizService.createQuiz(categoryId, numberOfQuestions, userDetails.getUsername());
+            SolvedQuiz solvedQuiz = this.solvedQuizService.createQuiz(categoryId, numberOfQuestions, userDetails.getUsername());
             id = solvedQuiz.getId();
         }
 
@@ -54,7 +54,7 @@ public class QuizController {
             Quiz quiz = this.guestQuizService.getSolvedQuizById(quizId);
             modelAndView.addObject("quiz", quiz);
         } else {
-            SolvedQuizDTO solvedQuizDTO = this.userQuizService.getSolvedQuizById(quizId);
+            SolvedQuizDTO solvedQuizDTO = this.solvedQuizService.getSolvedQuizById(quizId);
             modelAndView.addObject("quiz", solvedQuizDTO);
         }
 
@@ -72,7 +72,7 @@ public class QuizController {
         if (userDetails == null) {
             quizResultDTO = this.guestQuizService.evaluateQuiz(quizId, formData);
         } else {
-            quizResultDTO = this.userQuizService.evaluateQuiz(quizId, formData, userDetails.getUsername());
+            quizResultDTO = this.solvedQuizService.evaluateQuiz(quizId, formData, userDetails.getUsername());
         }
 
         modelAndView.addObject("result", quizResultDTO);
