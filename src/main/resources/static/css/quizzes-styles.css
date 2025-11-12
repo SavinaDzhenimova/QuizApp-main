@@ -19,7 +19,6 @@
     flex-wrap: nowrap;
     justify-content: space-between;
     align-items: center;
-    gap: 2em;
 }
 
 .quiz-card ul li {
