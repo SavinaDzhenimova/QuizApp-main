@@ -49,6 +49,7 @@ public class SolvedQuizServiceImpl implements SolvedQuizService {
                 .maxScore(solvedQuiz.getMaxScore())
                 .solvedAt(solvedQuiz.getSolvedAt())
                 .questions(questionDTOs)
+                .userAnswers(solvedQuiz.getUserAnswers())
                 .build();
     }
 

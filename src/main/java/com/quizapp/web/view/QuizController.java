@@ -79,4 +79,14 @@ public class QuizController {
 
         return modelAndView;
     }
+
+    @GetMapping("/{id}")
+    public ModelAndView showSolvedQuizById(@PathVariable Long id) {
+        ModelAndView modelAndView = new ModelAndView("solved-quiz");
+
+        SolvedQuizDTO solvedQuizDTO = this.solvedQuizService.getSolvedQuizById(id);
+        modelAndView.addObject("solvedQuiz", solvedQuizDTO);
+
+        return modelAndView;
+    }
 }

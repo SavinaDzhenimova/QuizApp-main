@@ -24,7 +24,7 @@
                     </li>
                     <li>Решен на: <span th:text="${#temporals.format(quiz.solvedAt, 'dd.MM.yyyy г. HH:mm')}"></span></li>
                     <li>
-                        <a th:href="@{/solved-quiz/{id}(id=${quiz.id})}" class="btn-start">Разгледай куиз</a>
+                        <a th:href="@{/quiz/{id}(id=${quiz.id})}" class="btn-start">Разгледай куиз</a>
                     </li>
                 </ul>
             </div>
