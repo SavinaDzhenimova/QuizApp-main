@@ -82,7 +82,7 @@ public class UserController {
         return new ModelAndView("redirect:/users/login");
     }
 
-    @GetMapping("/users/quizzes")
+    @GetMapping("/quizzes")
     public ModelAndView viewUserQuizzes(@AuthenticationPrincipal UserDetails userDetails) {
         ModelAndView modelAndView = new ModelAndView("quizzes");
 

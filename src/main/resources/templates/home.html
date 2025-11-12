@@ -32,8 +32,6 @@
                         <span th:if="${user.lastSolvedAt == null}">Все още не сте решавали куизове</span>
                     </li>
                 </ul>
-
-                <a th:href="@{/users/quizzes}" class="btn-start">Виж всички</a>
             </section>
 
             <section class="solved-quizzes">
@@ -56,6 +54,8 @@
                     </tr>
                     </tbody>
                 </table>
+
+                <a th:href="@{/users/quizzes}" class="btn-start">Виж всички</a>
             </section>
         </div>
     </main>

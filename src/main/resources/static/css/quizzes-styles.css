@@ -1,0 +1,27 @@
+.quizzes-section {
+    max-width: 70%;
+    margin: 0 auto;
+    padding: 2em;
+    font-family: 'Noto Sans', sans-serif;
+}
+
+.quiz-card {
+    margin-bottom: 2em;
+    padding: 1.5em;
+    border-radius: 1.5em;
+    background: rgba(212, 167, 236, 0.2);
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 10px;
+    backdrop-filter: blur(2px);
+}
+
+.quiz-card ul {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2em;
+}
+
+.quiz-card ul li {
+    flex: 1;
+}

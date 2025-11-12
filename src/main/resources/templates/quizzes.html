@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <link rel="stylesheet" href="/css/quizzes-styles.css">
+    <title>Куизове</title>
+</head>
+
+<body>
+
+    <header th:replace="~{fragments/commons::header}"></header>
+
+    <main>
+        <h1>Вашите куизове</h1>
+
+        <div class="quizzes-section" th:each="quiz : ${quizzes}">
+            <div class="quiz-card">
+                <ul>
+                    <li>Категория: <span th:text="${quiz.categoryName}"></span></li>
+                    <li>Брой точки:
+                        <span th:text="${quiz.score}"></span>/<span th:text="${quiz.maxScore}"></span>
+                    </li>
+                    <li>Решен на: <span th:text="${#temporals.format(quiz.solvedAt, 'dd.MM.yyyy г. HH:mm')}"></span></li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/commons::footer}"></footer>
+
+</body>
+</html>
