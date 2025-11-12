@@ -23,7 +23,7 @@ public class SecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/api/**", "/", "/users/login", "/users/register",
                                 "/categories", "/quiz/**").permitAll()
-                        .requestMatchers("/users/logout", "/users/home").authenticated()
+                        .requestMatchers("/users/logout", "/users/home", "/users/quizzes").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin

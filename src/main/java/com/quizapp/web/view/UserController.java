@@ -1,5 +1,6 @@
 package com.quizapp.web.view;
 
+import com.quizapp.model.dto.SolvedQuizDTO;
 import com.quizapp.model.dto.UserDTO;
 import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.entity.Result;
@@ -11,12 +12,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/users")
@@ -24,6 +24,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class UserController {
 
     private final UserService userService;
+
 
     @GetMapping("/home")
     public ModelAndView showHomePage(@AuthenticationPrincipal UserDetails userDetails) {
@@ -79,5 +80,20 @@ public class UserController {
         }
 
         return new ModelAndView("redirect:/users/login");
+    }
+
+    @GetMapping("/users/quizzes")
+    public ModelAndView viewUserQuizzes(@AuthenticationPrincipal UserDetails userDetails) {
+        ModelAndView modelAndView = new ModelAndView("quizzes");
+
+        List<SolvedQuizDTO> quizzes = this.userService.getSolvedQuizzesByUsername(userDetails.getUsername());
+
+        if (quizzes.isEmpty()) {
+            modelAndView.addObject("errorMessage", "Все още нямате решени куизове.");
+        } else {
+            modelAndView.addObject("quizzes", quizzes);
+        }
+
+        return modelAndView;
     }
 }

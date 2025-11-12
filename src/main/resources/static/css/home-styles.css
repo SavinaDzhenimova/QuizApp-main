@@ -19,6 +19,10 @@
     margin-bottom: 0.5em;
 }
 
+h3 {
+    font-size: 26px;
+}
+
 .profile-stats ul {
     list-style: none;
     padding: 0;

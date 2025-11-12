@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -110,6 +111,29 @@ public class UserServiceImpl implements UserService {
         this.userRepository.saveAndFlush(user);
 
         return new Result(true, "Успешна регистрация!");
+    }
+
+    @Override
+    @Transactional
+    public List<SolvedQuizDTO> getSolvedQuizzesByUsername(String username) {
+        Optional<User> optionalUser = this.userRepository.findByUsername(username);
+
+        if (optionalUser.isEmpty()) {
+            return null;
+        }
+
+        User user = optionalUser.get();
+
+        return user.getSolvedQuizzes().stream()
+                .map(solvedQuiz -> SolvedQuizDTO.builder()
+                        .id(solvedQuiz.getId())
+                        .categoryId(solvedQuiz.getCategoryId())
+                        .categoryName(this.categoryService.getCategoryNameById(solvedQuiz.getCategoryId()))
+                        .score(solvedQuiz.getScore())
+                        .maxScore(solvedQuiz.getMaxScore())
+                        .solvedAt(solvedQuiz.getSolvedAt())
+                        .build())
+                .toList();
     }
 
     @Override
