@@ -17,14 +17,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/quiz")
 @RequiredArgsConstructor
 public class QuizController {
 
     private final GuestQuizService guestQuizService;
     private final SolvedQuizService solvedQuizService;
 
-    @PostMapping("/category")
+    @PostMapping("/quiz/category")
     public String createQuiz(@RequestParam("categoryId") Long categoryId,
                              @AuthenticationPrincipal UserDetails userDetails,
                              RedirectAttributes redirectAttributes) {
@@ -44,7 +43,7 @@ public class QuizController {
         return "redirect:/quiz/" + id;
     }
 
-    @GetMapping("/{quizId}")
+    @GetMapping("/quiz/{quizId}")
     public ModelAndView showQuiz(@PathVariable Long quizId,
                                  @AuthenticationPrincipal UserDetails userDetails) {
 
@@ -61,7 +60,7 @@ public class QuizController {
         return modelAndView;
     }
 
-    @PostMapping("/submit")
+    @PostMapping("/quiz/submit")
     public ModelAndView submitQuiz(@RequestParam("quizId") Long quizId,
                                    @AuthenticationPrincipal UserDetails userDetails,
                                    @RequestParam Map<String, String> formData) {
@@ -80,7 +79,7 @@ public class QuizController {
         return modelAndView;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/solved-quiz/{id}")
     public ModelAndView showSolvedQuizById(@PathVariable Long id) {
         ModelAndView modelAndView = new ModelAndView("solved-quiz");
 

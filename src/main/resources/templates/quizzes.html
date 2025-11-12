@@ -15,8 +15,8 @@
     <main>
         <h1>Вашите куизове</h1>
 
-        <div class="quizzes-section" th:each="quiz : ${quizzes}">
-            <div class="quiz-card">
+        <div class="quizzes-section">
+            <div class="quiz-card" th:each="quiz : ${quizzes}">
                 <ul>
                     <li>Категория: <span th:text="${quiz.categoryName}"></span></li>
                     <li>Брой точки:
@@ -24,7 +24,7 @@
                     </li>
                     <li>Решен на: <span th:text="${#temporals.format(quiz.solvedAt, 'dd.MM.yyyy г. HH:mm')}"></span></li>
                     <li>
-                        <a th:href="@{/quiz/{id}(id=${quiz.id})}" class="btn-start">Разгледай куиз</a>
+                        <a th:href="@{/solved-quiz/{id}(id=${quiz.id})}" class="btn-start">Разгледай куиз</a>
                     </li>
                 </ul>
             </div>

@@ -1,5 +1,4 @@
-#quizForm,
-.quiz-container {
+#quizForm {
     width: 70%;
     display: flex;
     flex-direction: column;
@@ -37,14 +36,12 @@
 .answer-option {
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     width: calc(100% / 2 - 2em);
     cursor: pointer;
     border-radius: 2em;
     padding: 1em;
-    display: flex;
-    align-items: center;
     transition: 0.3s ease;
     backdrop-filter: blur(3px);
     background: linear-gradient(135deg,
@@ -63,22 +60,6 @@
         rgba(212, 167, 236, 0.4),
         rgba(128, 0, 128, 0.4));
     box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 10px;
-}
-
-.quiz-info {
-    width: 100%;
-    padding: 1em;
-    margin-bottom: 2em;
-    border-bottom: 2px solid rgb(128, 0, 128);
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    align-items: center;
-    text-align: center;
-}
-
-.quiz-info p {
-    flex: 1;
 }
 
 .answer-option:hover {

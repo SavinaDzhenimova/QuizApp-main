@@ -1,0 +1,91 @@
+.quiz-container {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+    margin: 2em auto;
+}
+
+.quiz-info {
+    width: 100%;
+    padding: 1em;
+    border-bottom: 2px solid rgb(128, 0, 128);
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: baseline;
+    text-align: center;
+}
+
+.quiz-info h2 {
+    font-size: 26px;
+}
+
+.quiz-info p {
+    flex: 1;
+    text-align: right;
+    font-size: 16px;
+}
+
+.question-pages {
+    width: 100%;
+}
+
+.question-page {
+    display: none;
+}
+
+.question-page.active {
+    display: flex;;
+    flex-direction: column;
+    gap: 2em;
+}
+
+.question-text,
+.answer-option {
+    padding: 1em;
+    border-radius: 2em;
+    backdrop-filter: blur(3px);
+    background: linear-gradient(135deg, rgba(212, 167, 236, 0.4), rgba(128, 0, 128, 0.4));
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 10px;
+}
+
+.question-text {
+    width: 100%;
+    text-align: center;
+}
+
+.options-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2em;
+}
+
+.answer-option {
+    width: calc(100% / 2 - 2em);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.options-list li.correct {
+    background: linear-gradient(135deg, #a8e6a3, #4caf50);
+    box-shadow: 0 0 15px 3px rgba(76, 175, 80, 0.6);
+}
+
+.options-list li.wrong {
+    background: linear-gradient(135deg, #f7a3a3, #f44336);
+    box-shadow: 0 0 15px 3px rgba(244, 67, 54, 0.6);
+}
+
+.pagination-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
