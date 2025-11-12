@@ -2,6 +2,7 @@ package com.quizapp.init;
 
 import com.quizapp.model.entity.Role;
 import com.quizapp.model.entity.User;
+import com.quizapp.model.entity.UserStatistics;
 import com.quizapp.model.enums.RoleName;
 import com.quizapp.repository.RoleRepository;
 import com.quizapp.repository.UserRepository;
@@ -78,7 +79,15 @@ public class AdminRolesInit implements CommandLineRunner {
                 .solvedQuizzes(new ArrayList<>())
                 .build();
 
+        UserStatistics userStatistics = UserStatistics.builder()
+                .user(adminUser)
+                .totalQuizzes(adminUser.getSolvedQuizzes().size())
+                .totalCorrectAnswers(0)
+                .maxScore(0)
+                .averageScore(0)
+                .build();
 
+        adminUser.setUserStatistics(userStatistics);
 
         this.userRepository.saveAndFlush(adminUser);
         log.info("Admin user created successfully");
