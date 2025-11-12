@@ -3,10 +3,7 @@ package com.quizapp.service;
 import com.quizapp.model.dto.SolvedQuizDTO;
 import com.quizapp.model.dto.UserDTO;
 import com.quizapp.model.dto.user.UserRegisterDTO;
-import com.quizapp.model.entity.Result;
-import com.quizapp.model.entity.Role;
-import com.quizapp.model.entity.User;
-import com.quizapp.model.entity.UserStatistics;
+import com.quizapp.model.entity.*;
 import com.quizapp.model.enums.RoleName;
 import com.quizapp.repository.UserRepository;
 import com.quizapp.service.interfaces.CategoryService;
@@ -21,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -111,29 +107,6 @@ public class UserServiceImpl implements UserService {
         this.userRepository.saveAndFlush(user);
 
         return new Result(true, "Успешна регистрация!");
-    }
-
-    @Override
-    @Transactional
-    public List<SolvedQuizDTO> getSolvedQuizzesByUsername(String username) {
-        Optional<User> optionalUser = this.userRepository.findByUsername(username);
-
-        if (optionalUser.isEmpty()) {
-            return null;
-        }
-
-        User user = optionalUser.get();
-
-        return user.getSolvedQuizzes().stream()
-                .map(solvedQuiz -> SolvedQuizDTO.builder()
-                        .id(solvedQuiz.getId())
-                        .categoryId(solvedQuiz.getCategoryId())
-                        .categoryName(this.categoryService.getCategoryNameById(solvedQuiz.getCategoryId()))
-                        .score(solvedQuiz.getScore())
-                        .maxScore(solvedQuiz.getMaxScore())
-                        .solvedAt(solvedQuiz.getSolvedAt())
-                        .build())
-                .toList();
     }
 
     @Override

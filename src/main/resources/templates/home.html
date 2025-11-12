@@ -36,7 +36,8 @@
 
             <section class="solved-quizzes">
                 <h3>История на куизовете</h3>
-                <table>
+                <p th:if="${warning}" th:text="${warning}"></p>
+                <table th:unless="${user.solvedQuizzes.isEmpty()}">
                     <thead>
                     <tr>
                         <th>Дата</th>

@@ -4,11 +4,16 @@ import com.quizapp.model.dto.QuizResultDTO;
 import com.quizapp.model.dto.SolvedQuizDTO;
 import com.quizapp.model.entity.SolvedQuiz;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
 
 import java.util.Map;
 
 public interface SolvedQuizService {
+
     SolvedQuizDTO getSolvedQuizById(Long id);
+
+    @Transactional
+    Page<SolvedQuizDTO> getSolvedQuizzesByUsername(String username, int page, int size);
 
     SolvedQuiz createQuiz(Long categoryId, int numberOfQuestions, String username);
 

@@ -11,6 +11,10 @@ import com.quizapp.repository.SolvedQuizRepository;
 import com.quizapp.service.interfaces.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -51,6 +55,26 @@ public class SolvedQuizServiceImpl implements SolvedQuizService {
                 .questions(questionDTOs)
                 .userAnswers(solvedQuiz.getUserAnswers())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public Page<SolvedQuizDTO> getSolvedQuizzesByUsername(String username, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("solvedAt").descending());
+
+        Page<SolvedQuiz> solvedQuizzesPage = this.solvedQuizRepository
+                .findByUserUsernameOrderBySolvedAtDesc(username, pageable);
+
+        return solvedQuizzesPage.map(solvedQuiz ->
+                SolvedQuizDTO.builder()
+                        .id(solvedQuiz.getId())
+                        .categoryId(solvedQuiz.getCategoryId())
+                        .categoryName(this.categoryService.getCategoryNameById(solvedQuiz.getCategoryId()))
+                        .score(solvedQuiz.getScore())
+                        .maxScore(solvedQuiz.getMaxScore())
+                        .solvedAt(solvedQuiz.getSolvedAt())
+                        .build()
+        );
     }
 
     @Override

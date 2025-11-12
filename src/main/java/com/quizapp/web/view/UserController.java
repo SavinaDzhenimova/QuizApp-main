@@ -4,9 +4,11 @@ import com.quizapp.model.dto.SolvedQuizDTO;
 import com.quizapp.model.dto.UserDTO;
 import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.entity.Result;
+import com.quizapp.service.interfaces.SolvedQuizService;
 import com.quizapp.service.interfaces.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -24,7 +26,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-
+    private final SolvedQuizService solvedQuizService;
 
     @GetMapping("/home")
     public ModelAndView showHomePage(@AuthenticationPrincipal UserDetails userDetails) {
@@ -33,6 +35,10 @@ public class UserController {
         UserDTO userDTO = this.userService.getUserInfo(userDetails.getUsername());
 
         modelAndView.addObject("user", userDTO);
+
+        if (userDTO.getSolvedQuizzes().isEmpty()) {
+            modelAndView.addObject("warning", "Все още нямате решени куизове.");
+        }
 
         return modelAndView;
     }
@@ -44,7 +50,7 @@ public class UserController {
 
     @GetMapping("/login-error")
     public ModelAndView loginError(RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("errorMessage", "Invalid username or password!");
+        redirectAttributes.addFlashAttribute("errorMessage", "Невалидно потребителско име или парола!");
 
         return new ModelAndView("redirect:/users/login");
     }
@@ -83,15 +89,21 @@ public class UserController {
     }
 
     @GetMapping("/quizzes")
-    public ModelAndView viewUserQuizzes(@AuthenticationPrincipal UserDetails userDetails) {
+    public ModelAndView viewUserQuizzes(@AuthenticationPrincipal UserDetails userDetails,
+                                        @RequestParam(defaultValue = "0") int page) {
+
+        int pageSize = 5;
+        Page<SolvedQuizDTO> quizPage = this.solvedQuizService
+                .getSolvedQuizzesByUsername(userDetails.getUsername(), page, pageSize);
+
         ModelAndView modelAndView = new ModelAndView("quizzes");
 
-        List<SolvedQuizDTO> quizzes = this.userService.getSolvedQuizzesByUsername(userDetails.getUsername());
-
-        if (quizzes.isEmpty()) {
-            modelAndView.addObject("errorMessage", "Все още нямате решени куизове.");
+        if (quizPage.isEmpty()) {
+            modelAndView.addObject("warning", "Все още нямате решени куизове.");
         } else {
-            modelAndView.addObject("quizzes", quizzes);
+            modelAndView.addObject("quizzes", quizPage.getContent());
+            modelAndView.addObject("currentPage", page);
+            modelAndView.addObject("totalPages", quizPage.getTotalPages());
         }
 
         return modelAndView;

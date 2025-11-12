@@ -13,20 +13,34 @@
     <header th:replace="~{fragments/commons::header}"></header>
 
     <main>
-        <h1>Вашите куизове</h1>
+        <div class="quizzes-container">
+            <h1>Вашите куизове</h1>
 
-        <div class="quizzes-section">
-            <div class="quiz-card" th:each="quiz : ${quizzes}">
-                <ul>
-                    <li>Категория: <span th:text="${quiz.categoryName}"></span></li>
-                    <li>Брой точки:
-                        <span th:text="${quiz.score}"></span>/<span th:text="${quiz.maxScore}"></span>
-                    </li>
-                    <li>Решен на: <span th:text="${#temporals.format(quiz.solvedAt, 'dd.MM.yyyy г. HH:mm')}"></span></li>
-                    <li>
-                        <a th:href="@{/solved-quiz/{id}(id=${quiz.id})}" class="btn-start">Разгледай куиз</a>
-                    </li>
-                </ul>
+            <div th:if="${warning}" class="warning">
+                <p th:text="${warning}"></p>
+            </div>
+
+            <div class="quizzes-section">
+                <div class="quiz-card" th:each="quiz : ${quizzes}">
+                    <ul>
+                        <li>Категория: <span th:text="${quiz.categoryName}"></span></li>
+                        <li>Брой точки:
+                            <span th:text="${quiz.score}"></span>/<span th:text="${quiz.maxScore}"></span>
+                        </li>
+                        <li>Решен на: <span th:text="${#temporals.format(quiz.solvedAt, 'dd.MM.yyyy г. HH:mm')}"></span></li>
+                        <li>
+                            <a th:href="@{/solved-quiz/{id}(id=${quiz.id})}" class="btn-start">Разгледай куиз</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="pagination">
+                <a th:if="${currentPage > 0}"
+                   th:href="@{/users/quizzes(page=${currentPage - 1})}" class="btn-start">⬅ Предишна</a>
+                <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
+                <a th:if="${currentPage + 1 < totalPages}"
+                   th:href="@{/users/quizzes(page=${currentPage + 1})}" class="btn-start">Следваща ➡</a>
             </div>
         </div>
     </main>

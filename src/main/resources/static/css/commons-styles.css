@@ -4,68 +4,68 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 
 body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Noto Sans', sans-serif;
-  color: #fff;
-  background: url(/images/background.jpg) no-repeat center center fixed;
-  background-size: cover;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans', sans-serif;
+    color: #fff;
+    background: url(/images/background.jpg) no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 main {
-  flex: 1;
-  padding-top: 120px;
+    flex: 1;
+    padding-top: 120px;
 }
 
 header .menu ul li a:hover,
 footer .footer-menu a:hover {
-  color: #e0b3ff;
+    color: #e0b3ff;
 }
 
 .form-section {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 h1,
 form h2 {
-  font-family: 'Rubik Doodle Shadow', cursive;
-  font-size: 30px;
-  text-align: center;
-  padding-bottom: 0.5em;
+    font-family: 'Rubik Doodle Shadow', cursive;
+    font-size: 30px;
+    text-align: center;
+    padding-bottom: 0.5em;
 }
 
 form label {
-  font-size: 16px;
-  font-weight: 500;
+    font-size: 16px;
+    font-weight: 500;
 }
 
 form input {
-  width: 100%;
-  padding: 0.8em 1em;
-  border: none;
-  border-radius: 1em;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  font-size: 1em;
-  transition: all 0.3s ease;
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+    width: 100%;
+    padding: 0.8em 1em;
+    border: none;
+    border-radius: 1em;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2);
 }
 
 form input:focus {
-  outline: none;
-  box-shadow: 0 0 10px #d4a7ec, 0 0 20px #d4a7ec inset;
-  background: rgba(255, 255, 255, 0.2);
+    outline: none;
+    box-shadow: 0 0 10px #d4a7ec, 0 0 20px #d4a7ec inset;
+    background: rgba(255, 255, 255, 0.2);
 }
 
 form input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
-  font-style: italic;
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
 }
 
 button[type="submit"],
@@ -73,28 +73,41 @@ button[type="submit"],
 #prevBtn,
 #nextBtn,
 #submitBtn {
-  margin-top: 2em;
-  padding: 0.8em 1.5em;
-  border: none;
-  border-radius: 1em;
-  background: linear-gradient(135deg, #d4a7ec, #b57edc);
-  color: #fff;
-  font-size: 1em;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
-  transition: all 0.3s ease;
+    margin-top: 2em;
+    padding: 0.8em 1.5em;
+    border: none;
+    border-radius: 1em;
+    background: linear-gradient(135deg, #d4a7ec, #b57edc);
+    color: #fff;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+    transition: all 0.3s ease;
 }
 
 button[type="submit"]:hover,
 .btn-start:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
-  background: linear-gradient(135deg, #b57edc, #d4a7ec);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+    background: linear-gradient(135deg, #b57edc, #d4a7ec);
 }
 
 button[type="submit"]:active,
 .btn-start:active {
-  transform: translateY(1px);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: translateY(1px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.warning {
+    padding: 1em;
+    width: 50%;
+    backdrop-filter: blur(3px);
+    background: linear-gradient(135deg,
+    rgba(212, 167, 236, 0.4),
+    rgba(128, 0, 128, 0.4));
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 10px;
+    text-align: center;
+    border-radius: 2em;
+    margin: 1em auto;
 }
