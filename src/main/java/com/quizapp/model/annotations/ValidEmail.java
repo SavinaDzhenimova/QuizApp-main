@@ -17,7 +17,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface ValidEmail {
 
-    String message() default "Invalid Email";
+    String message() default "Невалиден имейл!";
 
     Class<?>[] groups() default {};
 

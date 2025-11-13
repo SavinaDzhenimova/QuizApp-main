@@ -1,8 +1,9 @@
 .quizzes-container {
-    max-width: 70%;
-    margin: 0 auto;
-    padding: 2em;
-    font-family: 'Noto Sans', sans-serif;
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    margin: 2em auto;
 }
 
 .quizzes-section {

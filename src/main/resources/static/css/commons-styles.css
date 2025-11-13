@@ -17,19 +17,11 @@ body {
 
 main {
     flex: 1;
-    padding-top: 120px;
-}
-
-header .menu ul li a:hover,
-footer .footer-menu a:hover {
-    color: #e0b3ff;
-}
-
-.form-section {
-    width: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
+    padding-top: 120px;
 }
 
 h1,
@@ -37,7 +29,52 @@ form h2 {
     font-family: 'Rubik Doodle Shadow', cursive;
     font-size: 30px;
     text-align: center;
-    padding-bottom: 0.5em;
+}
+
+.form-section,
+.profile-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 2em auto;
+}
+
+.form-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    width: 25%;
+    padding: 2em;
+    padding-top: 0.5em;
+    border-radius: 2em;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    background: linear-gradient(135deg,
+    rgba(232, 179, 235, 0.8),
+    rgba(175, 144, 247, 0.8));
+    background-size: 200% 200%;
+    animation: gradientShift 5s ease infinite;
+    backdrop-filter: blur(5px);
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+form .field {
+    display: flex;
+    flex-direction: column;
 }
 
 form label {
@@ -104,10 +141,35 @@ button[type="submit"]:active,
     width: 50%;
     backdrop-filter: blur(3px);
     background: linear-gradient(135deg,
-    rgba(212, 167, 236, 0.4),
-    rgba(128, 0, 128, 0.4));
+        rgba(212, 167, 236, 0.4),
+        rgba(128, 0, 128, 0.4));
     box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 10px;
     text-align: center;
     border-radius: 2em;
     margin: 1em auto;
+}
+
+.error {
+    backdrop-filter: blur(3px);
+    background: #f7a3a3;
+    padding: 0.5em;
+    text-align: center;
+    border: 1px solid #f44336;
+    border-radius: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+.success {
+    backdrop-filter: blur(3px);
+    background: #a8e6a3;
+    padding: 0.5em;
+    text-align: center;
+    border: 1px solid #4caf50;
+    border-radius: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+header .menu ul li a:hover,
+footer .footer-menu a:hover {
+    color: #e0b3ff;
 }

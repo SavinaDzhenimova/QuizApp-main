@@ -5,8 +5,6 @@
 <head>
     <th:block th:replace="~{fragments/commons::head}"></th:block>
     <link rel="stylesheet" href="/css/register-styles.css">
-    <link rel="stylesheet" href="/css/commons-styles.css">
-    <link rel="stylesheet" href="/css/reset.css">
     <title>Регистрация</title>
 </head>
 
@@ -21,10 +19,14 @@
                 th:object="${userRegisterDTO}">
               <h2>Регистрация</h2>
 
+              <div th:if="${error}" class="error">
+                  <p th:text="${error}"></p>
+              </div>
+
               <div class="row">
                   <div class="field">
                       <label th:for="username">Потребителско име</label>
-                      <input type="text" name="username" id="username"
+                      <input type="text" name="username" id="username" placeholder="Напр. ivan.petrov или maria_123"
                              th:field="*{username}"
                              th:errorclass="is-invalid">
                       <small th:if="${#fields.hasErrors('username')}"
@@ -34,7 +36,7 @@
 
                   <div class="field">
                       <label th:for="email">Имейл</label>
-                      <input type="text" name="email" id="email"
+                      <input type="text" name="email" id="email" placeholder="Напр. example@domain.com"
                              th:field="*{email}"
                              th:errorclass="is-invalid">
                       <small th:if="${#fields.hasErrors('email')}"
@@ -46,7 +48,7 @@
               <div class="row">
                   <div class="field">
                       <label th:for="password">Парола</label>
-                      <input type="password" name="password" id="password"
+                      <input type="password" name="password" id="password" placeholder="Напр. Password123"
                              th:field="*{password}"
                              th:errorclass="is-invalid">
                       <small th:if="${#fields.hasErrors('password')}"
@@ -56,7 +58,7 @@
 
                   <div class="field">
                       <label th:for="confirmPassword">Повторете паролата</label>
-                      <input type="confirmPassword" name="confirmPassword" id="confirmPassword"
+                      <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Password123"
                              th:field="*{confirmPassword}"
                              th:errorclass="is-invalid">
                       <small th:if="${#fields.hasErrors('confirmPassword')}"

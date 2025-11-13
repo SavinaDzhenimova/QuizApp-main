@@ -4,6 +4,7 @@ import com.quizapp.model.dto.QuestionDTO;
 import com.quizapp.model.dto.QuizResultDTO;
 import com.quizapp.model.entity.Question;
 import com.quizapp.model.entity.Quiz;
+import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.QuestionService;
 import com.quizapp.service.interfaces.GuestQuizService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GuestQuizServiceImpl implements GuestQuizService {
 
     private final QuestionService questionService;
+    private final CategoryService categoryService;
     private final Map<Long, Quiz> tempQuizzes = new ConcurrentHashMap<>();
     private static long TEMP_ID_COUNTER = 1L;
 
@@ -41,6 +43,7 @@ public class GuestQuizServiceImpl implements GuestQuizService {
         Quiz quiz = Quiz.builder()
                 .id(tempId)
                 .categoryId(categoryId)
+                .categoryName(this.categoryService.getCategoryNameById(categoryId))
                 .questions(questionDTOs)
                 .build();
 

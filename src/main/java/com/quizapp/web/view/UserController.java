@@ -48,7 +48,7 @@ public class UserController {
 
     @GetMapping("/login-error")
     public ModelAndView loginError(RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("errorMessage", "Невалидно потребителско име или парола!");
+        redirectAttributes.addFlashAttribute("error", "Невалидно потребителско име или парола!");
 
         return new ModelAndView("redirect:/users/login");
     }
@@ -76,13 +76,12 @@ public class UserController {
 
         Result result = this.userService.registerUser(userRegisterDTO);
 
-        if (result.isSuccess()) {
-            redirectAttributes.addFlashAttribute("successMessage", result.getMessage());
-        } else {
-            redirectAttributes.addFlashAttribute("failureMessage", result.getMessage());
+        if (!result.isSuccess()) {
+            redirectAttributes.addFlashAttribute("error", result.getMessage());
             return new ModelAndView("redirect:/users/register");
         }
 
+        redirectAttributes.addFlashAttribute("success", result.getMessage());
         return new ModelAndView("redirect:/users/login");
     }
 

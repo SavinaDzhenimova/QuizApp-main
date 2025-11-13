@@ -10,34 +10,31 @@
 
 <body>
 
-  <header th:replace="~{fragments/commons::header}"></header>
+    <header th:replace="~{fragments/commons::header}"></header>
 
-  <main>
-    <section class="categories-grid">
-      <h1 class="page-title">Избери категория</h1>
+    <main>
+        <section class="categories-section">
+            <h1 class="page-title">Избери категория</h1>
 
-      <form th:action="@{/quiz/category}"
-            th:method="POST">
+            <form th:action="@{/quiz/category}"
+                  th:method="POST">
 
-        <div class="categories-container">
-          <label th:each="category : ${categories}" class="category-card">
-            <input type="radio" th:name="categoryId" th:value="${category.getId()}" required>
-            <div class="card-content">
-              <h2 th:text="${category.getName()}">Категория</h2>
-              <p th:text="${category.getDescription()}">Описание</p>
-            </div>
-          </label>
-        </div>
+                <div class="categories-container">
+                    <label th:each="category : ${categories}" class="category-card">
+                        <input type="radio" th:name="categoryId" th:value="${category.getId()}" required>
+                        <div class="card-content">
+                            <h3 th:text="${category.getName()}">Категория</h3>
+                            <p th:text="${category.getDescription()}">Описание</p>
+                        </div>
+                    </label>
+                </div>
 
-        <button type="submit">Започни куиза</button>
-      </form>
-    </section>
-  </main>
+                <button type="submit">Започни куиза</button>
+            </form>
+        </section>
+    </main>
 
-  <footer th:replace="~{fragments/commons::footer}"></footer>
+    <footer th:replace="~{fragments/commons::footer}"></footer>
 
-  <script>
-
-  </script>
 </body>
 </html>

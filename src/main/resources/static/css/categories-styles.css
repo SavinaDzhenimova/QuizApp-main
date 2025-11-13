@@ -1,7 +1,9 @@
-.categories-grid {
+.categories-section {
+    width: 90%;
     display: flex;
+    gap: 2em;
     flex-direction: column;
-    padding: 2em 6em;
+    margin: 2em auto;
 }
 
 form {
@@ -32,8 +34,6 @@ form {
     cursor: pointer;
     border-radius: 2em;
     padding: 1.5em;
-    display: flex;
-    align-items: center;
     transition: 0.3s ease;
     backdrop-filter: blur(3px);
     background: linear-gradient(135deg,
@@ -70,12 +70,11 @@ form {
     }
 }
 
-.category-card h2 {
-    font-size: 24px;
-    font-family: 'Noto Sans', sans-serif;
+.card-content {
+    text-align: center;
 }
 
 button[type="submit"] {
     width: 20%;
-    font-size: 26px;
+    font-size: 18px;
 }

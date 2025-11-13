@@ -1,16 +1,13 @@
 .profile-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2em;
-    font-family: 'Noto Sans', sans-serif;
+    gap: 2em;
 }
 
 .profile-info, .profile-stats, .solved-quizzes {
+    width: 60%;
     display: flex;
     flex-direction: column;
-    margin-bottom: 2em;
     padding: 1.5em;
-    border-radius: 1.5em;
+    border-radius: 2em;
     background: rgba(212, 167, 236, 0.2);
     box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 10px;
     backdrop-filter: blur(2px);
@@ -26,12 +23,8 @@ h3 {
 }
 
 .profile-stats ul {
-    list-style: none;
-    padding: 0;
-}
-
-.profile-stats li {
-    margin-bottom: 0.5em;
+    display: flex;
+    flex-direction: column;
 }
 
 .solved-quizzes table {
@@ -40,7 +33,7 @@ h3 {
 }
 
 .solved-quizzes th, .solved-quizzes td {
-    border: 1px solid #ccc;
+    border: 1px solid rgba(128, 0, 128, 0.6);
     padding: 0.5em 1em;
     text-align: center;
 }
