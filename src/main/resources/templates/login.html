@@ -13,24 +13,28 @@
   <header th:replace="~{fragments/commons::header}"></header>
 
   <main>
-    <div class="form-section">
-      <form th:action="@{/users/login}"
-            th:method="POST">
-        <h2>Вход</h2>
+      <div class="form-section">
+          <form th:action="@{/users/login}"
+                th:method="POST">
+              <h2>Вход</h2>
 
-        <div class="field">
-          <label>Потребителско име</label>
-          <input type="text" name="username"/><br/>
-        </div>
+              <div th:if="${error}" class="error">
+                  <p th:text="${error}"></p>
+              </div>
 
-        <div class="field">
-          <label>Парола</label>
-          <input type="password" name="password"/><br/>
-        </div>
+              <div class="field">
+                  <label for="username">Потребителско име</label>
+                  <input type="text" name="username" id="username"/>
+              </div>
 
-        <button type="submit">Вход</button>
-      </form>
-    </div>
+              <div class="field">
+                  <label for="password">Парола</label>
+                  <input type="password" name="password" id="password"/>
+              </div>
+
+              <button type="submit">Вход</button>
+          </form>
+      </div>
   </main>
 
   <footer th:replace="~{fragments/commons::footer}"></footer>

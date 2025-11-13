@@ -1,7 +1,7 @@
 package com.quizapp.web.view;
 
 import com.quizapp.model.dto.SolvedQuizDTO;
-import com.quizapp.model.dto.UserDTO;
+import com.quizapp.model.dto.user.UserDTO;
 import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.SolvedQuizService;
@@ -17,8 +17,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/users")

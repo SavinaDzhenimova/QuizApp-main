@@ -23,7 +23,7 @@
                 <h3>Статистика</h3>
                 <ul>
                     <li>Общо решени куизове: <span th:text="${user.totalQuizzes}">0</span></li>
-                    <li>Среден резултат: <span th:text="${user.averageScore} + '%'">0%</span></li>
+                    <li>Среден резултат: <span th:text="${#numbers.formatDecimal(user.averageScore, 0, 0)} + '%'">0%</span></li>
                     <li>Общо верни отговори: <span th:text="${user.score}">0</span></li>
                     <li>Общо решени въпроси: <span th:text="${user.maxScore}">0</span></li>
                     <li>Последно решавал на:

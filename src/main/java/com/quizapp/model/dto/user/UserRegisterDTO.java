@@ -19,7 +19,6 @@ public class UserRegisterDTO {
     @Size(min = 4, max = 15, message = "Потребителското име трябва да бъде между 4 и 15 символа!")
     private String username;
 
-    @NotBlank(message = "Моля въведете имейл!")
     @ValidEmail(message = "Имейлът трябва да бъде във формат example@domain.com")
     private String email;
 

@@ -1,7 +1,7 @@
 package com.quizapp.service;
 
 import com.quizapp.model.dto.SolvedQuizDTO;
-import com.quizapp.model.dto.UserDTO;
+import com.quizapp.model.dto.user.UserDTO;
 import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.entity.*;
 import com.quizapp.model.enums.RoleName;
