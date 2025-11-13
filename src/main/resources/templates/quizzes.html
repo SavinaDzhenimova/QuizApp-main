@@ -24,12 +24,12 @@
                 <div class="quiz-card" th:each="quiz : ${quizzes}">
                     <ul>
                         <li>Категория: <span th:text="${quiz.categoryName}"></span></li>
-                        <li>Брой точки:
+                        <li>Резултат:
                             <span th:text="${quiz.score}"></span>/<span th:text="${quiz.maxScore}"></span>
                         </li>
                         <li>Решен на: <span th:text="${#temporals.format(quiz.solvedAt, 'dd.MM.yyyy г. HH:mm')}"></span></li>
                         <li>
-                            <a th:href="@{/solved-quiz/{id}(id=${quiz.id})}" class="btn-start">Разгледай куиз</a>
+                            <a th:href="@{/solved-quiz/{id}(id=${quiz.id})}" class="btn-start">Разгледай куиза</a>
                         </li>
                     </ul>
                 </div>
