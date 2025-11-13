@@ -37,6 +37,8 @@ public class UserServiceImpl implements UserService {
         User user = optionalUser.get();
 
         List<SolvedQuizDTO> solvedQuizDTOs = user.getSolvedQuizzes().stream()
+                .limit(3)
+                .sorted(Comparator.comparing(SolvedQuiz::getSolvedAt).reversed())
                 .map(solvedQuiz -> SolvedQuizDTO.builder()
                         .id(solvedQuiz.getId())
                         .categoryId(solvedQuiz.getCategoryId())
@@ -45,8 +47,6 @@ public class UserServiceImpl implements UserService {
                         .maxScore(solvedQuiz.getMaxScore())
                         .solvedAt(solvedQuiz.getSolvedAt())
                         .build())
-                .limit(3)
-                .sorted(Comparator.comparing(SolvedQuizDTO::getSolvedAt).reversed())
                 .toList();
 
         return UserDTO.builder()

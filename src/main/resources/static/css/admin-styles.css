@@ -1,0 +1,18 @@
+.admin-container {
+    gap: 2em;
+}
+
+.admin-authorities {
+    width: 50%;
+    display: flex;
+    gap: 2em;
+}
+
+.authority {
+    flex: 1;
+}
+
+.authority a {
+    display: flex;
+    margin-top: 0;
+}

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <link rel="stylesheet" href="/css/admin-styles.css">
+    <title>Админ панел</title>
+</head>
+
+<body>
+
+    <header th:replace="~{fragments/commons::header}"></header>
+
+    <main>
+        <div class="admin-container">
+            <h1>Админ панел</h1>
+
+            <div class="admin-authorities">
+                <section class="authority">
+                    <a th:href="@{/categories/add-category}" class="btn-start">Добави категория</a>
+                </section>
+
+                <section class="authority">
+                    <a th:href="@{/questions/add-question}" class="btn-start">Добави въпрос</a>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/commons::footer}"></footer>
+
+</body>
+</html>

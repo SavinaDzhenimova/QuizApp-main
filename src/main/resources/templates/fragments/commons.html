@@ -25,8 +25,12 @@
                 <ul>
                     <li><a th:href="@{/}">Начало</a></li>
                     <li><a th:href="@{/categories}">Категории</a></li>
-                    <li sec:authorize="!isAuthenticated()"><a th:href="@{/users/login}">Вход</a></li>
-                    <li sec:authorize="!isAuthenticated()"><a th:href="@{/users/register}">Регистрация</a></li>
+
+                    <li sec:authorize="isAnonymous()"><a th:href="@{/users/login}">Вход</a></li>
+                    <li sec:authorize="isAnonymous()"><a th:href="@{/users/register}">Регистрация</a></li>
+
+                    <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin}">Админ панел</a></li>
+
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/users/home}">Профил</a></li>
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/users/logout}">Изход</a></li>
                 </ul>

@@ -1,5 +1,6 @@
 package com.quizapp.config;
 
+import com.quizapp.model.enums.RoleName;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/**", "/", "/users/login", "/users/register",
                                 "/categories", "/quiz/**").permitAll()
                         .requestMatchers("/users/logout", "/users/home", "/users/quizzes").authenticated()
+                        .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin

@@ -31,6 +31,7 @@ main .hero .btn-start {
 }
 
 main .sections {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
