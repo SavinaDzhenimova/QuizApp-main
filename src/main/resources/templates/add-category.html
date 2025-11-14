@@ -23,6 +23,10 @@
                     <p th:text="${error}"></p>
                 </div>
 
+                <div th:if="${success}" class="success">
+                    <p th:text="${success}"></p>
+                </div>
+
                 <div class="field">
                     <label th:for="name">Име на категорията</label>
                     <input type="text" name="name" id="name"
@@ -35,9 +39,9 @@
 
                 <div class="field">
                     <label th:for="description">Кратко описание</label>
-                    <input type="text" name="description" id="description"
-                           th:field="*{description}"
-                           th:errorclass="is-invalid">
+                    <textarea name="description" id="description"
+                              th:field="*{description}" rows="4"
+                              th:errorclass="is-invalid"></textarea>
                     <small th:if="${#fields.hasErrors('description')}"
                            th:errors="*{description}"
                            class="text-danger">Description error message</small>
