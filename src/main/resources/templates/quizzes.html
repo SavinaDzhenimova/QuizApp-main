@@ -35,7 +35,7 @@
                 </div>
             </div>
 
-            <div class="pagination">
+            <div class="pagination" th:if="${totalPages > 1}">
                 <a th:if="${currentPage > 0}"
                    th:href="@{/users/quizzes(page=${currentPage - 1})}" class="btn-start">⬅ Предишна</a>
                 <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
