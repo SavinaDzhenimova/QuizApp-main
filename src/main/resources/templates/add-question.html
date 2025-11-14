@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <title>Добави въпрос</title>
+</head>
+
+<body>
+
+    <header th:replace="~{fragments/commons::header}"></header>
+
+    <main>
+        <div class="form-section">
+            <form th:action="@{/questions/add-question}"
+                  th:method="POST"
+                  th:object="${addQuestionDTO}">
+                <h2>Добави въпрос</h2>
+
+                <div th:if="${error}" class="error">
+                    <p th:text="${error}"></p>
+                </div>
+
+                <div th:if="${success}" class="success">
+                    <p th:text="${success}"></p>
+                </div>
+
+                <div class="field">
+                    <label th:for="questionText">Съдържание на въпроса</label>
+                    <input type="text" name="questionText" id="questionText"
+                           th:field="*{questionText}"
+                           th:errorclass="is-invalid">
+                    <small th:if="${#fields.hasErrors('questionText')}"
+                           th:errors="*{questionText}"
+                           class="text-danger">Question text error message</small>
+                </div>
+
+                <div class="field">
+                    <label th:for="correctAnswer">Правилен отговор</label>
+                    <input type="text" name="correctAnswer" id="correctAnswer"
+                           th:field="*{correctAnswer}"
+                           th:errorclass="is-invalid">
+                    <small th:if="${#fields.hasErrors('correctAnswer')}"
+                           th:errors="*{correctAnswer}"
+                           class="text-danger">Question text error message</small>
+                </div>
+
+                <div class="field">
+                    <label th:for="options">Опционални отговори</label>
+                    <input type="text" name="correctAnswer" id="options"
+                           th:field="*{options}"
+                           th:errorclass="is-invalid">
+                    <small th:if="${#fields.hasErrors('options')}"
+                           th:errors="*{options}"
+                           class="text-danger">Description error message</small>
+                </div>
+
+                <button type="submit" class="btn-submit">Добави категория</button>
+            </form>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/commons::footer}"></footer>
+
+</body>
+</html>
