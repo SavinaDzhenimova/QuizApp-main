@@ -1,5 +1,6 @@
 package com.quizapp.service.interfaces;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.quizapp.model.dto.AddCategoryDTO;
 import com.quizapp.model.dto.CategoryDTO;
 import com.quizapp.model.entity.Result;
@@ -12,7 +13,7 @@ public interface CategoryService {
 
     List<CategoryDTO> getAllCategories();
 
-    Result addCategory(AddCategoryDTO addCategoryDTO);
+    Result addCategory(AddCategoryDTO addCategoryDTO) throws JsonProcessingException;
 
     boolean deleteCategoryById(Long id);
 

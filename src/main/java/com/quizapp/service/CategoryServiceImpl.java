@@ -1,10 +1,12 @@
 package com.quizapp.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quizapp.model.dto.AddCategoryDTO;
 import com.quizapp.model.dto.CategoryDTO;
 import com.quizapp.model.entity.Category;
 import com.quizapp.model.entity.Result;
+import com.quizapp.model.records.ApiError;
 import com.quizapp.service.interfaces.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +15,6 @@ import org.springframework.web.client.RestClient;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +36,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDTO getCategoryById(Long id) {
         try {
-            Category category = this.makeGetRequest(id);
+            Category category = this.makeGetRequestById(id);
 
             return this.categoryToDTO(category);
         } catch (HttpClientErrorException.NotFound e) {
@@ -52,16 +53,19 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Result addCategory(AddCategoryDTO addCategoryDTO) {
+    public Result addCategory(AddCategoryDTO addCategoryDTO) throws JsonProcessingException {
         try {
-            
-
             this.makePostRequest(addCategoryDTO);
 
             return new Result(true, "Успешно добавихте категория " + addCategoryDTO.getName());
-        } catch (HttpClientErrorException.BadRequest e) {
-            return new Result(false,
-                    "Нещо се обърка! Категорията не беше запазена!");
+        } catch (HttpClientErrorException e) {
+
+            ApiError error = objectMapper.readValue(
+                    e.getResponseBodyAsString(),
+                    ApiError.class
+            );
+
+            return new Result(false, error.message());
         }
     }
 
@@ -78,15 +82,15 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public String getCategoryNameById(Long id) {
         try {
-           return this.makeGetRequest(id).getName();
+           return this.makeGetRequestById(id).getName();
         } catch (HttpClientErrorException.NotFound e) {
             return null;
         }
     }
 
-    private Category makeGetRequest(Long id) {
+    private Category makeGetRequestById(Long id) {
         return this.restClient.get()
-                .uri("/api/categories/{id}", id)
+                .uri("/api/categories/id/{id}", id)
                 .retrieve()
                 .body(Category.class);
     }

@@ -1,5 +1,6 @@
 package com.quizapp.web.view;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.quizapp.model.dto.AddCategoryDTO;
 import com.quizapp.model.dto.CategoryDTO;
 import com.quizapp.model.entity.Result;
@@ -47,7 +48,7 @@ public class CategoryController {
 
     @PostMapping("/add-category")
     public ModelAndView addCategory(@Valid @ModelAttribute("addCategoryDTO") AddCategoryDTO addCategoryDTO,
-                                    BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+                                    BindingResult bindingResult, RedirectAttributes redirectAttributes) throws JsonProcessingException {
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("addCategoryDTO", addCategoryDTO)
@@ -59,12 +60,12 @@ public class CategoryController {
 
         Result result = this.categoryService.addCategory(addCategoryDTO);
 
-        if (!result.isSuccess()) {
+        if (result.isSuccess()) {
+            redirectAttributes.addFlashAttribute("success", result.getMessage());
+        } else {
             redirectAttributes.addFlashAttribute("error", result.getMessage());
-            return new ModelAndView("redirect:/categories/add-category");
         }
 
-        redirectAttributes.addFlashAttribute("success", result.getMessage());
-        return new ModelAndView("redirect:/admin");
+        return new ModelAndView("redirect:/categories/add-category");
     }
 }
