@@ -14,27 +14,84 @@
 
     <main>
         <section class="categories-section">
-            <h1 class="page-title">Избери категория</h1>
+            <h1 class="page-title">Категории</h1>
 
-            <form th:action="@{/quiz/category}"
-                  th:method="POST">
+            <table th:unless="${categories.isEmpty()}">
+                <thead>
+                <tr>
+                    <th>Име</th>
+                    <th>Описание</th>
+                    <th>Редактирай</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="category : ${categories}">
+                    <td th:text="${category.name}">Име</td>
+                    <td th:text="${category.description}">Описание</td>
+                    <td>
+                        <button class="edit-btn"
+                                th:data-id="${category.id}"
+                                th:data-name="${category.name}"
+                                th:data-description="${category.description}">Редактирай</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
 
-                <div class="categories-container">
-                    <label th:each="category : ${categories}" class="category-card">
-                        <input type="radio" th:name="categoryId" th:value="${category.getId()}" required>
-                        <div class="card-content">
-                            <h3 th:text="${category.getName()}">Категория</h3>
-                            <p th:text="${category.getDescription()}">Описание</p>
+            <div id="editModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+
+                    <form method="post" id="editForm">
+                        <h2>Редактирай</h2>
+                        <input type="hidden" name="id" id="edit-id">
+
+                        <div class="field">
+                            <label>Име:</label>
+                            <input type="text" id="edit-name" name="name" readonly>
                         </div>
-                    </label>
-                </div>
 
-                <button type="submit">Започни куиза</button>
-            </form>
+                        <div class="field">
+                            <label>Описание:</label>
+                            <textarea id="edit-description" name="description" rows="4"></textarea>
+                        </div>
+
+                        <button type="submit">Запази</button>
+                    </form>
+                </div>
+            </div>
         </section>
     </main>
 
     <footer th:replace="~{fragments/commons::footer}"></footer>
 
+    <script>
+        const modal = document.getElementById("editModal");
+        const closeBtn = document.querySelector(".modal .close");
+
+        document.querySelectorAll(".edit-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const id = btn.dataset.id;
+                const name = btn.dataset.name;
+                const description = btn.dataset.description;
+
+                document.getElementById("edit-id").value = id;
+                document.getElementById("edit-name").value = name;
+                document.getElementById("edit-description").value = description;
+
+                document.getElementById("editForm").action = `/categories/update/${id}`;
+
+                modal.style.display = "flex";
+            });
+        });
+
+        closeBtn.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+
+        window.addEventListener("click", e => {
+            if (e.target === modal) modal.style.display = "none";
+        });
+    </script>
 </body>
 </html>

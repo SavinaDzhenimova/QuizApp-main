@@ -20,14 +20,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 @Controller
-@RequestMapping("/categories")
 @RequiredArgsConstructor
 public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @GetMapping
-    public ModelAndView showCategoriesPage() {
+    @GetMapping("/categories")
+    public ModelAndView showCategories() {
         ModelAndView modelAndView = new ModelAndView("categories");
 
         List<CategoryDTO> allCategories = this.categoryService.getAllCategories();
@@ -37,7 +36,18 @@ public class CategoryController {
         return modelAndView;
     }
 
-    @GetMapping("/add-category")
+    @GetMapping("/start-quiz")
+    public ModelAndView showCategoriesPage() {
+        ModelAndView modelAndView = new ModelAndView("start-quiz");
+
+        List<CategoryDTO> allCategories = this.categoryService.getAllCategories();
+
+        modelAndView.addObject("categories", allCategories);
+
+        return modelAndView;
+    }
+
+    @GetMapping("/categories/add-category")
     public ModelAndView showAddCategoryPage(Model model) {
         if (!model.containsAttribute("addCategoryDTO")) {
             model.addAttribute("addCategoryDTO", new AddCategoryDTO());
@@ -46,7 +56,7 @@ public class CategoryController {
         return new ModelAndView("add-category");
     }
 
-    @PostMapping("/add-category")
+    @PostMapping("/categories/add-category")
     public ModelAndView addCategory(@Valid @ModelAttribute("addCategoryDTO") AddCategoryDTO addCategoryDTO,
                                     BindingResult bindingResult, RedirectAttributes redirectAttributes) throws JsonProcessingException {
 

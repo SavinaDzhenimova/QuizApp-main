@@ -5,11 +5,14 @@
 .admin-authorities {
     width: 50%;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
     gap: 2em;
 }
 
 .authority {
-    flex: 1;
+    width: calc((100% - 2em) / 2);
 }
 
 .authority a {

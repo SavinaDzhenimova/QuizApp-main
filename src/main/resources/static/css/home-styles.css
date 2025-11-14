@@ -27,19 +27,8 @@ h3 {
     flex-direction: column;
 }
 
-.solved-quizzes table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.solved-quizzes th, .solved-quizzes td {
-    border: 1px solid rgba(128, 0, 128, 0.6);
-    padding: 0.5em 1em;
+.solved-quizzes table th, td {
     text-align: center;
-}
-
-.solved-quizzes th {
-    background-color: rgba(128,0,128,0.1);
 }
 
 .solved-quizzes .btn-start {
