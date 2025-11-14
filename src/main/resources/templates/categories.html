@@ -16,6 +16,14 @@
         <section class="categories-section">
             <h1 class="page-title">Категории</h1>
 
+            <div th:if="${error}" class="error">
+                <p th:text="${error}"></p>
+            </div>
+
+            <div th:if="${success}" class="success">
+                <p th:text="${success}"></p>
+            </div>
+
             <table th:unless="${categories.isEmpty()}">
                 <thead>
                 <tr>
@@ -38,22 +46,28 @@
                 </tbody>
             </table>
 
-            <div id="editModal" class="modal">
+            <div id="editModal" class="modal" th:data-open-modal="${openModal}">
                 <div class="modal-content">
                     <span class="close">&times;</span>
 
-                    <form method="post" id="editForm">
+                    <form th:object="${updateCategoryDTO}"
+                          th:method="PUT"
+                          id="editForm">
                         <h2>Редактирай</h2>
-                        <input type="hidden" name="id" id="edit-id">
+
+                        <input type="hidden" th:field="*{id}" name="id" id="edit-id">
 
                         <div class="field">
                             <label>Име:</label>
-                            <input type="text" id="edit-name" name="name" readonly>
+                            <input type="text" th:field="*{name}" id="edit-name" name="name" readonly>
                         </div>
 
                         <div class="field">
                             <label>Описание:</label>
-                            <textarea id="edit-description" name="description" rows="4"></textarea>
+                            <textarea id="edit-description" th:field="*{description}" name="description" rows="4"></textarea>
+                            <small th:if="${#fields.hasErrors('description')}"
+                                   th:errors="*{description}"
+                                   class="text-danger">Description error message</small>
                         </div>
 
                         <button type="submit">Запази</button>
@@ -65,33 +79,6 @@
 
     <footer th:replace="~{fragments/commons::footer}"></footer>
 
-    <script>
-        const modal = document.getElementById("editModal");
-        const closeBtn = document.querySelector(".modal .close");
-
-        document.querySelectorAll(".edit-btn").forEach(btn => {
-            btn.addEventListener("click", () => {
-                const id = btn.dataset.id;
-                const name = btn.dataset.name;
-                const description = btn.dataset.description;
-
-                document.getElementById("edit-id").value = id;
-                document.getElementById("edit-name").value = name;
-                document.getElementById("edit-description").value = description;
-
-                document.getElementById("editForm").action = `/categories/update/${id}`;
-
-                modal.style.display = "flex";
-            });
-        });
-
-        closeBtn.addEventListener("click", () => {
-            modal.style.display = "none";
-        });
-
-        window.addEventListener("click", e => {
-            if (e.target === modal) modal.style.display = "none";
-        });
-    </script>
+    <script src="\js\show-modal-form.js"></script>
 </body>
 </html>

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quizapp.model.dto.AddCategoryDTO;
 import com.quizapp.model.dto.CategoryDTO;
+import com.quizapp.model.dto.UpdateCategoryDTO;
 import com.quizapp.model.entity.Category;
 import com.quizapp.model.entity.Result;
 import com.quizapp.model.records.ApiError;
@@ -70,6 +71,22 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public Result updateCategory(Long id, UpdateCategoryDTO updateCategoryDTO) {
+        try {
+            Category category = this.makeGetRequestById(id);
+            if (category.getDescription().equals(updateCategoryDTO.getDescription())) {
+                return new Result(false, "Няма промени за запазване");
+            }
+
+            this.makePutRequest(id, updateCategoryDTO);
+
+            return new Result(true, "Успешно редактирахте категория " + updateCategoryDTO.getName());
+        } catch (HttpClientErrorException e) {
+            return new Result(false, "Грешка при редактиране! Категорията не можа да бъде променена.");
+        }
+    }
+
+    @Override
     public boolean deleteCategoryById(Long id) {
         try {
             this.makeDeleteRequest(id);
@@ -106,6 +123,14 @@ public class CategoryServiceImpl implements CategoryService {
         return this.restClient.post()
                 .uri("/api/categories")
                 .body(addCategoryDTO)
+                .retrieve()
+                .body(Category.class);
+    }
+
+    private Category makePutRequest(Long id, UpdateCategoryDTO updateCategoryDTO) {
+        return this.restClient.put()
+                .uri("/api/categories/{id}", id)
+                .body(updateCategoryDTO)
                 .retrieve()
                 .body(Category.class);
     }

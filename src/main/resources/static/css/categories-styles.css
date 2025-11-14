@@ -1,3 +1,7 @@
+.categories-section {
+    gap: 1em;
+}
+
 table {
     width: 70%;
 }

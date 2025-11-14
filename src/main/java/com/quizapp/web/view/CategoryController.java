@@ -3,6 +3,7 @@ package com.quizapp.web.view;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.quizapp.model.dto.AddCategoryDTO;
 import com.quizapp.model.dto.CategoryDTO;
+import com.quizapp.model.dto.UpdateCategoryDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.CategoryService;
 import jakarta.validation.Valid;
@@ -10,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -26,14 +24,43 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("/categories")
-    public ModelAndView showCategories() {
+    public ModelAndView showCategories(Model model) {
         ModelAndView modelAndView = new ModelAndView("categories");
+
+        if (!model.containsAttribute("updateCategoryDTO")) {
+            model.addAttribute("updateCategoryDTO", new UpdateCategoryDTO());
+        }
 
         List<CategoryDTO> allCategories = this.categoryService.getAllCategories();
 
         modelAndView.addObject("categories", allCategories);
 
         return modelAndView;
+    }
+
+    @PutMapping("/categories/update/{id}")
+    public ModelAndView updateCategory(@PathVariable Long id,
+                                       @Valid @ModelAttribute("updateCategoryDTO") UpdateCategoryDTO updateCategoryDTO,
+                                       BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("updateCategoryDTO", updateCategoryDTO)
+                    .addFlashAttribute("org.springframework.validation.BindingResult.updateCategoryDTO",
+                            bindingResult)
+                    .addFlashAttribute("openModal", true);
+
+            return new ModelAndView("redirect:/categories");
+        }
+
+        Result result = this.categoryService.updateCategory(id, updateCategoryDTO);
+
+        if (result.isSuccess()) {
+            redirectAttributes.addFlashAttribute("success", result.getMessage());
+        } else {
+            redirectAttributes.addFlashAttribute("error", result.getMessage());
+        }
+
+        return new ModelAndView("redirect:/categories");
     }
 
     @GetMapping("/start-quiz")
