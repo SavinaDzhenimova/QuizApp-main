@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quizapp.model.dto.AddQuestionDTO;
 import com.quizapp.model.dto.QuestionDTO;
 import com.quizapp.model.entity.Question;
+import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -53,19 +54,14 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Object addQuestion(AddQuestionDTO addQuestionDTO) {
+    public Result addQuestion(AddQuestionDTO addQuestionDTO) {
         try {
-            return this.makePostRequest(addQuestionDTO);
+            this.makePostRequest(addQuestionDTO);
 
-        } catch (HttpClientErrorException.BadRequest e) {
-            String responseBody = e.getResponseBodyAsString();
+            return new Result(true, "Успешно добавихте въпрос.");
+        } catch (HttpClientErrorException e) {
 
-            try {
-                Map<String, String> errors = objectMapper.readValue(responseBody, Map.class);
-                return Map.of("errors", errors);
-            } catch (Exception ex) {
-                return Map.of("errors", Map.of("general", "Нещо се обърка при обработката на грешката"));
-            }
+            return new Result(false, "Нещо се обърка! Въпросът не беше записан.");
         }
     }
 
@@ -87,16 +83,14 @@ public class QuestionServiceImpl implements QuestionService {
                 .body(Question.class);
     }
 
-    @Override
-    public Question[] makeGetRequestAll() {
+    private Question[] makeGetRequestAll() {
         return this.restClient.get()
                 .uri("/api/questions")
                 .retrieve()
                 .body(Question[].class);
     }
 
-    @Override
-    public Question makePostRequest(AddQuestionDTO addQuestionDTO) {
+    private Question makePostRequest(AddQuestionDTO addQuestionDTO) {
         return this.restClient.post()
                 .uri("/api/questions")
                 .body(addQuestionDTO)
@@ -104,8 +98,7 @@ public class QuestionServiceImpl implements QuestionService {
                 .body(Question.class);
     }
 
-    @Override
-    public void makeDeleteRequest(Long id) {
+    private void makeDeleteRequest(Long id) {
         this.restClient.delete()
                 .uri("/api/questions/{id}", id)
                 .retrieve()

@@ -1,0 +1,24 @@
+.form-section form {
+    width: 50%;
+}
+
+.form-section form .additional-info {
+    font-size: 12px;
+    font-style: oblique;
+}
+
+.form-section form .additional-info::before {
+    display: inline-block;
+    content: "*";
+    font-weight: 500;
+    padding-right: 0.3em;
+}
+
+.form-section form select option[value=""] {
+    color: #fff;
+}
+
+.form-section form select option {
+    color: rgba(128, 0, 128, 0.6);
+    background-color: white;
+}

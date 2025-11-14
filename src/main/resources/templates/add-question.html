@@ -4,6 +4,7 @@
 
 <head>
     <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <link rel="stylesheet" href="/css/add-question-styles.css">
     <title>Добави въпрос</title>
 </head>
 
@@ -37,17 +38,17 @@
                 </div>
 
                 <div class="field">
-                    <label th:for="category">Категория</label>
-                    <select th:field="*{category}"
+                    <label th:for="categoryId">Категория</label>
+                    <select th:field="*{categoryId}"
                             th:errorclass="is-invalid"
-                            name="category" id="category">
+                            name="categoryId" id="categoryId">
                         <option value="">-- Изберете категория --</option>
                         <option th:each="category : ${categories}"
                                 th:value="${category.id}"
                                 th:text="${category.name}"></option>
                     </select>
-                    <small th:if="${#fields.hasErrors('category')}"
-                           th:errors="*{category}"
+                    <small th:if="${#fields.hasErrors('categoryId')}"
+                           th:errors="*{categoryId}"
                            class="text-danger">Category error message</small>
                 </div>
 
@@ -66,13 +67,13 @@
                     <input type="text" name="correctAnswer" id="options"
                            th:field="*{options}"
                            th:errorclass="is-invalid">
-                    <p>Въведете опциите със запетая между тях като задължително трябва да включите и верния отговор!</p>
+                    <p class="additional-info">Въведете опциите със запетая между тях като задължително трябва да включите и верния отговор!</p>
                     <small th:if="${#fields.hasErrors('options')}"
                            th:errors="*{options}"
                            class="text-danger">Options error message</small>
                 </div>
 
-                <button type="submit" class="btn-submit">Добави категория</button>
+                <button type="submit" class="btn-submit">Добави въпрос</button>
             </form>
         </div>
     </main>
