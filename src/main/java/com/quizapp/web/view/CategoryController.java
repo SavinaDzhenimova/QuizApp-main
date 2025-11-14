@@ -1,12 +1,20 @@
 package com.quizapp.web.view;
 
+import com.quizapp.model.dto.AddCategoryDTO;
 import com.quizapp.model.dto.CategoryDTO;
+import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -26,5 +34,37 @@ public class CategoryController {
         modelAndView.addObject("categories", allCategories);
 
         return modelAndView;
+    }
+
+    @GetMapping("/add-category")
+    public ModelAndView showAddCategoryPage(Model model) {
+        if (!model.containsAttribute("addCategoryDTO")) {
+            model.addAttribute("addCategoryDTO", new AddCategoryDTO());
+        }
+
+        return new ModelAndView("add-category");
+    }
+
+    @PostMapping("/add-category")
+    public ModelAndView addCategory(@Valid @ModelAttribute("addCategoryDTO") AddCategoryDTO addCategoryDTO,
+                                    BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("addCategoryDTO", addCategoryDTO)
+                    .addFlashAttribute("org.springframework.validation.BindingResult.addCategoryDTO",
+                            bindingResult);
+
+            return new ModelAndView("add-category");
+        }
+
+        Result result = this.categoryService.addCategory(addCategoryDTO);
+
+        if (!result.isSuccess()) {
+            redirectAttributes.addFlashAttribute("error", result.getMessage());
+            return new ModelAndView("redirect:/categories/add-category");
+        }
+
+        redirectAttributes.addFlashAttribute("success", result.getMessage());
+        return new ModelAndView("redirect:/admin");
     }
 }

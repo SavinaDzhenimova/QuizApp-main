@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quizapp.model.dto.AddCategoryDTO;
 import com.quizapp.model.dto.CategoryDTO;
 import com.quizapp.model.entity.Category;
+import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -51,19 +52,16 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Object addCategory(AddCategoryDTO addCategoryDTO) {
+    public Result addCategory(AddCategoryDTO addCategoryDTO) {
         try {
-            return this.makePostRequest(addCategoryDTO);
+            
 
+            this.makePostRequest(addCategoryDTO);
+
+            return new Result(true, "Успешно добавихте категория " + addCategoryDTO.getName());
         } catch (HttpClientErrorException.BadRequest e) {
-            String responseBody = e.getResponseBodyAsString();
-
-            try {
-                Map<String, String> errors = objectMapper.readValue(responseBody, Map.class);
-                return Map.of("errors", errors);
-            } catch (Exception ex) {
-                return Map.of("errors", Map.of("general", "Нещо се обърка при обработката на грешката"));
-            }
+            return new Result(false,
+                    "Нещо се обърка! Категорията не беше запазена!");
         }
     }
 
@@ -86,24 +84,21 @@ public class CategoryServiceImpl implements CategoryService {
         }
     }
 
-    @Override
-    public Category makeGetRequest(Long id) {
+    private Category makeGetRequest(Long id) {
         return this.restClient.get()
                 .uri("/api/categories/{id}", id)
                 .retrieve()
                 .body(Category.class);
     }
 
-    @Override
-    public Category[] makeGetRequestAll() {
+    private Category[] makeGetRequestAll() {
         return this.restClient.get()
                 .uri("/api/categories")
                 .retrieve()
                 .body(Category[].class);
     }
 
-    @Override
-    public Category makePostRequest(AddCategoryDTO addCategoryDTO) {
+    private Category makePostRequest(AddCategoryDTO addCategoryDTO) {
         return this.restClient.post()
                 .uri("/api/categories")
                 .body(addCategoryDTO)
@@ -111,8 +106,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .body(Category.class);
     }
 
-    @Override
-    public void makeDeleteRequest(Long id) {
+    private void makeDeleteRequest(Long id) {
         this.restClient.delete()
                 .uri("/api/categories/{id}", id)
                 .retrieve()

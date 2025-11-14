@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <link rel="stylesheet" href="/css/add-category-styles.css">
+    <title>Добави категория</title>
+</head>
+
+<body>
+
+    <header th:replace="~{fragments/commons::header}"></header>
+
+    <main>
+        <div class="form-section">
+            <form th:action="@{/categories/add-category}"
+                  th:method="POST"
+                  th:object="${addCategoryDTO}">
+                <h2>Добави категория</h2>
+
+                <div th:if="${error}" class="error">
+                    <p th:text="${error}"></p>
+                </div>
+
+                <div class="field">
+                    <label th:for="name">Име на категорията</label>
+                    <input type="text" name="name" id="name"
+                           th:field="*{name}"
+                           th:errorclass="is-invalid">
+                    <small th:if="${#fields.hasErrors('name')}"
+                           th:errors="*{name}"
+                           class="text-danger">Name error message</small>
+                </div>
+
+                <div class="field">
+                    <label th:for="description">Кратко описание</label>
+                    <input type="text" name="description" id="description"
+                           th:field="*{description}"
+                           th:errorclass="is-invalid">
+                    <small th:if="${#fields.hasErrors('description')}"
+                           th:errors="*{description}"
+                           class="text-danger">Description error message</small>
+                </div>
+
+                <button type="submit" class="btn-submit">Добави категория</button>
+            </form>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/commons::footer}"></footer>
+
+</body>
+</html>
