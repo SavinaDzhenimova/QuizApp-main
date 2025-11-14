@@ -37,13 +37,28 @@
                 </div>
 
                 <div class="field">
+                    <label th:for="category">Категория</label>
+                    <select th:field="*{category}"
+                            th:errorclass="is-invalid"
+                            name="category" id="category">
+                        <option value="">-- Изберете категория --</option>
+                        <option th:each="category : ${categories}"
+                                th:value="${category.id}"
+                                th:text="${category.name}"></option>
+                    </select>
+                    <small th:if="${#fields.hasErrors('category')}"
+                           th:errors="*{category}"
+                           class="text-danger">Category error message</small>
+                </div>
+
+                <div class="field">
                     <label th:for="correctAnswer">Правилен отговор</label>
                     <input type="text" name="correctAnswer" id="correctAnswer"
                            th:field="*{correctAnswer}"
                            th:errorclass="is-invalid">
                     <small th:if="${#fields.hasErrors('correctAnswer')}"
                            th:errors="*{correctAnswer}"
-                           class="text-danger">Question text error message</small>
+                           class="text-danger">Correct answer error message</small>
                 </div>
 
                 <div class="field">
@@ -51,9 +66,10 @@
                     <input type="text" name="correctAnswer" id="options"
                            th:field="*{options}"
                            th:errorclass="is-invalid">
+                    <p>Въведете опциите със запетая между тях като задължително трябва да включите и верния отговор!</p>
                     <small th:if="${#fields.hasErrors('options')}"
                            th:errors="*{options}"
-                           class="text-danger">Description error message</small>
+                           class="text-danger">Options error message</small>
                 </div>
 
                 <button type="submit" class="btn-submit">Добави категория</button>
