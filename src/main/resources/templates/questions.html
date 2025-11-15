@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <link rel="stylesheet" href="/css/questions-styles.css">
+    <title>Въпроси</title>
+</head>
+
+<body>
+
+    <header th:replace="~{fragments/commons::header}"></header>
+
+    <main>
+        <section class="questions-section">
+            <h1 class="page-title">Въпроси</h1>
+
+            <div th:if="${error}" class="error">
+                <p th:text="${error}"></p>
+            </div>
+
+            <div th:if="${success}" class="success">
+                <p th:text="${success}"></p>
+            </div>
+
+            <table th:unless="${questions.isEmpty()}">
+                <thead>
+                <tr>
+                    <th>Въпрос</th>
+                    <th>Категория</th>
+                    <th>Верен отговор</th>
+                    <th>Опции</th>
+                    <th>Редактирай</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="question : ${questions}">
+                    <td th:text="${question.questionText}">Въпрос</td>
+                    <td th:text="${question.categoryName}">Категория</td>
+                    <td th:text="${question.correctAnswer}">Верен отговор</td>
+                    <td th:text="${question.options}">Опции</td>
+                    <td>
+                        <button class="edit-btn"
+                                th:data-id="${question.id}"
+                                th:data-questionText="${question.questionText}"
+                                th:data-categoryName="${question.categoryName}"
+                                th:data-correctAnswer="${question.correctAnswer}"
+                                th:data-options="${category.options}">Редактирай</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div id="editModal" class="modal" th:data-open-modal="${openModal}">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+
+                    <form th:object="${updateQuestionDTO}"
+                          th:method="PUT"
+                          id="editForm">
+                        <h2>Редактирай</h2>
+
+                        <input type="hidden" th:field="*{id}" name="id" id="edit-id">
+
+                        <div class="field">
+                            <label th:for="questionText">Въпрос:</label>
+                            <input type="text" th:field="*{questionText}" id="edit-question-text" name="questionText">
+                            <small th:if="${#fields.hasErrors('questionText')}"
+                                   th:errors="*{questionText}"
+                                   class="text-danger">Question text error message</small>
+                        </div>
+
+                        <div class="field">
+                            <label th:for="categoryName">Категория:</label>
+                            <input type="text" id="edit-category-name" th:field="*{categoryName}" name="categoryName" readonly>
+                        </div>
+
+                        <div class="field">
+                            <label th:for="correctAnswer">Верен отговор:</label>
+                            <input type="text" th:field="*{correctAnswer}" id="edit-correct-answer" name="correctAnswer">
+                            <small th:if="${#fields.hasErrors('correctAnswer')}"
+                                   th:errors="*{correctAnswer}"
+                                   class="text-danger">Correct answer error message</small>
+                        </div>
+
+                        <div class="field">
+                            <label th:for="options">Опции:</label>
+                            <input type="text" th:field="*{options}" id="edit-name" name="options">
+                            <small th:if="${#fields.hasErrors('options')}"
+                                   th:errors="*{options}"
+                                   class="text-danger">Options error message</small>
+                        </div>
+
+                        <button type="submit">Запази</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer th:replace="~{fragments/commons::footer}"></footer>
+
+    <script src="\js\show-modal-form.js"></script>
+</body>
+</html>
