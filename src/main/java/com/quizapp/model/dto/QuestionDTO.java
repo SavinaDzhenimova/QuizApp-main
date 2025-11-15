@@ -17,7 +17,9 @@ public class QuestionDTO {
 
     private String questionText;
 
+    private String categoryName;
+
     private String correctAnswer;
 
-    private List<String> options;
+    private String options;
 }

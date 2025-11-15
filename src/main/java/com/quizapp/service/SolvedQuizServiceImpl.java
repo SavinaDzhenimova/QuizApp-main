@@ -3,7 +3,7 @@ package com.quizapp.service;
 import com.quizapp.model.dto.QuestionDTO;
 import com.quizapp.model.dto.QuizResultDTO;
 import com.quizapp.model.dto.SolvedQuizDTO;
-import com.quizapp.model.entity.Question;
+import com.quizapp.model.entity.QuestionApiDTO;
 import com.quizapp.model.entity.SolvedQuiz;
 import com.quizapp.model.entity.User;
 import com.quizapp.model.entity.UserStatistics;
@@ -85,16 +85,16 @@ public class SolvedQuizServiceImpl implements SolvedQuizService {
             return null;
         }
 
-        List<Question> allQuestions = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
+        List<QuestionApiDTO> questionApiDTOs = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
 
-        if (allQuestions.isEmpty()) {
+        if (questionApiDTOs.isEmpty()) {
             return null;
         }
 
-        Collections.shuffle(allQuestions);
-        List<Long> selectedIds = allQuestions.stream()
+        Collections.shuffle(questionApiDTOs);
+        List<Long> selectedIds = questionApiDTOs.stream()
                 .limit(numberOfQuestions)
-                .map(Question::getId)
+                .map(QuestionApiDTO::getId)
                 .collect(Collectors.toList());
 
         SolvedQuiz solvedQuiz = SolvedQuiz.builder()
@@ -136,15 +136,15 @@ public class SolvedQuizServiceImpl implements SolvedQuizService {
 
         Map<Long, String> userAnswers = this.mapUserAnswers(formData);
 
-        List<Question> questions = solvedQuiz.getQuestionIds().stream()
+        List<QuestionApiDTO> questionApiDTOs = solvedQuiz.getQuestionIds().stream()
                 .map(this.questionService::makeGetRequest)
                 .toList();
 
-        long correctAnswers = questions.stream()
+        long correctAnswers = questionApiDTOs.stream()
                 .filter(q -> q.getCorrectAnswer().equals(userAnswers.get(q.getId())))
                 .count();
 
-        int totalQuestions = questions.size();
+        int totalQuestions = questionApiDTOs.size();
 
         double scorePercent = ((double) correctAnswers / totalQuestions) * 100;
 

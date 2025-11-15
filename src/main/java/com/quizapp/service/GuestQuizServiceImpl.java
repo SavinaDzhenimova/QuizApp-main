@@ -2,7 +2,7 @@ package com.quizapp.service;
 
 import com.quizapp.model.dto.QuestionDTO;
 import com.quizapp.model.dto.QuizResultDTO;
-import com.quizapp.model.entity.Question;
+import com.quizapp.model.entity.QuestionApiDTO;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.QuestionService;
@@ -29,13 +29,13 @@ public class GuestQuizServiceImpl implements GuestQuizService {
 
     @Override
     public Quiz createQuiz(Long categoryId, int numberOfQuestions) {
-        List<Question> allQuestions = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
+        List<QuestionApiDTO> questionApiDTOs = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
 
-        Collections.shuffle(allQuestions);
+        Collections.shuffle(questionApiDTOs);
 
-        List<QuestionDTO> questionDTOs = allQuestions.stream()
+        List<QuestionDTO> questionDTOs = questionApiDTOs.stream()
                 .limit(numberOfQuestions)
-                .map(this.questionService::questionToDTO)
+                .map(this.questionService::mapQuestionApiToDTO)
                 .toList();
 
         Long tempId = TEMP_ID_COUNTER++;

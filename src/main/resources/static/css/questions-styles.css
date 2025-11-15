@@ -1,0 +1,47 @@
+.questions-section {
+    gap: 1em;
+}
+
+table td .edit-btn {
+    padding: 0.5em 1em;
+    margin-top: 0;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    width: 30%;
+    border-radius: 2em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.modal-content .close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 24px;
+    font-weight: 500;
+    width: 30px;
+    aspect-ratio: 1 / 1;
+    color: rgb(128, 0, 128);
+    z-index: 1000;
+}
+
+.modal-content form {
+    width: 100%;
+}

@@ -20,5 +20,5 @@ public class Category {
 
     private String description;
 
-    private List<Question> questions = new ArrayList<>();
+    private List<QuestionApiDTO> questions = new ArrayList<>();
 }
