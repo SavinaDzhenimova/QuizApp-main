@@ -1,6 +1,7 @@
 package com.quizapp.web.view;
 
 import com.quizapp.model.dto.AddQuestionDTO;
+import com.quizapp.model.dto.QuestionDTO;
 import com.quizapp.model.dto.UpdateQuestionDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.QuestionService;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/questions")
 @RequiredArgsConstructor
@@ -22,11 +25,17 @@ public class QuestionController {
 
     @GetMapping
     public ModelAndView showQuestions(Model model) {
+        ModelAndView modelAndView = new ModelAndView("questions");
+
         if (!model.containsAttribute("updateQuestionDTO")) {
             model.addAttribute("updateQuestionDTO", new UpdateQuestionDTO());
         }
 
-        return new ModelAndView("questions");
+        List<QuestionDTO> allQuestions = this.questionService.getAllQuestions();
+
+        modelAndView.addObject("questions", allQuestions);
+
+        return modelAndView;
     }
 
     @PutMapping("/update/{id}")

@@ -3,6 +3,7 @@ package com.quizapp.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quizapp.model.dto.AddQuestionDTO;
 import com.quizapp.model.dto.QuestionDTO;
+import com.quizapp.model.dto.UpdateQuestionDTO;
 import com.quizapp.model.entity.Question;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.QuestionService;
@@ -66,6 +67,29 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public Result updateQuestion(Long id, UpdateQuestionDTO updateQuestionDTO) {
+        try {
+            Question question = this.makeGetRequest(id);
+
+            String options = String.join(", ", question.getOptions());
+
+            if (question.getQuestionText().equals(updateQuestionDTO.getQuestionText())
+                || question.getCategory().getName().equals(updateQuestionDTO.getCategoryName())
+                || question.getCorrectAnswer().equals(updateQuestionDTO.getCorrectAnswer())
+                || options.equals(updateQuestionDTO.getOptions())) {
+
+                return new Result(false, "Няма промени за запазване!");
+            }
+
+            this.makePutRequest(id, updateQuestionDTO);
+
+            return new Result(true, "Успешно редактирахте въпрос.");
+        } catch (HttpClientErrorException e) {
+            return new Result(false, "Грешка при редактиране! Въпросът не можа да бъде променен.");
+        }
+    }
+
+    @Override
     public boolean deleteQuestionById(Long id) {
         try {
             this.makeDeleteRequest(id);
@@ -94,6 +118,14 @@ public class QuestionServiceImpl implements QuestionService {
         return this.restClient.post()
                 .uri("/api/questions")
                 .body(addQuestionDTO)
+                .retrieve()
+                .body(Question.class);
+    }
+
+    private Question makePutRequest(Long id, UpdateQuestionDTO updateQuestionDTO) {
+        return this.restClient.put()
+                .uri("/api/questions/{id}", id)
+                .body(updateQuestionDTO)
                 .retrieve()
                 .body(Question.class);
     }

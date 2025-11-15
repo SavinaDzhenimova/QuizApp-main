@@ -2,6 +2,7 @@ package com.quizapp.service.interfaces;
 
 import com.quizapp.model.dto.AddQuestionDTO;
 import com.quizapp.model.dto.QuestionDTO;
+import com.quizapp.model.dto.UpdateQuestionDTO;
 import com.quizapp.model.entity.Question;
 import com.quizapp.model.entity.Result;
 
@@ -22,4 +23,6 @@ public interface QuestionService {
     Question makeGetRequest(Long id);
 
     Question[] makeGetRequestByCategoryId(Long categoryId);
+
+    Result updateQuestion(Long id, UpdateQuestionDTO updateQuestionDTO);
 }
