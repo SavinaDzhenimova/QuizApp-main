@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quizapp.model.dto.AddCategoryDTO;
 import com.quizapp.model.dto.CategoryDTO;
 import com.quizapp.model.dto.UpdateCategoryDTO;
-import com.quizapp.model.entity.CategoryApiDTO;
+import com.quizapp.model.rest.CategoryApiDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.model.records.ApiError;
 import com.quizapp.service.interfaces.CategoryService;

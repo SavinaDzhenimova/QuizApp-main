@@ -3,7 +3,7 @@ package com.quizapp.service;
 import com.quizapp.model.dto.QuestionDTO;
 import com.quizapp.model.dto.QuizResultDTO;
 import com.quizapp.model.dto.SolvedQuizDTO;
-import com.quizapp.model.entity.QuestionApiDTO;
+import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.model.entity.SolvedQuiz;
 import com.quizapp.model.entity.User;
 import com.quizapp.model.entity.UserStatistics;

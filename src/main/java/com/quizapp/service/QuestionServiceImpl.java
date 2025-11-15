@@ -3,7 +3,7 @@ package com.quizapp.service;
 import com.quizapp.model.dto.AddQuestionDTO;
 import com.quizapp.model.dto.QuestionDTO;
 import com.quizapp.model.dto.UpdateQuestionDTO;
-import com.quizapp.model.entity.QuestionApiDTO;
+import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.QuestionService;
 import lombok.RequiredArgsConstructor;

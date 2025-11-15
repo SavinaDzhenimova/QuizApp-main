@@ -1,4 +1,4 @@
-package com.quizapp.model.entity;
+package com.quizapp.model.rest;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -2,7 +2,7 @@ package com.quizapp.service;
 
 import com.quizapp.model.dto.QuestionDTO;
 import com.quizapp.model.dto.QuizResultDTO;
-import com.quizapp.model.entity.QuestionApiDTO;
+import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.QuestionService;
