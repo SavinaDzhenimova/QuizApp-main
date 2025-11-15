@@ -21,5 +21,5 @@ public class QuestionDTO {
 
     private String correctAnswer;
 
-    private String options;
+    private List<String> options;
 }

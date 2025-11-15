@@ -91,7 +91,7 @@ public class QuestionServiceImpl implements QuestionService {
                 .categoryName(questionApiDTO.getCategoryName())
                 .questionText(questionApiDTO.getQuestionText())
                 .correctAnswer(questionApiDTO.getCorrectAnswer())
-                .options(String.join(", ", questionApiDTO.getOptions()))
+                .options(questionApiDTO.getOptions())
                 .build();
     }
 

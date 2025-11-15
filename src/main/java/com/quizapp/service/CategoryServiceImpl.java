@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quizapp.model.dto.AddCategoryDTO;
 import com.quizapp.model.dto.CategoryDTO;
 import com.quizapp.model.dto.UpdateCategoryDTO;
-import com.quizapp.model.entity.Category;
+import com.quizapp.model.entity.CategoryApiDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.model.records.ApiError;
 import com.quizapp.service.interfaces.CategoryService;
@@ -27,9 +27,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDTO> getAllCategories() {
-        Category[] categories = this.makeGetRequestAll();
+        CategoryApiDTO[] categoryApiDTOs = this.makeGetRequestAll();
 
-        return Arrays.stream(categories)
+        return Arrays.stream(categoryApiDTOs)
                 .map(this::categoryToDTO)
                 .collect(Collectors.toList());
     }
@@ -37,15 +37,15 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDTO getCategoryById(Long id) {
         try {
-            Category category = this.makeGetRequestById(id);
+            CategoryApiDTO categoryApiDTO = this.makeGetRequestById(id);
 
-            return this.categoryToDTO(category);
+            return this.categoryToDTO(categoryApiDTO);
         } catch (HttpClientErrorException.NotFound e) {
             return null;
         }
     }
 
-    private CategoryDTO categoryToDTO(Category category) {
+    private CategoryDTO categoryToDTO(CategoryApiDTO category) {
         return CategoryDTO.builder()
                 .id(category.getId())
                 .name(category.getName())
@@ -73,8 +73,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Result updateCategory(Long id, UpdateCategoryDTO updateCategoryDTO) {
         try {
-            Category category = this.makeGetRequestById(id);
-            if (category.getDescription().equals(updateCategoryDTO.getDescription())) {
+            CategoryApiDTO categoryApiDTO = this.makeGetRequestById(id);
+            if (categoryApiDTO.getDescription().equals(updateCategoryDTO.getDescription())) {
                 return new Result(false, "Няма промени за запазване");
             }
 
@@ -105,34 +105,34 @@ public class CategoryServiceImpl implements CategoryService {
         }
     }
 
-    private Category makeGetRequestById(Long id) {
+    private CategoryApiDTO makeGetRequestById(Long id) {
         return this.restClient.get()
                 .uri("/api/categories/id/{id}", id)
                 .retrieve()
-                .body(Category.class);
+                .body(CategoryApiDTO.class);
     }
 
-    private Category[] makeGetRequestAll() {
+    private CategoryApiDTO[] makeGetRequestAll() {
         return this.restClient.get()
                 .uri("/api/categories")
                 .retrieve()
-                .body(Category[].class);
+                .body(CategoryApiDTO[].class);
     }
 
-    private Category makePostRequest(AddCategoryDTO addCategoryDTO) {
+    private CategoryApiDTO makePostRequest(AddCategoryDTO addCategoryDTO) {
         return this.restClient.post()
                 .uri("/api/categories")
                 .body(addCategoryDTO)
                 .retrieve()
-                .body(Category.class);
+                .body(CategoryApiDTO.class);
     }
 
-    private Category makePutRequest(Long id, UpdateCategoryDTO updateCategoryDTO) {
+    private CategoryApiDTO makePutRequest(Long id, UpdateCategoryDTO updateCategoryDTO) {
         return this.restClient.put()
                 .uri("/api/categories/{id}", id)
                 .body(updateCategoryDTO)
                 .retrieve()
-                .body(Category.class);
+                .body(CategoryApiDTO.class);
     }
 
     private void makeDeleteRequest(Long id) {

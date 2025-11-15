@@ -34,7 +34,8 @@ form h2 {
 .form-section,
 .profile-container,
 .admin-container,
-.categories-section {
+.categories-section,
+.questions-section {
     width: 100%;
     display: flex;
     flex-direction: column;

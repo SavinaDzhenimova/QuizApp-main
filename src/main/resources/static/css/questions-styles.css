@@ -2,6 +2,10 @@
     gap: 1em;
 }
 
+table {
+    width: 90%;
+}
+
 table td .edit-btn {
     padding: 0.5em 1em;
     margin-top: 0;
