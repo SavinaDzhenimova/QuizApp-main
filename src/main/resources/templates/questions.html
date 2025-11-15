@@ -39,14 +39,14 @@
                     <td th:text="${question.questionText}">Въпрос</td>
                     <td th:text="${question.categoryName}">Категория</td>
                     <td th:text="${question.correctAnswer}">Верен отговор</td>
-                    <td th:text="${question.options}">Опции</td>
+                    <td th:text="${#strings.arrayJoin(question.options, ', ')}">Опции</td>
                     <td>
                         <button class="edit-btn"
                                 th:data-id="${question.id}"
-                                th:data-questionText="${question.questionText}"
-                                th:data-categoryName="${question.categoryName}"
-                                th:data-correctAnswer="${question.correctAnswer}"
-                                th:data-options="${question.options}">Редактирай</button>
+                                th:data-question-text="${question.questionText}"
+                                th:data-category-name="${question.categoryName}"
+                                th:data-correct-answer="${question.correctAnswer}"
+                                th:data-options="${#strings.arrayJoin(question.options, ', ')}">Редактирай</button>
                     </td>
                 </tr>
                 </tbody>
@@ -86,7 +86,7 @@
 
                         <div class="field">
                             <label th:for="options">Опции:</label>
-                            <input type="text" th:field="*{options}" id="edit-name" name="options">
+                            <input type="text" th:field="*{options}" id="edit-options" name="options">
                             <small th:if="${#fields.hasErrors('options')}"
                                    th:errors="*{options}"
                                    class="text-danger">Options error message</small>
@@ -101,6 +101,6 @@
 
     <footer th:replace="~{fragments/commons::footer}"></footer>
 
-    <script src="\js\show-modal-form.js"></script>
+    <script src="\js\show-questions-update-modal.js"></script>
 </body>
 </html>
