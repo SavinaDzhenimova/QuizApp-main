@@ -1,6 +1,7 @@
 package com.quizapp.web.view;
 
 import com.quizapp.model.dto.AddQuestionDTO;
+import com.quizapp.model.dto.UpdateQuestionDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.QuestionService;
 import jakarta.validation.Valid;
@@ -8,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -21,6 +19,40 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class QuestionController {
 
     private final QuestionService questionService;
+
+    @GetMapping
+    public ModelAndView showQuestions(Model model) {
+        if (!model.containsAttribute("updateQuestionDTO")) {
+            model.addAttribute("updateQuestionDTO", new UpdateQuestionDTO());
+        }
+
+        return new ModelAndView("questions");
+    }
+
+    @PutMapping("/update/{id}")
+    public ModelAndView updateQuestion(@PathVariable Long id,
+                                       @Valid @ModelAttribute("updateQuestionDTO") UpdateQuestionDTO updateQuestionDTO,
+                                       BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("updateQuestionDTO", updateQuestionDTO)
+                    .addFlashAttribute("org.springframework.validation.BindingResult.updateQuestionDTO",
+                            bindingResult)
+                    .addFlashAttribute("openModal", true);
+
+            return new ModelAndView("redirect:/questions");
+        }
+
+        Result result = this.questionService.updateQuestion(id, updateQuestionDTO);
+
+        if (result.isSuccess()) {
+            redirectAttributes.addFlashAttribute("success", result.getMessage());
+        } else {
+            redirectAttributes.addFlashAttribute("error", result.getMessage());
+        }
+
+        return new ModelAndView("redirect:/questions");
+    }
 
     @GetMapping("/add-question")
     public ModelAndView showAddQuestionPage(Model model) {
