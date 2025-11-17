@@ -2,19 +2,19 @@ package com.quizapp.web.view;
 
 import com.quizapp.model.dto.AddQuestionDTO;
 import com.quizapp.model.dto.QuestionDTO;
+import com.quizapp.model.dto.QuestionPageDTO;
 import com.quizapp.model.dto.UpdateQuestionDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.QuestionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/questions")
@@ -24,16 +24,23 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @GetMapping
-    public ModelAndView showQuestions(Model model) {
+    public ModelAndView showQuestions(@RequestParam(defaultValue = "0") int page,
+                                      @RequestParam(defaultValue = "10") int size,
+                                      Model model) {
+
         ModelAndView modelAndView = new ModelAndView("questions");
 
         if (!model.containsAttribute("updateQuestionDTO")) {
             model.addAttribute("updateQuestionDTO", new UpdateQuestionDTO());
         }
 
-        List<QuestionDTO> allQuestions = this.questionService.getAllQuestions();
+        QuestionPageDTO<QuestionDTO> questionsPageDTO = this.questionService.getAllQuestions(PageRequest.of(page, size));
 
-        modelAndView.addObject("questions", allQuestions);
+        modelAndView.addObject("questions", questionsPageDTO.getQuestions());
+        modelAndView.addObject("currentPage", questionsPageDTO.getCurrentPage());
+        modelAndView.addObject("totalPages", questionsPageDTO.getTotalPages());
+        modelAndView.addObject("totalElements", questionsPageDTO.getTotalElements());
+        modelAndView.addObject("size", questionsPageDTO.getSize());
 
         return modelAndView;
     }

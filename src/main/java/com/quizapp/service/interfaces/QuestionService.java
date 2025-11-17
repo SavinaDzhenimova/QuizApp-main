@@ -2,15 +2,15 @@ package com.quizapp.service.interfaces;
 
 import com.quizapp.model.dto.AddQuestionDTO;
 import com.quizapp.model.dto.QuestionDTO;
+import com.quizapp.model.dto.QuestionPageDTO;
 import com.quizapp.model.dto.UpdateQuestionDTO;
 import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.model.entity.Result;
-
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 public interface QuestionService {
 
-    List<QuestionDTO> getAllQuestions();
+    QuestionPageDTO<QuestionDTO> getAllQuestions(Pageable pageable);
 
     QuestionDTO getQuestionById(Long id);
 

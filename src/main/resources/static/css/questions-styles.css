@@ -11,6 +11,13 @@ table td .edit-btn {
     margin-top: 0;
 }
 
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 1.5em;
+}
+
 .modal {
     display: none;
     position: fixed;

@@ -2,21 +2,24 @@ package com.quizapp.service;
 
 import com.quizapp.model.dto.AddQuestionDTO;
 import com.quizapp.model.dto.QuestionDTO;
+import com.quizapp.model.dto.QuestionPageDTO;
 import com.quizapp.model.dto.UpdateQuestionDTO;
 import com.quizapp.model.enums.ApiResponse;
 import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.QuestionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,12 +28,20 @@ public class QuestionServiceImpl implements QuestionService {
     private final RestClient restClient;
 
     @Override
-    public List<QuestionDTO> getAllQuestions() {
-        QuestionApiDTO[] questionApiDTOs = this.makeGetRequestAll();
+    public QuestionPageDTO<QuestionDTO> getAllQuestions(Pageable pageable) {
+        QuestionPageDTO<QuestionApiDTO> pageDTO = this.makeGetRequestAll(pageable.getPageNumber(), pageable.getPageSize());
 
-            return Arrays.stream(questionApiDTOs)
+        List<QuestionDTO> questionDTOs = pageDTO.getQuestions().stream()
                 .map(this::mapQuestionApiToDTO)
-                .collect(Collectors.toList());
+                .toList();
+
+        return QuestionPageDTO.<QuestionDTO>builder()
+                .questions(questionDTOs)
+                .totalPages(pageDTO.getTotalPages())
+                .totalElements(pageDTO.getTotalElements())
+                .currentPage(pageDTO.getCurrentPage())
+                .size(pageDTO.getSize())
+                .build();
     }
 
     @Override
@@ -77,7 +88,7 @@ public class QuestionServiceImpl implements QuestionService {
             ResponseEntity<Void> response = this.makePutRequest(id, updateQuestionDTO);
             ApiResponse apiResponse = ApiResponse.fromStatus(response.getStatusCode());
 
-            if (apiResponse.equals(ApiResponse.UPDATED)) {
+            if (apiResponse.equals(ApiResponse.SUCCESS)) {
                 return new Result(true, "Успешно редактирахте въпрос.");
             }
 
@@ -124,11 +135,16 @@ public class QuestionServiceImpl implements QuestionService {
                 .body(QuestionApiDTO.class);
     }
 
-    private QuestionApiDTO[] makeGetRequestAll() {
+    public QuestionPageDTO<QuestionApiDTO> makeGetRequestAll(int page, int size) {
+        String uri = UriComponentsBuilder.fromUriString("/api/questions")
+                .queryParam("page", page)
+                .queryParam("size", size)
+                .toUriString();
+
         return this.restClient.get()
-                .uri("/api/questions")
+                .uri(uri)
                 .retrieve()
-                .body(QuestionApiDTO[].class);
+                .body(new ParameterizedTypeReference<>() {});
     }
 
     private QuestionApiDTO makePostRequest(AddQuestionDTO addQuestionDTO) {
@@ -140,8 +156,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     private ResponseEntity<Void> makePutRequest(Long id, UpdateQuestionDTO updateQuestionDTO) {
-        return this.restClient
-                .put()
+        return this.restClient.put()
                 .uri("/api/questions/{id}", id)
                 .body(updateQuestionDTO)
                 .retrieve()
