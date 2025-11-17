@@ -3,10 +3,12 @@ package com.quizapp.service;
 import com.quizapp.model.dto.AddQuestionDTO;
 import com.quizapp.model.dto.QuestionDTO;
 import com.quizapp.model.dto.UpdateQuestionDTO;
+import com.quizapp.model.enums.ApiResponse;
 import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.QuestionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
@@ -59,20 +61,29 @@ public class QuestionServiceImpl implements QuestionService {
         try {
             QuestionApiDTO questionApiDTO = this.makeGetRequest(id);
 
-            List<String> updateOptions = this.stringToList(updateQuestionDTO.getOptions());
+            if (questionApiDTO == null) {
+                return new Result(false, "Въпросът не е намерен!");
+            }
 
+            List<String> updateOptions = this.stringToList(updateQuestionDTO.getOptions());
             if (questionApiDTO.getQuestionText().equals(updateQuestionDTO.getQuestionText())
-                || questionApiDTO.getCategoryName().equals(updateQuestionDTO.getCategoryName())
-                || questionApiDTO.getCorrectAnswer().equals(updateQuestionDTO.getCorrectAnswer())
-                || new HashSet<>(questionApiDTO.getOptions()).equals(new HashSet<>(updateOptions))) {
+                    && questionApiDTO.getCategoryName().equals(updateQuestionDTO.getCategoryName())
+                    && questionApiDTO.getCorrectAnswer().equals(updateQuestionDTO.getCorrectAnswer())
+                    && new HashSet<>(questionApiDTO.getOptions()).equals(new HashSet<>(updateOptions))) {
 
                 return new Result(false, "Няма промени за запазване!");
             }
 
-            this.makePutRequest(id, updateQuestionDTO);
+            ResponseEntity<Void> response = this.makePutRequest(id, updateQuestionDTO);
+            ApiResponse apiResponse = ApiResponse.fromStatus(response.getStatusCode());
 
-            return new Result(true, "Успешно редактирахте въпрос.");
+            if (apiResponse.equals(ApiResponse.UPDATED)) {
+                return new Result(true, "Успешно редактирахте въпрос.");
+            }
+
+            return new Result(false, "Сървърна грешка при редактиране!");
         } catch (HttpClientErrorException e) {
+
             return new Result(false, "Грешка при редактиране! Въпросът не можа да бъде променен.");
         }
     }
@@ -128,12 +139,13 @@ public class QuestionServiceImpl implements QuestionService {
                 .body(QuestionApiDTO.class);
     }
 
-    private QuestionApiDTO makePutRequest(Long id, UpdateQuestionDTO updateQuestionDTO) {
-        return this.restClient.put()
+    private ResponseEntity<Void> makePutRequest(Long id, UpdateQuestionDTO updateQuestionDTO) {
+        return this.restClient
+                .put()
                 .uri("/api/questions/{id}", id)
                 .body(updateQuestionDTO)
                 .retrieve()
-                .body(QuestionApiDTO.class);
+                .toBodilessEntity();
     }
 
     private void makeDeleteRequest(Long id) {
