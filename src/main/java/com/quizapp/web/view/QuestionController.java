@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 @Controller
 @RequestMapping("/questions")
 @RequiredArgsConstructor
@@ -36,7 +39,12 @@ public class QuestionController {
             model.addAttribute("updateQuestionDTO", new UpdateQuestionDTO());
         }
 
-        QuestionPageDTO<QuestionDTO> questionsPageDTO = this.questionService.getAllQuestions(questionText, categoryId,
+        String decodedText = "";
+        if (questionText != null) {
+            decodedText = URLDecoder.decode(questionText, StandardCharsets.UTF_8);
+        }
+
+        QuestionPageDTO<QuestionDTO> questionsPageDTO = this.questionService.getAllQuestions(decodedText, categoryId,
                 PageRequest.of(page, size));
 
         modelAndView.addObject("questions", questionsPageDTO.getQuestions());
