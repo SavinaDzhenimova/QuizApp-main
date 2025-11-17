@@ -24,6 +24,27 @@
                 <p th:text="${success}"></p>
             </div>
 
+            <form th:action="@{/questions}"
+                  th:method="GET"
+                  class="search-form">
+
+                <select name="categoryId">
+                    <option value="">Търси категория</option>
+                    <option th:each="cat : ${categories}"
+                            th:value="${cat.id}"
+                            th:selected="${cat.id == categoryId}"
+                            th:text="${cat.name}">
+                    </option>
+                </select>
+
+                <input type="text"
+                       name="questionText"
+                       th:value="${questionText}"
+                       placeholder="Търси по съдържанието на въпроса...">
+
+                <button type="submit">Търси</button>
+            </form>
+
             <table th:unless="${questions.isEmpty()}">
                 <thead>
                 <tr>
@@ -54,10 +75,18 @@
 
             <div class="pagination" th:if="${totalPages > 1}">
                 <a th:if="${currentPage > 0}"
-                   th:href="@{/questions(page=${currentPage - 1}, size=${size})}" class="btn-start">⬅ Предишна</a>
+                   th:href="@{/questions(
+                       page=${currentPage - 1},
+                       size=${size},
+                       questionText=${questionText},
+                       categoryId=${categoryId})}" class="btn-start">⬅ Предишна</a>
                 <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
                 <a th:if="${currentPage + 1 < totalPages}"
-                   th:href="@{/questions(page=${currentPage + 1}, size=${size})}" class="btn-start">Следваща ➡</a>
+                   th:href="@{/questions(
+                        page=${currentPage + 1},
+                        size=${size},
+                        questionText=${questionText},
+                        categoryId=${categoryId})}" class="btn-start">Следваща ➡</a>
             </div>
 
             <div id="editModal" class="modal" th:data-open-modal="${openModal}">

@@ -26,6 +26,8 @@ public class QuestionController {
     @GetMapping
     public ModelAndView showQuestions(@RequestParam(defaultValue = "0") int page,
                                       @RequestParam(defaultValue = "10") int size,
+                                      @RequestParam(required = false) String questionText,
+                                      @RequestParam(required = false) Long categoryId,
                                       Model model) {
 
         ModelAndView modelAndView = new ModelAndView("questions");
@@ -34,13 +36,17 @@ public class QuestionController {
             model.addAttribute("updateQuestionDTO", new UpdateQuestionDTO());
         }
 
-        QuestionPageDTO<QuestionDTO> questionsPageDTO = this.questionService.getAllQuestions(PageRequest.of(page, size));
+        QuestionPageDTO<QuestionDTO> questionsPageDTO = this.questionService.getAllQuestions(questionText, categoryId,
+                PageRequest.of(page, size));
 
         modelAndView.addObject("questions", questionsPageDTO.getQuestions());
         modelAndView.addObject("currentPage", questionsPageDTO.getCurrentPage());
         modelAndView.addObject("totalPages", questionsPageDTO.getTotalPages());
         modelAndView.addObject("totalElements", questionsPageDTO.getTotalElements());
         modelAndView.addObject("size", questionsPageDTO.getSize());
+
+        modelAndView.addObject("questionText", questionText);
+        modelAndView.addObject("categoryId", categoryId);
 
         return modelAndView;
     }

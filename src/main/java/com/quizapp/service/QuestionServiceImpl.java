@@ -28,8 +28,9 @@ public class QuestionServiceImpl implements QuestionService {
     private final RestClient restClient;
 
     @Override
-    public QuestionPageDTO<QuestionDTO> getAllQuestions(Pageable pageable) {
-        QuestionPageDTO<QuestionApiDTO> pageDTO = this.makeGetRequestAll(pageable.getPageNumber(), pageable.getPageSize());
+    public QuestionPageDTO<QuestionDTO> getAllQuestions(String questionText, Long categoryId, Pageable pageable) {
+        QuestionPageDTO<QuestionApiDTO> pageDTO = this.makeGetRequestAll(questionText, categoryId,
+                pageable.getPageNumber(), pageable.getPageSize());
 
         List<QuestionDTO> questionDTOs = pageDTO.getQuestions().stream()
                 .map(this::mapQuestionApiToDTO)
@@ -135,14 +136,22 @@ public class QuestionServiceImpl implements QuestionService {
                 .body(QuestionApiDTO.class);
     }
 
-    public QuestionPageDTO<QuestionApiDTO> makeGetRequestAll(int page, int size) {
-        String uri = UriComponentsBuilder.fromUriString("/api/questions")
+    public QuestionPageDTO<QuestionApiDTO> makeGetRequestAll(String questionText, Long categoryId, int page, int size) {
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString("/api/questions")
                 .queryParam("page", page)
-                .queryParam("size", size)
-                .toUriString();
+                .queryParam("size", size);
+
+        if (questionText != null && !questionText.isBlank()) {
+            uriBuilder.queryParam("questionText", questionText);
+        }
+
+        if (categoryId != null) {
+            uriBuilder.queryParam("categoryId", categoryId);
+        }
 
         return this.restClient.get()
-                .uri(uri)
+                .uri(uriBuilder.toUriString())
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
     }
