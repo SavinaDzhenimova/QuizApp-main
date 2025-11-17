@@ -45,6 +45,10 @@
                 <button type="submit">Търси</button>
             </form>
 
+            <div th:if="${warning}" class="warning">
+                <p th:text="${warning}"></p>
+            </div>
+
             <table th:unless="${questions.isEmpty()}">
                 <thead>
                 <tr>

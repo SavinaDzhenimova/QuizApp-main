@@ -52,9 +52,12 @@ public class QuestionController {
         modelAndView.addObject("totalPages", questionsPageDTO.getTotalPages());
         modelAndView.addObject("totalElements", questionsPageDTO.getTotalElements());
         modelAndView.addObject("size", questionsPageDTO.getSize());
-
         modelAndView.addObject("questionText", questionText);
         modelAndView.addObject("categoryId", categoryId);
+
+        if (questionsPageDTO.getTotalElements() == 0) {
+            modelAndView.addObject("warning", "Няма намерени въпроси за зададените критерии!");
+        }
 
         return modelAndView;
     }
