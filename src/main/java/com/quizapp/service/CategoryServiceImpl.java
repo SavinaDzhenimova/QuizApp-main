@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quizapp.model.dto.AddCategoryDTO;
 import com.quizapp.model.dto.CategoryDTO;
 import com.quizapp.model.dto.UpdateCategoryDTO;
+import com.quizapp.model.enums.ApiResponse;
 import com.quizapp.model.rest.CategoryApiDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.model.records.ApiError;
 import com.quizapp.service.interfaces.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
@@ -74,14 +76,25 @@ public class CategoryServiceImpl implements CategoryService {
     public Result updateCategory(Long id, UpdateCategoryDTO updateCategoryDTO) {
         try {
             CategoryApiDTO categoryApiDTO = this.makeGetRequestById(id);
+
+            if (categoryApiDTO == null) {
+                return new Result(false, "Категорията не е намерена!");
+            }
+
             if (categoryApiDTO.getDescription().equals(updateCategoryDTO.getDescription())) {
                 return new Result(false, "Няма промени за запазване");
             }
 
-            this.makePutRequest(id, updateCategoryDTO);
+            ResponseEntity<Void> response = this.makePutRequest(id, updateCategoryDTO);
+            ApiResponse apiResponse = ApiResponse.fromStatus(response.getStatusCode());
 
-            return new Result(true, "Успешно редактирахте категория " + updateCategoryDTO.getName());
+            if (apiResponse.equals(ApiResponse.SUCCESS)) {
+                return new Result(true, "Успешно редактирахте категория " + updateCategoryDTO.getName());
+            }
+
+            return new Result(false, "Сървърна грешка при редактиране!");
         } catch (HttpClientErrorException e) {
+
             return new Result(false, "Грешка при редактиране! Категорията не можа да бъде променена.");
         }
     }
@@ -107,7 +120,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private CategoryApiDTO makeGetRequestById(Long id) {
         return this.restClient.get()
-                .uri("/api/categories/id/{id}", id)
+                .uri("/api/categories/{id}", id)
                 .retrieve()
                 .body(CategoryApiDTO.class);
     }
@@ -127,12 +140,12 @@ public class CategoryServiceImpl implements CategoryService {
                 .body(CategoryApiDTO.class);
     }
 
-    private CategoryApiDTO makePutRequest(Long id, UpdateCategoryDTO updateCategoryDTO) {
+    private ResponseEntity<Void> makePutRequest(Long id, UpdateCategoryDTO updateCategoryDTO) {
         return this.restClient.put()
                 .uri("/api/categories/{id}", id)
                 .body(updateCategoryDTO)
                 .retrieve()
-                .body(CategoryApiDTO.class);
+                .toBodilessEntity();
     }
 
     private void makeDeleteRequest(Long id) {

@@ -6,11 +6,8 @@ import org.springframework.http.HttpStatusCode;
 public enum ApiResponse {
     SUCCESS(HttpStatus.OK),
     CREATED(HttpStatus.CREATED),
-    UPDATED(HttpStatus.OK),
     DELETED(HttpStatus.NO_CONTENT),
-    NO_CHANGES(HttpStatus.NO_CONTENT),
     NOT_FOUND(HttpStatus.NOT_FOUND),
-    VALIDATION_ERROR(HttpStatus.BAD_REQUEST),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST),
     ERROR(HttpStatus.INTERNAL_SERVER_ERROR);
 
