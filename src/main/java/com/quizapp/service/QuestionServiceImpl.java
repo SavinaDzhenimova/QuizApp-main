@@ -59,9 +59,16 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Result addQuestion(AddQuestionDTO addQuestionDTO) {
         try {
-            this.makePostRequest(addQuestionDTO);
+            ResponseEntity<Void> response = this.makePostRequest(addQuestionDTO);
+            ApiResponse apiResponse = ApiResponse.fromStatus(response.getStatusCode());
 
-            return new Result(true, "Успешно добавихте въпрос.");
+            return switch (apiResponse) {
+                case CREATED -> new Result(true, "Успешно добавихте въпрос.");
+                case NOT_FOUND -> new Result(false, "Не е намерена категория!");
+                case BAD_REQUEST -> new Result(false, "Невалидни входни данни.");
+                default -> new Result(false, "Сървърна грешка при добавяне на въпрос!");
+            };
+
         } catch (HttpClientErrorException e) {
 
             return new Result(false, "Нещо се обърка! Въпросът не беше записан.");
@@ -156,12 +163,12 @@ public class QuestionServiceImpl implements QuestionService {
                 .body(new ParameterizedTypeReference<>() {});
     }
 
-    private QuestionApiDTO makePostRequest(AddQuestionDTO addQuestionDTO) {
+    private ResponseEntity<Void> makePostRequest(AddQuestionDTO addQuestionDTO) {
         return this.restClient.post()
                 .uri("/api/questions")
                 .body(addQuestionDTO)
                 .retrieve()
-                .body(QuestionApiDTO.class);
+                .toBodilessEntity();
     }
 
     private ResponseEntity<Void> makePutRequest(Long id, UpdateQuestionDTO updateQuestionDTO) {

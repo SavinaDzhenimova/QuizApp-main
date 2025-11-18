@@ -8,7 +8,7 @@ public enum ApiResponse {
     CREATED(HttpStatus.CREATED),
     DELETED(HttpStatus.NO_CONTENT),
     NOT_FOUND(HttpStatus.NOT_FOUND),
-    INVALID_REQUEST(HttpStatus.BAD_REQUEST),
+    BAD_REQUEST(HttpStatus.BAD_REQUEST),
     ERROR(HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final HttpStatus status;
