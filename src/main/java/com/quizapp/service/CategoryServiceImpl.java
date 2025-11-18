@@ -10,14 +10,12 @@ import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -27,10 +25,9 @@ public class CategoryServiceImpl implements CategoryService {
     private final RestClient restClient;
 
     @Override
-    public CategoryPageDTO<CategoryDTO> getAllCategories(Pageable pageable) {
+    public CategoryPageDTO<CategoryDTO> getAllCategories(int page, int size) {
 
-        CategoryPageDTO<CategoryApiDTO> categoryPageDTO = this.makeGetRequestAll(pageable.getPageNumber(),
-                pageable.getPageSize());
+        CategoryPageDTO<CategoryApiDTO> categoryPageDTO = this.makeGetRequestAll(page, size);
 
         List<CategoryDTO> categoryDTOs = categoryPageDTO.getCategories().stream()
                 .map(this::categoryApiToDTO)
@@ -44,13 +41,6 @@ public class CategoryServiceImpl implements CategoryService {
         categoryPage.setSize(categoryPageDTO.getSize());
 
         return categoryPage;
-    }
-
-    @Override
-    public List<CategoryDTO> getAllCategories() {
-        return Arrays.stream(this.makeGetRequestAll())
-                .map(this::categoryApiToDTO)
-                .toList();
     }
 
     @Override
@@ -153,13 +143,6 @@ public class CategoryServiceImpl implements CategoryService {
                 .uri(uriBuilder.toUriString())
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
-    }
-
-    private CategoryApiDTO[] makeGetRequestAll() {
-        return this.restClient.get()
-                .uri("/api/categories/all")
-                .retrieve()
-                .body(CategoryApiDTO[].class);
     }
 
     private ResponseEntity<?> makePostRequest(AddCategoryDTO addCategoryDTO) {

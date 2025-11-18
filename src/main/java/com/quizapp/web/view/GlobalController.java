@@ -1,6 +1,7 @@
 package com.quizapp.web.view;
 
 import com.quizapp.model.dto.CategoryDTO;
+import com.quizapp.model.dto.CategoryPageDTO;
 import com.quizapp.service.interfaces.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,6 +17,7 @@ public class GlobalController {
 
     @ModelAttribute("categories")
     public List<CategoryDTO> getCategoriesForSelectElement() {
-        return this.categoryService.getAllCategories();
+        CategoryPageDTO<CategoryDTO> categoryPageDTO = this.categoryService.getAllCategories(0, 100);
+        return categoryPageDTO.getCategories();
     }
 }

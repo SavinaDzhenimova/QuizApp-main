@@ -9,15 +9,12 @@ import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,7 +33,7 @@ public class CategoryController {
             model.addAttribute("updateCategoryDTO", new UpdateCategoryDTO());
         }
 
-        CategoryPageDTO<CategoryDTO> categoriesPageDTO = this.categoryService.getAllCategories(PageRequest.of(page, size));
+        CategoryPageDTO<CategoryDTO> categoriesPageDTO = this.categoryService.getAllCategories(page, size);
 
         modelAndView.addObject("categories", categoriesPageDTO.getCategories());
         modelAndView.addObject("currentPage", categoriesPageDTO.getCurrentPage());
@@ -80,9 +77,9 @@ public class CategoryController {
     public ModelAndView showCategoriesPage() {
         ModelAndView modelAndView = new ModelAndView("start-quiz");
 
-        List<CategoryDTO> allCategories = this.categoryService.getAllCategories();
+        CategoryPageDTO<CategoryDTO> categoryPageDTO = this.categoryService.getAllCategories(0, 100);
 
-        modelAndView.addObject("categories", allCategories);
+        modelAndView.addObject("categories", categoryPageDTO.getCategories());
 
         return modelAndView;
     }
