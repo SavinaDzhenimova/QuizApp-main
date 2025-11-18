@@ -70,6 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
 
             return switch (apiResponse) {
                 case BAD_REQUEST -> new Result(false, "Невалидни входни данни!");
+                case CONFLICT -> new Result(false, "Категория с това име вече съществува.");
                 case CREATED -> new Result(true, "Успешно добавихте категория " + addCategoryDTO.getName());
                 default -> new Result(false, "Сървърна грешка при създаване на категория!");
             };
