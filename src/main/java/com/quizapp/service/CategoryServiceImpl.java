@@ -58,17 +58,18 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Result addCategory(AddCategoryDTO addCategoryDTO) throws JsonProcessingException {
         try {
-            this.makePostRequest(addCategoryDTO);
+            ResponseEntity<?> response = this.makePostRequest(addCategoryDTO);
+            ApiResponse apiResponse = ApiResponse.fromStatus(response.getStatusCode());
 
-            return new Result(true, "Успешно добавихте категория " + addCategoryDTO.getName());
+            return switch (apiResponse) {
+                case BAD_REQUEST -> new Result(false, "Невалидни входни данни!");
+                case CREATED -> new Result(true, "Успешно добавихте категория " + addCategoryDTO.getName());
+                default -> new Result(false, "Сървърна грешка при създаване на категория!");
+            };
+            
         } catch (HttpClientErrorException e) {
 
-            ApiError error = objectMapper.readValue(
-                    e.getResponseBodyAsString(),
-                    ApiError.class
-            );
-
-            return new Result(false, error.message());
+            return new Result(false, "Нещо се обърка! Категорията не беше записана.");
         }
     }
 
@@ -132,12 +133,12 @@ public class CategoryServiceImpl implements CategoryService {
                 .body(CategoryApiDTO[].class);
     }
 
-    private CategoryApiDTO makePostRequest(AddCategoryDTO addCategoryDTO) {
+    private ResponseEntity<?> makePostRequest(AddCategoryDTO addCategoryDTO) {
         return this.restClient.post()
                 .uri("/api/categories")
                 .body(addCategoryDTO)
                 .retrieve()
-                .body(CategoryApiDTO.class);
+                .toBodilessEntity();
     }
 
     private ResponseEntity<Void> makePutRequest(Long id, UpdateCategoryDTO updateCategoryDTO) {
