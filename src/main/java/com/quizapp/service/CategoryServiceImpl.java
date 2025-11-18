@@ -68,53 +68,41 @@ public class CategoryServiceImpl implements CategoryService {
             ResponseEntity<?> response = this.makePostRequest(addCategoryDTO);
             ApiResponse apiResponse = ApiResponse.fromStatus(response.getStatusCode());
 
-            return switch (apiResponse) {
-                case BAD_REQUEST -> new Result(false, "Невалидни входни данни!");
-                case CONFLICT -> new Result(false, "Категория с това име вече съществува.");
-                case CREATED -> new Result(true, "Успешно добавихте категория " + addCategoryDTO.getName());
-                default -> new Result(false, "Сървърна грешка при създаване на категория!");
-            };
+            if (apiResponse.equals(ApiResponse.CREATED)) {
+                return new Result(true, "Успешно добавихте категория " + addCategoryDTO.getName());
+            }
 
+            return new Result(false, "Сървърна грешка при създаване на категория!");
+        } catch (HttpClientErrorException.BadRequest e) {
+
+            return new Result(false, "Невалидни входни данни!");
+        } catch (HttpClientErrorException.Conflict e) {
+
+            return new Result(false, "Категория с това име вече съществува.");
         } catch (HttpClientErrorException e) {
 
-            return new Result(false, "Нещо се обърка! Категорията не беше записана.");
+            return new Result(false, "Сървърна грешка при създаване на категория!");
         }
     }
 
     @Override
     public Result updateCategory(Long id, UpdateCategoryDTO updateCategoryDTO) {
         try {
-            CategoryApiDTO categoryApiDTO = this.makeGetRequestById(id);
-
-            if (categoryApiDTO == null) {
-                return new Result(false, "Категорията не е намерена!");
-            }
-
-            if (categoryApiDTO.getDescription().equals(updateCategoryDTO.getDescription())) {
-                return new Result(false, "Няма промени за запазване");
-            }
-
             ResponseEntity<Void> response = this.makePutRequest(id, updateCategoryDTO);
             ApiResponse apiResponse = ApiResponse.fromStatus(response.getStatusCode());
 
-            if (apiResponse.equals(ApiResponse.SUCCESS)) {
-                return new Result(true, "Успешно редактирахте категория " + updateCategoryDTO.getName());
-            }
+            return switch (apiResponse) {
+                case SUCCESS -> new Result(true, "Успешно редактирахте категория " + updateCategoryDTO.getName());
+                case NO_CONTENT -> new Result(false, "Няма промени за запазване");
+                default -> new Result(false, "Сървърна грешка при редактиране!");
+            };
 
-            return new Result(false, "Сървърна грешка при редактиране!");
+        } catch (HttpClientErrorException.NotFound e) {
+
+            return new Result(false, "Категорията не е намерена!");
         } catch (HttpClientErrorException e) {
 
             return new Result(false, "Грешка при редактиране! Категорията не можа да бъде променена.");
-        }
-    }
-
-    @Override
-    public boolean deleteCategoryById(Long id) {
-        try {
-            this.makeDeleteRequest(id);
-            return true;
-        } catch (HttpClientErrorException.NotFound e) {
-            return false;
         }
     }
 

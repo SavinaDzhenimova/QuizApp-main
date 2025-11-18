@@ -15,8 +15,6 @@ public interface CategoryService {
 
     Result addCategory(AddCategoryDTO addCategoryDTO) throws JsonProcessingException;
 
-    boolean deleteCategoryById(Long id);
-
     String getCategoryNameById(Long id);
 
     Result updateCategory(Long id, UpdateCategoryDTO updateCategoryDTO);

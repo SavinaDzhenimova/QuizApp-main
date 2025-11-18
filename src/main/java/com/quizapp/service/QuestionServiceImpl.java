@@ -63,13 +63,17 @@ public class QuestionServiceImpl implements QuestionService {
             ResponseEntity<Void> response = this.makePostRequest(addQuestionDTO);
             ApiResponse apiResponse = ApiResponse.fromStatus(response.getStatusCode());
 
-            return switch (apiResponse) {
-                case CREATED -> new Result(true, "Успешно добавихте въпрос.");
-                case NOT_FOUND -> new Result(false, "Не е намерена категория!");
-                case BAD_REQUEST -> new Result(false, "Невалидни входни данни.");
-                default -> new Result(false, "Сървърна грешка при добавяне на въпрос!");
-            };
+            if (apiResponse.equals(ApiResponse.SUCCESS)) {
+                return new Result(true, "Успешно добавихте въпрос.");
+            }
 
+            return new Result(false, "Сървърна грешка при добавяне на въпрос!");
+        } catch (HttpClientErrorException.NotFound e) {
+
+            return new Result(false, "Не е намерена категория!");
+        } catch (HttpClientErrorException.BadRequest e) {
+
+            return new Result(false, "Невалидни входни данни.");
         } catch (HttpClientErrorException e) {
 
             return new Result(false, "Нещо се обърка! Въпросът не беше записан.");
@@ -79,40 +83,22 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Result updateQuestion(Long id, UpdateQuestionDTO updateQuestionDTO) {
         try {
-            QuestionApiDTO questionApiDTO = this.makeGetRequest(id);
-
-            if (questionApiDTO == null) {
-                return new Result(false, "Въпросът не е намерен!");
-            }
-
-            List<String> updateOptions = this.stringToList(updateQuestionDTO.getOptions());
-            if (questionApiDTO.getQuestionText().equals(updateQuestionDTO.getQuestionText())
-                    && questionApiDTO.getCategoryName().equals(updateQuestionDTO.getCategoryName())
-                    && questionApiDTO.getCorrectAnswer().equals(updateQuestionDTO.getCorrectAnswer())
-                    && new HashSet<>(questionApiDTO.getOptions()).equals(new HashSet<>(updateOptions))) {
-
-                return new Result(false, "Няма промени за запазване!");
-            }
-
             ResponseEntity<Void> response = this.makePutRequest(id, updateQuestionDTO);
             ApiResponse apiResponse = ApiResponse.fromStatus(response.getStatusCode());
 
-            if (apiResponse.equals(ApiResponse.SUCCESS)) {
-                return new Result(true, "Успешно редактирахте въпрос.");
-            }
+            return switch (apiResponse) {
+                case SUCCESS ->  new Result(true, "Успешно редактирахте въпрос.");
+                case NO_CONTENT -> new Result(false, "Няма промени за запазване!");
+                default -> new Result(false, "Сървърна грешка при редактиране!");
+            };
 
-            return new Result(false, "Сървърна грешка при редактиране!");
+        } catch (HttpClientErrorException.NotFound e) {
+
+            return new Result(false, "Въпросът не е намерен!");
         } catch (HttpClientErrorException e) {
 
             return new Result(false, "Грешка при редактиране! Въпросът не можа да бъде променен.");
         }
-    }
-
-    private List<String> stringToList(String options) {
-        return Arrays.stream(options.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .toList();
     }
 
     @Override

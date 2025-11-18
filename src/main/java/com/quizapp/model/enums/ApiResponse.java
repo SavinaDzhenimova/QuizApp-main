@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatusCode;
 
 public enum ApiResponse {
     SUCCESS(HttpStatus.OK),
+    NO_CONTENT(HttpStatus.NO_CONTENT),
     CREATED(HttpStatus.CREATED),
     CONFLICT(HttpStatus.CONFLICT),
     NOT_FOUND(HttpStatus.NOT_FOUND),
