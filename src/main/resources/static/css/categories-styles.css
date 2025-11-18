@@ -4,6 +4,7 @@
 
 table {
     width: 70%;
+    table-layout: fixed;
 }
 
 table td .edit-btn {
@@ -17,6 +18,18 @@ table thead th {
 
 table tbody td {
     background-color: rgba(186, 156, 252, 0.9);
+}
+
+table .col-name {
+    width: 15%;
+}
+
+table .col-description {
+    width: 80%;
+}
+
+table .col-update {
+    width: 5%;
 }
 
 .pagination {

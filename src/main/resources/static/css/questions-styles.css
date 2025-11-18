@@ -22,6 +22,7 @@
 
 table {
     width: 90%;
+    table-layout: fixed;
 }
 
 table td .edit-btn {
@@ -35,6 +36,26 @@ table thead th {
 
 table tbody td {
     background-color: rgba(186, 156, 252, 0.9);
+}
+
+table .col-question-text {
+    width: 35%;
+}
+
+table .col-categories {
+    width: 10%;
+}
+
+table .col-correct-answer {
+    width: 15%;
+}
+
+table .col-options {
+    width: 35%;
+}
+
+table .col-update {
+    width: 5%;
 }
 
 .search-form button {

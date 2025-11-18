@@ -52,20 +52,20 @@
             <table th:unless="${questions.isEmpty()}">
                 <thead>
                 <tr>
-                    <th>Въпрос</th>
-                    <th>Категория</th>
-                    <th>Верен отговор</th>
-                    <th>Опции</th>
-                    <th>Редактирай</th>
+                    <th class="col-question-text">Въпрос</th>
+                    <th class="col-categories">Категория</th>
+                    <th class="col-correct-answer">Верен отговор</th>
+                    <th class="col-options">Опции</th>
+                    <th class="col-update">Редактирай</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="question : ${questions}">
-                    <td th:text="${question.questionText}">Въпрос</td>
-                    <td th:text="${question.categoryName}">Категория</td>
-                    <td th:text="${question.correctAnswer}">Верен отговор</td>
-                    <td th:text="${#strings.arrayJoin(question.options, ', ')}">Опции</td>
-                    <td>
+                    <td th:text="${question.questionText}" class="col-question-text">Въпрос</td>
+                    <td th:text="${question.categoryName}" class="col-categories">Категория</td>
+                    <td th:text="${question.correctAnswer}" class="col-correct-answer">Верен отговор</td>
+                    <td th:text="${#strings.arrayJoin(question.options, ', ')}" class="col-options">Опции</td>
+                    <td class="col-update">
                         <button class="edit-btn"
                                 th:data-id="${question.id}"
                                 th:data-question-text="${question.questionText}"

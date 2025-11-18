@@ -31,16 +31,16 @@
             <table th:unless="${categories.isEmpty()}">
                 <thead>
                 <tr>
-                    <th>Име</th>
-                    <th>Описание</th>
-                    <th>Редактирай</th>
+                    <th class="col-name">Име</th>
+                    <th class="col-description">Описание</th>
+                    <th class="col-update">Редактирай</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="category : ${categories}">
-                    <td th:text="${category.name}">Име</td>
-                    <td th:text="${category.description}">Описание</td>
-                    <td>
+                    <td th:text="${category.name}" class="col-name">Име</td>
+                    <td th:text="${category.description}" class="col-description">Описание</td>
+                    <td class="col-update">
                         <button class="edit-btn"
                                 th:data-id="${category.id}"
                                 th:data-name="${category.name}"
