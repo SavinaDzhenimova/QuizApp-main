@@ -25,9 +25,9 @@ public class CategoryServiceImpl implements CategoryService {
     private final RestClient restClient;
 
     @Override
-    public CategoryPageDTO<CategoryDTO> getAllCategories(int page, int size) {
+    public CategoryPageDTO<CategoryDTO> getAllCategories(String categoryName, int page, int size) {
 
-        CategoryPageDTO<CategoryApiDTO> categoryPageDTO = this.makeGetRequestAll(page, size);
+        CategoryPageDTO<CategoryApiDTO> categoryPageDTO = this.makeGetRequestAll(categoryName, page, size);
 
         List<CategoryDTO> categoryDTOs = categoryPageDTO.getCategories().stream()
                 .map(this::categoryApiToDTO)
@@ -133,11 +133,15 @@ public class CategoryServiceImpl implements CategoryService {
                 .body(CategoryApiDTO.class);
     }
 
-    private CategoryPageDTO<CategoryApiDTO> makeGetRequestAll(int page, int size) {
+    private CategoryPageDTO<CategoryApiDTO> makeGetRequestAll(String categoryName, int page, int size) {
 
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString("/api/categories")
                 .queryParam("page", page)
                 .queryParam("size", size);
+
+        if (categoryName != null && !categoryName.isBlank()) {
+            uriBuilder.queryParam("categoryName", categoryName);
+        }
 
         return this.restClient.get()
                 .uri(uriBuilder.toUriString())

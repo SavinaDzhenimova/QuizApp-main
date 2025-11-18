@@ -24,6 +24,18 @@
                 <p th:text="${success}"></p>
             </div>
 
+            <form th:action="@{/categories}"
+                  th:method="GET"
+                  class="search-form">
+
+                <input type="text"
+                       name="categoryName"
+                       th:value="${categoryName}"
+                       placeholder="Търси по име на категория...">
+
+                <button type="submit" class="search-btn">Търси</button>
+            </form>
+
             <div th:if="${warning}" class="warning">
                 <p th:text="${warning}"></p>
             </div>

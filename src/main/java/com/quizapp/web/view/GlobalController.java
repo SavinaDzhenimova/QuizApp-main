@@ -17,7 +17,7 @@ public class GlobalController {
 
     @ModelAttribute("categories")
     public List<CategoryDTO> getCategoriesForSelectElement() {
-        CategoryPageDTO<CategoryDTO> categoryPageDTO = this.categoryService.getAllCategories(0, 100);
+        CategoryPageDTO<CategoryDTO> categoryPageDTO = this.categoryService.getAllCategories("", 0, 100);
         return categoryPageDTO.getCategories();
     }
 }

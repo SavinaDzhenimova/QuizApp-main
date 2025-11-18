@@ -16,6 +16,18 @@
         <section class="categories-section">
             <h1 class="page-title">Избери категория</h1>
 
+            <form th:action="@{/start-quiz}"
+                  th:method="GET"
+                  class="search-form">
+
+                <input type="text"
+                       name="categoryName"
+                       th:value="${categoryName}"
+                       placeholder="Търси по име на категория...">
+
+                <button type="submit" class="search-btn">Търси</button>
+            </form>
+
             <form th:action="@{/quiz/category}"
                   th:method="POST">
 
