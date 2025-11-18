@@ -157,7 +157,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private CategoryApiDTO[] makeGetRequestAll() {
         return this.restClient.get()
-                .uri("/api/categories")
+                .uri("/api/categories/all")
                 .retrieve()
                 .body(CategoryApiDTO[].class);
     }

@@ -11,6 +11,21 @@ table td .edit-btn {
     margin-top: 0;
 }
 
+table thead th {
+    background-color: rgba(128, 0, 128, 0.8);
+}
+
+table tbody td {
+    background-color: rgba(186, 156, 252, 0.9);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 1.5em;
+}
+
 .modal {
     display: none;
     position: fixed;
