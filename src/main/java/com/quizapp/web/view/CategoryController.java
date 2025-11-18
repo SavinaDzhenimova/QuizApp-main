@@ -3,11 +3,13 @@ package com.quizapp.web.view;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.quizapp.model.dto.AddCategoryDTO;
 import com.quizapp.model.dto.CategoryDTO;
+import com.quizapp.model.dto.CategoryPageDTO;
 import com.quizapp.model.dto.UpdateCategoryDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,16 +26,27 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("/categories")
-    public ModelAndView showCategories(Model model) {
+    public ModelAndView showCategories(@RequestParam(defaultValue = "0") int page,
+                                       @RequestParam(defaultValue = "10") int size,
+                                       Model model) {
+
         ModelAndView modelAndView = new ModelAndView("categories");
 
         if (!model.containsAttribute("updateCategoryDTO")) {
             model.addAttribute("updateCategoryDTO", new UpdateCategoryDTO());
         }
 
-        List<CategoryDTO> allCategories = this.categoryService.getAllCategories();
+        CategoryPageDTO<CategoryDTO> categoriesPageDTO = this.categoryService.getAllCategories(PageRequest.of(page, size));
 
-        modelAndView.addObject("categories", allCategories);
+        modelAndView.addObject("categories", categoriesPageDTO.getCategories());
+        modelAndView.addObject("currentPage", categoriesPageDTO.getCurrentPage());
+        modelAndView.addObject("totalPages", categoriesPageDTO.getTotalPages());
+        modelAndView.addObject("totalElements", categoriesPageDTO.getTotalElements());
+        modelAndView.addObject("size", categoriesPageDTO.getSize());
+
+        if (categoriesPageDTO.getTotalElements() == 0) {
+            modelAndView.addObject("warning", "Няма намерени категории за зададените критерии!");
+        }
 
         return modelAndView;
     }

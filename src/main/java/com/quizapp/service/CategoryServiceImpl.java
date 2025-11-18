@@ -1,39 +1,56 @@
 package com.quizapp.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quizapp.model.dto.AddCategoryDTO;
 import com.quizapp.model.dto.CategoryDTO;
+import com.quizapp.model.dto.CategoryPageDTO;
 import com.quizapp.model.dto.UpdateCategoryDTO;
 import com.quizapp.model.enums.ApiResponse;
 import com.quizapp.model.rest.CategoryApiDTO;
 import com.quizapp.model.entity.Result;
-import com.quizapp.model.records.ApiError;
 import com.quizapp.service.interfaces.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
     private final RestClient restClient;
-    private final ObjectMapper objectMapper;
+
+    @Override
+    public CategoryPageDTO<CategoryDTO> getAllCategories(Pageable pageable) {
+
+        CategoryPageDTO<CategoryApiDTO> categoryPageDTO = this.makeGetRequestAll(pageable.getPageNumber(),
+                pageable.getPageSize());
+
+        List<CategoryDTO> categoryDTOs = categoryPageDTO.getCategories().stream()
+                .map(this::categoryApiToDTO)
+                .toList();
+
+        CategoryPageDTO<CategoryDTO> categoryPage = new CategoryPageDTO<>();
+        categoryPage.setCategories(categoryDTOs);
+        categoryPage.setTotalPages(categoryPageDTO.getTotalPages());
+        categoryPage.setTotalElements(categoryPageDTO.getTotalElements());
+        categoryPage.setCurrentPage(categoryPageDTO.getCurrentPage());
+        categoryPage.setSize(categoryPageDTO.getSize());
+
+        return categoryPage;
+    }
 
     @Override
     public List<CategoryDTO> getAllCategories() {
-        CategoryApiDTO[] categoryApiDTOs = this.makeGetRequestAll();
-
-        return Arrays.stream(categoryApiDTOs)
-                .map(this::categoryToDTO)
-                .collect(Collectors.toList());
+        return Arrays.stream(this.makeGetRequestAll())
+                .map(this::categoryApiToDTO)
+                .toList();
     }
 
     @Override
@@ -41,22 +58,22 @@ public class CategoryServiceImpl implements CategoryService {
         try {
             CategoryApiDTO categoryApiDTO = this.makeGetRequestById(id);
 
-            return this.categoryToDTO(categoryApiDTO);
+            return this.categoryApiToDTO(categoryApiDTO);
         } catch (HttpClientErrorException.NotFound e) {
             return null;
         }
     }
 
-    private CategoryDTO categoryToDTO(CategoryApiDTO category) {
+    private CategoryDTO categoryApiToDTO(CategoryApiDTO categoryApiDTO) {
         return CategoryDTO.builder()
-                .id(category.getId())
-                .name(category.getName())
-                .description(category.getDescription())
+                .id(categoryApiDTO.getId())
+                .name(categoryApiDTO.getName())
+                .description(categoryApiDTO.getDescription())
                 .build();
     }
 
     @Override
-    public Result addCategory(AddCategoryDTO addCategoryDTO) throws JsonProcessingException {
+    public Result addCategory(AddCategoryDTO addCategoryDTO) {
         try {
             ResponseEntity<?> response = this.makePostRequest(addCategoryDTO);
             ApiResponse apiResponse = ApiResponse.fromStatus(response.getStatusCode());
@@ -66,7 +83,7 @@ public class CategoryServiceImpl implements CategoryService {
                 case CREATED -> new Result(true, "Успешно добавихте категория " + addCategoryDTO.getName());
                 default -> new Result(false, "Сървърна грешка при създаване на категория!");
             };
-            
+
         } catch (HttpClientErrorException e) {
 
             return new Result(false, "Нещо се обърка! Категорията не беше записана.");
@@ -124,6 +141,18 @@ public class CategoryServiceImpl implements CategoryService {
                 .uri("/api/categories/{id}", id)
                 .retrieve()
                 .body(CategoryApiDTO.class);
+    }
+
+    private CategoryPageDTO<CategoryApiDTO> makeGetRequestAll(int page, int size) {
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString("/api/categories")
+                .queryParam("page", page)
+                .queryParam("size", size);
+
+        return this.restClient.get()
+                .uri(uriBuilder.toUriString())
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
     }
 
     private CategoryApiDTO[] makeGetRequestAll() {

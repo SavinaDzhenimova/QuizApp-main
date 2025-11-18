@@ -8,7 +8,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuestionPageDTO<T> extends PageDTO {
+public class CategoryPageDTO<T> extends PageDTO {
 
-    private List<T> questions;
+    private List<T> categories;
 }

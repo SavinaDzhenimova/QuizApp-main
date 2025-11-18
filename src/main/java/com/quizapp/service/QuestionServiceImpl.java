@@ -29,20 +29,21 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public QuestionPageDTO<QuestionDTO> getAllQuestions(String questionText, Long categoryId, Pageable pageable) {
-        QuestionPageDTO<QuestionApiDTO> pageDTO = this.makeGetRequestAll(questionText, categoryId,
+        QuestionPageDTO<QuestionApiDTO> questionPageDTO = this.makeGetRequestAll(questionText, categoryId,
                 pageable.getPageNumber(), pageable.getPageSize());
 
-        List<QuestionDTO> questionDTOs = pageDTO.getQuestions().stream()
+        List<QuestionDTO> questionDTOs = questionPageDTO.getQuestions().stream()
                 .map(this::mapQuestionApiToDTO)
                 .toList();
 
-        return QuestionPageDTO.<QuestionDTO>builder()
-                .questions(questionDTOs)
-                .totalPages(pageDTO.getTotalPages())
-                .totalElements(pageDTO.getTotalElements())
-                .currentPage(pageDTO.getCurrentPage())
-                .size(pageDTO.getSize())
-                .build();
+        QuestionPageDTO<QuestionDTO> questionPage = new QuestionPageDTO<>();
+        questionPage.setQuestions(questionDTOs);
+        questionPage.setTotalPages(questionPageDTO.getTotalPages());
+        questionPage.setTotalElements(questionPageDTO.getTotalElements());
+        questionPage.setCurrentPage(questionPageDTO.getCurrentPage());
+        questionPage.setSize(questionPageDTO.getSize());
+
+        return questionPage;
     }
 
     @Override

@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface QuestionService {
 
-    QuestionPageDTO<QuestionDTO> getAllQuestions(String questionText, Long categoryId, Pageable pageable);
+    QuestionPageDTO getAllQuestions(String questionText, Long categoryId, Pageable pageable);
 
     QuestionDTO getQuestionById(Long id);
 

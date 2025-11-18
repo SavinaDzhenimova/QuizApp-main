@@ -24,6 +24,10 @@
                 <p th:text="${success}"></p>
             </div>
 
+            <div th:if="${warning}" class="warning">
+                <p th:text="${warning}"></p>
+            </div>
+
             <table th:unless="${categories.isEmpty()}">
                 <thead>
                 <tr>
@@ -45,6 +49,18 @@
                 </tr>
                 </tbody>
             </table>
+
+            <div class="pagination" th:if="${totalPages > 1}">
+                <a th:if="${currentPage > 0}"
+                   th:href="@{/categories(
+                       page=${currentPage - 1},
+                       size=${size})}" class="btn-start">⬅ Предишна</a>
+                <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
+                <a th:if="${currentPage + 1 < totalPages}"
+                   th:href="@{/categories(
+                        page=${currentPage + 1},
+                        size=${size})}" class="btn-start">Следваща ➡</a>
+            </div>
 
             <div id="editModal" class="modal" th:data-open-modal="${openModal}">
                 <div class="modal-content">
