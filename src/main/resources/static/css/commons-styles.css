@@ -224,6 +224,11 @@ table tbody td {
     border: 1px solid #4caf50;
 }
 
+.form-section form .error,
+.form-section form .success {
+    width: 100%;
+}
+
 header .menu ul li a:hover,
 footer .footer-menu a:hover {
     color: #e0b3ff;
