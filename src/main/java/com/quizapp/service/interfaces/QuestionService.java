@@ -18,9 +18,7 @@ public interface QuestionService {
 
     QuestionDTO mapQuestionApiToDTO(QuestionApiDTO questionApiDTO);
 
-    boolean deleteQuestionById(Long id);
-
-    QuestionApiDTO makeGetRequest(Long id);
+    QuestionApiDTO makeGetRequestById(Long id);
 
     QuestionApiDTO[] makeGetRequestByCategoryId(Long categoryId);
 

@@ -1,10 +1,7 @@
 package com.quizapp.service;
 
-import com.quizapp.model.dto.AddQuestionDTO;
-import com.quizapp.model.dto.QuestionDTO;
-import com.quizapp.model.dto.QuestionPageDTO;
-import com.quizapp.model.dto.UpdateQuestionDTO;
-import com.quizapp.model.enums.ApiResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.quizapp.model.dto.*;
 import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.QuestionService;
@@ -17,8 +14,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -49,7 +44,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public QuestionDTO getQuestionById(Long id) {
         try {
-            QuestionApiDTO questionApiDTO = this.makeGetRequest(id);
+            QuestionApiDTO questionApiDTO = this.makeGetRequestById(id);
 
             return this.mapQuestionApiToDTO(questionApiDTO);
         } catch (HttpClientErrorException.NotFound e) {
@@ -60,44 +55,24 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Result addQuestion(AddQuestionDTO addQuestionDTO) {
         try {
-            ResponseEntity<Void> response = this.makePostRequest(addQuestionDTO);
-            ApiResponse apiResponse = ApiResponse.fromStatus(response.getStatusCode());
+            this.makePostRequest(addQuestionDTO);
+            return new Result(true, "Успешно добавихте въпрос.");
 
-            if (apiResponse.equals(ApiResponse.SUCCESS)) {
-                return new Result(true, "Успешно добавихте въпрос.");
-            }
-
-            return new Result(false, "Сървърна грешка при добавяне на въпрос!");
-        } catch (HttpClientErrorException.NotFound e) {
-
-            return new Result(false, "Не е намерена категория!");
-        } catch (HttpClientErrorException.BadRequest e) {
-
-            return new Result(false, "Невалидни входни данни.");
         } catch (HttpClientErrorException e) {
-
-            return new Result(false, "Нещо се обърка! Въпросът не беше записан.");
+            String errorMessage = this.extractErrorMessage(e);
+            return new Result(false, errorMessage);
         }
     }
 
     @Override
     public Result updateQuestion(Long id, UpdateQuestionDTO updateQuestionDTO) {
         try {
-            ResponseEntity<Void> response = this.makePutRequest(id, updateQuestionDTO);
-            ApiResponse apiResponse = ApiResponse.fromStatus(response.getStatusCode());
+            this.makePutRequest(id, updateQuestionDTO);
+            return new Result(true, "Успешно редактирахте въпрос.");
 
-            return switch (apiResponse) {
-                case SUCCESS ->  new Result(true, "Успешно редактирахте въпрос.");
-                case NO_CONTENT -> new Result(false, "Няма промени за запазване!");
-                default -> new Result(false, "Сървърна грешка при редактиране!");
-            };
-
-        } catch (HttpClientErrorException.NotFound e) {
-
-            return new Result(false, "Въпросът не е намерен!");
         } catch (HttpClientErrorException e) {
-
-            return new Result(false, "Грешка при редактиране! Въпросът не можа да бъде променен.");
+            String errorMessage = this.extractErrorMessage(e);
+            return new Result(false, errorMessage);
         }
     }
 
@@ -112,18 +87,19 @@ public class QuestionServiceImpl implements QuestionService {
                 .build();
     }
 
-    @Override
-    public boolean deleteQuestionById(Long id) {
+    private String extractErrorMessage(HttpClientErrorException e) {
         try {
-            this.makeDeleteRequest(id);
-            return true;
-        } catch (HttpClientErrorException.NotFound e) {
-            return false;
+            String body = e.getResponseBodyAsString();
+            ProblemDetailDTO problem = new ObjectMapper().readValue(body, ProblemDetailDTO.class);
+
+            return problem.getDetail();
+        } catch (Exception ex) {
+            return "Грешка при извикване на REST API";
         }
     }
 
     @Override
-    public QuestionApiDTO makeGetRequest(Long id) {
+    public QuestionApiDTO makeGetRequestById(Long id) {
         return this.restClient.get()
                 .uri("/api/questions/{id}", id)
                 .retrieve()

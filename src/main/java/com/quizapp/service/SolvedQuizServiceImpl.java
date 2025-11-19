@@ -137,7 +137,7 @@ public class SolvedQuizServiceImpl implements SolvedQuizService {
         Map<Long, String> userAnswers = this.mapUserAnswers(formData);
 
         List<QuestionApiDTO> questionApiDTOs = solvedQuiz.getQuestionIds().stream()
-                .map(this.questionService::makeGetRequest)
+                .map(this.questionService::makeGetRequestById)
                 .toList();
 
         long correctAnswers = questionApiDTOs.stream()
