@@ -142,13 +142,6 @@ public class QuestionServiceImpl implements QuestionService {
                 .toBodilessEntity();
     }
 
-    private void makeDeleteRequest(Long id) {
-        this.restClient.delete()
-                .uri("/api/questions/{id}", id)
-                .retrieve()
-                .toBodilessEntity();
-    }
-
     @Override
     public QuestionApiDTO[] makeGetRequestByCategoryId(Long categoryId) {
         return this.restClient.get()
