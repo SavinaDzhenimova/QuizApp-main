@@ -1,10 +1,7 @@
 package com.quizapp.service;
 
-import com.quizapp.model.dto.AddCategoryDTO;
-import com.quizapp.model.dto.CategoryDTO;
-import com.quizapp.model.dto.CategoryPageDTO;
-import com.quizapp.model.dto.UpdateCategoryDTO;
-import com.quizapp.model.enums.ApiResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.quizapp.model.dto.*;
 import com.quizapp.model.rest.CategoryApiDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.CategoryService;
@@ -65,44 +62,25 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Result addCategory(AddCategoryDTO addCategoryDTO) {
         try {
-            ResponseEntity<?> response = this.makePostRequest(addCategoryDTO);
-            ApiResponse apiResponse = ApiResponse.fromStatus(response.getStatusCode());
+            this.makePostRequest(addCategoryDTO);
+            return new Result(true, "Успешно добавихте категория " + addCategoryDTO.getName());
 
-            if (apiResponse.equals(ApiResponse.CREATED)) {
-                return new Result(true, "Успешно добавихте категория " + addCategoryDTO.getName());
-            }
-
-            return new Result(false, "Сървърна грешка при създаване на категория!");
-        } catch (HttpClientErrorException.BadRequest e) {
-
-            return new Result(false, "Невалидни входни данни!");
-        } catch (HttpClientErrorException.Conflict e) {
-
-            return new Result(false, "Категория с това име вече съществува.");
         } catch (HttpClientErrorException e) {
 
-            return new Result(false, "Сървърна грешка при създаване на категория!");
+            String errorMessage = this.extractErrorMessage(e);
+            return new Result(false, errorMessage);
         }
     }
 
     @Override
     public Result updateCategory(Long id, UpdateCategoryDTO updateCategoryDTO) {
         try {
-            ResponseEntity<Void> response = this.makePutRequest(id, updateCategoryDTO);
-            ApiResponse apiResponse = ApiResponse.fromStatus(response.getStatusCode());
+            this.makePutRequest(id, updateCategoryDTO);
+            return new Result(true, "Успешно редактирахте категория " + updateCategoryDTO.getName());
 
-            return switch (apiResponse) {
-                case SUCCESS -> new Result(true, "Успешно редактирахте категория " + updateCategoryDTO.getName());
-                case NO_CONTENT -> new Result(false, "Няма промени за запазване");
-                default -> new Result(false, "Сървърна грешка при редактиране!");
-            };
-
-        } catch (HttpClientErrorException.NotFound e) {
-
-            return new Result(false, "Категорията не е намерена!");
         } catch (HttpClientErrorException e) {
-
-            return new Result(false, "Грешка при редактиране! Категорията не можа да бъде променена.");
+            String errorMessage = this.extractErrorMessage(e);
+            return new Result(false, errorMessage);
         }
     }
 
@@ -112,6 +90,17 @@ public class CategoryServiceImpl implements CategoryService {
            return this.makeGetRequestById(id).getName();
         } catch (HttpClientErrorException.NotFound e) {
             return null;
+        }
+    }
+
+    private String extractErrorMessage(HttpClientErrorException e) {
+        try {
+            String body = e.getResponseBodyAsString();
+            ProblemDetailDTO problem = new ObjectMapper().readValue(body, ProblemDetailDTO.class);
+
+            return problem.getDetail();
+        } catch (Exception ex) {
+            return "Грешка при извикване на REST API";
         }
     }
 
@@ -138,7 +127,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .body(new ParameterizedTypeReference<>() {});
     }
 
-    private ResponseEntity<?> makePostRequest(AddCategoryDTO addCategoryDTO) {
+    private ResponseEntity<Void> makePostRequest(AddCategoryDTO addCategoryDTO) {
         return this.restClient.post()
                 .uri("/api/categories")
                 .body(addCategoryDTO)
@@ -150,13 +139,6 @@ public class CategoryServiceImpl implements CategoryService {
         return this.restClient.put()
                 .uri("/api/categories/{id}", id)
                 .body(updateCategoryDTO)
-                .retrieve()
-                .toBodilessEntity();
-    }
-
-    private void makeDeleteRequest(Long id) {
-        this.restClient.delete()
-                .uri("/api/categories/{id}", id)
                 .retrieve()
                 .toBodilessEntity();
     }

@@ -1,4 +1,4 @@
-package com.quizapp.web.view;
+package com.quizapp.web;
 
 import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.entity.Result;

@@ -1,4 +1,4 @@
-package com.quizapp.web.view;
+package com.quizapp.web;
 
 import com.quizapp.model.dto.AddQuestionDTO;
 import com.quizapp.model.dto.QuestionDTO;

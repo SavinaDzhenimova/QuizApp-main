@@ -1,4 +1,4 @@
-package com.quizapp.web.view;
+package com.quizapp.web;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

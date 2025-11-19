@@ -1,4 +1,4 @@
-package com.quizapp.web.view;
+package com.quizapp.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.quizapp.model.dto.AddCategoryDTO;
