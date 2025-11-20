@@ -8,7 +8,7 @@ public interface EmailService {
 
     void sendUserRegisterEmail(String fullName, String email);
 
-    void sendReportBugEmail(String fullName, String email, String phoneNumber, String address, String requestType);
+    void sendReportProblemEmail(String fullName, String email, String phoneNumber, String address, String requestType);
 
     void sendSubscribeEmail(String email);
 }

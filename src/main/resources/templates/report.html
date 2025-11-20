@@ -13,7 +13,72 @@
     <header th:replace="~{fragments/commons::header}"></header>
 
     <main>
+        <div class="report-bug-container">
+            <h1>Докладвай проблем</h1>
 
+            <p>Ако забележиш грешка или неточност в приложение, моля сподели ни. Ще я разгледаме възможно най-бързо.</p>
+
+            <form th:action="@{/report-problem}"
+                  th:method="POST"
+                  th:object="${reportProblemDTO}">
+
+                <div class="field">
+                    <label th:for="fullName">Вашето име (по желание):</label>
+                    <input type="text" name="fullName" id="fullName"
+                           th:field="*{fullName}"
+                           th:errorclass="is-invalid">
+                    <small th:if="${#fields.hasErrors('fullName')}"
+                           th:errors="*{fullName}"
+                           class="text-danger">Full name error message</small>
+                </div>
+
+                <div class="field">
+                    <label th:for="email">Имейл (за обратна връзка)</label>
+                    <input type="text" name="email" id="email"
+                           th:field="*{email}"
+                           th:errorclass="is-invalid">
+                    <small th:if="${#fields.hasErrors('email')}"
+                           th:errors="*{email}"
+                           class="text-danger">Email error message</small>
+                </div>
+
+                <div class="field">
+                    <label th:for="problemType">Тип на проблема:</label>
+                    <select th:field="*{problemType}">
+                        <option value="">-- Изберете --</option>
+                        <option value="WRONG_QUESTION">Грешен въпрос</option>
+                        <option value="WRONG_ANSWER">Грешен отговор</option>
+                        <option value="CATEGORY_ISSUE">Проблем с категория</option>
+                        <option value="SPELLING_ERROR">Правописна/граматична грешка</option>
+                        <option value="TECHNICAL">Технически проблем</option>
+                        <option value="OTHER">Друго</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label th:for="questionIdentifier">Съдържание на въпрос (ако има):</label>
+                    <input type="text" name="questionIdentifier" id="questionIdentifier"
+                           th:field="*{questionIdentifier}"
+                           th:errorclass="is-invalid">
+                    <small th:if="${#fields.hasErrors('questionIdentifier')}"
+                           th:errors="*{questionIdentifier}"
+                           class="text-danger">Email error message</small>
+                </div>
+
+                <div class="field">
+                    <label th:for="description">Описание на проблема</label>
+                    <textarea name="description" id="description"
+                              th:field="*{description}" rows="4"
+                              th:errorclass="is-invalid"></textarea>
+                    <small th:if="${#fields.hasErrors('description')}"
+                           th:errors="*{description}"
+                           class="text-danger">Description error message</small>
+                </div>
+
+                <button type="submit">Изпрати</button>
+
+            </form>
+        </div>
     </main>
 
     <footer th:replace="~{fragments/commons::footer}"></footer>

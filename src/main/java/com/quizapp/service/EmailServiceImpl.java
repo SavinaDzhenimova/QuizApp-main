@@ -63,17 +63,18 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendReportBugEmail(String fullName, String email, String phoneNumber, String address, String requestType) {
+    public void sendReportProblemEmail(String fullName, String email, String problemType, String questionIdentifier,
+                                       String description) {
         Map<String, Object> variables = Map.of(
                 "fullName", fullName,
                 "email", email,
-                "phoneNumber", phoneNumber,
-                "address", address,
-                "requestType", requestType
+                "problemType", problemType,
+                "questionIdentifier", questionIdentifier,
+                "description", description
         );
 
-        String content = generateEmailContent("/email/make-request-email", variables);
-        sendEmail("savina.dzhenimova@gmail.com", "Заявка за " + requestType, content, this.email);
+        String content = generateEmailContent("/email/report-problem-email", variables);
+        sendEmail("savina.dzhenimova@gmail.com", "Заявка за " + problemType, content, this.email);
     }
 
     @Override

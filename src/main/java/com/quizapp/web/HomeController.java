@@ -16,9 +16,4 @@ public class HomeController {
     public ModelAndView getAboutUsPage() {
         return new ModelAndView("about-us");
     }
-
-    @GetMapping("/report")
-    public ModelAndView getReportPage() {
-        return new ModelAndView("report");
-    }
 }

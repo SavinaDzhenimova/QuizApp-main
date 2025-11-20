@@ -1,0 +1,31 @@
+package com.quizapp.model.dto;
+
+import com.quizapp.model.annotations.ValidEmail;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class ReportProblemDTO {
+
+    @Size(max = 20, message = "Името не трябва да бъде над 20 символа.")
+    private String fullName;
+
+    @ValidEmail
+    private String email;
+
+    @NotBlank(message = "Моля изберете вид на проблема.")
+    private String problemType;
+
+    private String questionIdentifier;
+
+    @NotBlank
+    @Size(min = 10, message = "Описанието трябва да съдържа поне 10 символа.")
+    private String description;
+}
