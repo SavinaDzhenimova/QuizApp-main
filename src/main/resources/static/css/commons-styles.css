@@ -35,7 +35,7 @@ form h2 {
 .profile-container,
 .admin-container,
 .contacts-container,
-.report-bug-container,
+.report-problem-container,
 .about-container,
 .categories-section,
 .questions-section {
@@ -49,7 +49,8 @@ form h2 {
 
 .form-section form,
 .modal-content form,
-.contact-form form {
+.contact-form form,
+.report-problem-container form {
     display: flex;
     flex-direction: column;
     gap: 1em;

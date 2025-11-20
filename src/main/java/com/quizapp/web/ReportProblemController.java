@@ -24,15 +24,15 @@ public class ReportProblemController {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @GetMapping
-    public ModelAndView getReportBugPage(Model model) {
+    public ModelAndView getReportProblemPage(Model model) {
         if (!model.containsAttribute("reportProblemDTO")) {
             model.addAttribute("reportProblemDTO", new ReportProblemDTO());
         }
 
-        return new ModelAndView("report");
+        return new ModelAndView("report-problem");
     }
 
-    @PostMapping
+    @PostMapping("/send-report")
     public ModelAndView reportProblem(@Valid @ModelAttribute("reportProblemDTO") ReportProblemDTO reportProblemDTO,
                                       BindingResult bindingResult, RedirectAttributes redirectAttributes) {
 
@@ -41,7 +41,7 @@ public class ReportProblemController {
                     .addFlashAttribute("org.springframework.validation.BindingResult.reportProblemDTO",
                             bindingResult);
 
-            return new ModelAndView("report");
+            return new ModelAndView("report-problem");
         }
 
         this.applicationEventPublisher.publishEvent(
@@ -51,6 +51,6 @@ public class ReportProblemController {
 
         redirectAttributes.addFlashAttribute("success", "Докладът Ви за проблем беше изпратен успешно!");
 
-        return new ModelAndView("redirect:/contacts");
+        return new ModelAndView("redirect:/report-problem");
     }
 }

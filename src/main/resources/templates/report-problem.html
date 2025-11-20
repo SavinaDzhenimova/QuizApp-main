@@ -4,7 +4,7 @@
 
 <head>
     <th:block th:replace="~{fragments/commons::head}"></th:block>
-    <link rel="stylesheet" href="/css/about-us-styles.css">
+    <link rel="stylesheet" href="/css/report-problem-styles.css">
     <title>Докладвай грешка</title>
 </head>
 
@@ -13,12 +13,12 @@
     <header th:replace="~{fragments/commons::header}"></header>
 
     <main>
-        <div class="report-bug-container">
+        <div class="report-problem-container">
             <h1>Докладвай проблем</h1>
 
             <p>Ако забележиш грешка или неточност в приложение, моля сподели ни. Ще я разгледаме възможно най-бързо.</p>
 
-            <form th:action="@{/report-problem}"
+            <form th:action="@{/report-problem/send-report}"
                   th:method="POST"
                   th:object="${reportProblemDTO}">
 
