@@ -23,13 +23,13 @@
                 <section class="contacts-info">
                     <div>
                         <h2>Свържете се с нас на:</h2>
-                        <p><strong>Имейл:</strong> support@quizapp.bg</p>
-                        <p><strong>Телефон:</strong> +359 888 123 456</p>
+                        <p><i class="fa-solid fa-envelope"></i> support@quizapp.bg</p>
+                        <p><i class="fa-solid fa-phone"></i> +359 888 123 456</p>
                     </div>
 
                     <div>
                         <h2>Работно време:</h2>
-                        <p><strong>Понеделник–Петък:</strong> 09:00 – 18:00</p>
+                        <p>Понеделник–Петък: 09:00 – 18:00</p>
                     </div>
 
                     <div>
@@ -47,6 +47,7 @@
                 <section class="contact-form">
                     <form th:action="@{/contact}"
                           th:method="POST">
+                        <h2>Свържете се с нас чрез контактната форма</h2>
 
                         <div class="field">
                             <label th:for="name">Име:</label>
