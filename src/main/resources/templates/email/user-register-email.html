@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+    <div style="padding: 1em 2em; border-radius: 0.5em; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+        <h1 style="text-align: center;">Успешна регистрация в QuizApp</h1>
+
+        <div style="font-size: 16px;">
+            <p style="padding-bottom: 0.5em;">Здравей, <strong th:text="${username}">[Потребителко име]</strong>,</p>
+
+            <p style="padding-bottom: 1em;">Благодарим ти, че се регистрира в QuizApp!</p>
+
+            <p style="padding-bottom: 1em;">Вече имаш достъп до стотици интерактивни викторини, предизвикателства и образователно съдържание.</p>
+
+            <p style="padding-bottom: 0.5em;">Имейлът, с който се регистрира:
+               <strong th:text="${email}">[email]</strong></p>
+
+            <p style="padding-bottom: 1em;">Ако регистрацията не е направена от теб, моля свържи се с нас незабавно.</p>
+
+            <p>Успех и приятно учене!<br><strong>Екипът на QuizApp</strong></p>
+        </div>
+    </div>
+
+</body>
+</html>

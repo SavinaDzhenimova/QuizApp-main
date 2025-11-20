@@ -5,16 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-@RequiredArgsConstructor
 @Component
-public class SendInquiryEventListener {
+@RequiredArgsConstructor
+public class UserRegisterEventListener {
 
     private final EmailService emailService;
 
     @EventListener
-    public void handleSendInquiry(SendInquiryEvent sendInquiryEvent) {
+    public void handleUserRegisterEvent(UserRegisterEvent userRegisterEvent) {
 
-        this.emailService.sendInquiryEmail(sendInquiryEvent.getFullName(), sendInquiryEvent.getEmail(),
-                sendInquiryEvent.getTheme(), sendInquiryEvent.getMessage());
+        this.emailService.sendUserRegisterEmail(userRegisterEvent.getUsername(), userRegisterEvent.getEmail());
     }
 }

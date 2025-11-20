@@ -6,11 +6,14 @@ import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.entity.*;
 import com.quizapp.model.enums.RoleName;
 import com.quizapp.repository.UserRepository;
+import com.quizapp.service.events.SendInquiryEvent;
+import com.quizapp.service.events.UserRegisterEvent;
 import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.RoleService;
 import com.quizapp.service.interfaces.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,7 @@ public class UserServiceImpl implements UserService {
     private final CategoryService categoryService;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Transactional
@@ -104,6 +108,9 @@ public class UserServiceImpl implements UserService {
         user.setUserStatistics(userStatistics);
 
         this.userRepository.saveAndFlush(user);
+
+        this.applicationEventPublisher.publishEvent(
+                new UserRegisterEvent(this, user.getUsername(), user.getEmail()));
 
         return new Result(true, "Успешна регистрация!");
     }

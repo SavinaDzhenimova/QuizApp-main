@@ -1,7 +1,11 @@
 package com.quizapp.service.events;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.context.ApplicationEvent;
 
+@Getter
+@Setter
 public class SendInquiryEvent extends ApplicationEvent {
 
     private String fullName;
@@ -17,38 +21,6 @@ public class SendInquiryEvent extends ApplicationEvent {
         this.fullName = fullName;
         this.email = email;
         this.theme = theme;
-        this.message = message;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getTheme() {
-        return theme;
-    }
-
-    public void setTheme(String theme) {
-        this.theme = theme;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
         this.message = message;
     }
 }

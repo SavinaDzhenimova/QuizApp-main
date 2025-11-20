@@ -52,15 +52,14 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendUserRegisterEmail(String fullName, String email, String phoneNumber) {
+    public void sendUserRegisterEmail(String username, String email) {
         Map<String, Object> variables = Map.of(
-                "fullName", fullName,
-                "email", email,
-                "phoneNumber", phoneNumber
+                "username", username,
+                "email", email
         );
 
         String content = generateEmailContent("/email/user-register-email", variables);
-        sendEmail(email, "Успешна регистрация в Runtastic Shoes", content, this.email);
+        sendEmail(email, "Успешна регистрация в QuizApp", content, this.email);
     }
 
     @Override
