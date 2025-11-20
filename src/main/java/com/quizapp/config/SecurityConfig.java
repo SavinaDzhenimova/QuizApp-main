@@ -22,7 +22,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/api/**", "/", "/users/login", "/users/register",
-                                "/start-quiz", "/quiz/**", "/about-us", "/contacts", "/report").permitAll()
+                                "/start-quiz", "/quiz/**", "/about-us", "/contacts", "/contacts/send-inquiry",
+                                "/report").permitAll()
                         .requestMatchers("/users/logout", "/users/home", "/users/quizzes").authenticated()
                         .requestMatchers("/admin", "/categories", "/categories/add-category",
                                 "/questions", "/questions/add-question").hasRole("ADMIN")

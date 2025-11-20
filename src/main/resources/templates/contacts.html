@@ -19,6 +19,10 @@
             <p>Независимо дали имате технически въпрос, предложение за нови категории или искате да ни изпратите обратна връзка —
                 нашият екип е тук, за да помогне.</p>
 
+            <div th:if="${success}" class="success">
+                <p th:text="${success}"></p>
+            </div>
+
             <div class="contacts">
                 <section class="contacts-info">
                     <div>
@@ -45,28 +49,50 @@
                 </section>
 
                 <section class="contact-form">
-                    <form th:action="@{/contact}"
-                          th:method="POST">
+                    <form th:action="@{/contacts/send-inquiry}"
+                          th:method="POST"
+                          th:object="${addInquiryDTO}">
+
                         <h2>Свържете се с нас чрез контактната форма</h2>
 
                         <div class="field">
-                            <label th:for="name">Име:</label>
-                            <input type="text" name="name" id="name" required>
+                            <label th:for="fullName">Име:</label>
+                            <input type="text" name="fullName" id="fullName"
+                                   th:field="*{fullName}"
+                                   th:errorclass="is-invalid">
+                            <small th:if="${#fields.hasErrors('fullName')}"
+                                   th:errors="*{fullName}"
+                                   class="text-danger">Full name error message</small>
                         </div>
 
                         <div class="field">
                             <label th:for="email">Имейл:</label>
-                            <input type="email" name="email" id="email">
+                            <input type="email" name="email" id="email"
+                                   th:field="*{email}"
+                                   th:errorclass="is-invalid">
+                            <small th:if="${#fields.hasErrors('email')}"
+                                   th:errors="*{email}"
+                                   class="text-danger">Email error message</small>
                         </div>
 
                         <div class="field">
                             <label th:for="theme">Тема:</label>
-                            <input type="text" name="theme" id="theme">
+                            <input type="text" name="theme" id="theme"
+                                   th:field="*{theme}"
+                                   th:errorclass="is-invalid">
+                            <small th:if="${#fields.hasErrors('theme')}"
+                                   th:errors="*{theme}"
+                                   class="text-danger">Theme error message</small>
                         </div>
 
                         <div class="field">
                             <label th:for="message">Съобщение:</label>
-                            <textarea name="message" id="message" rows="4"></textarea>
+                            <textarea name="message" id="message" rows="4"
+                                      th:field="*{message}"
+                                      th:errorclass="is-invalid"></textarea>
+                            <small th:if="${#fields.hasErrors('message')}"
+                                   th:errors="*{message}"
+                                   class="text-danger">Message error message</small>
                         </div>
 
                         <button type="submit">Изпрати</button>
