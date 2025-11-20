@@ -4,7 +4,7 @@
 
 <head>
     <th:block th:replace="~{fragments/commons::head}"></th:block>
-    <link rel="stylesheet" href="/css/about-us-styles.css">
+    <link rel="stylesheet" href="/css/contacts-styles.css">
     <title>Контакти</title>
 </head>
 
@@ -13,7 +13,66 @@
     <header th:replace="~{fragments/commons::header}"></header>
 
     <main>
+        <div class="contacts-container">
+            <h1>Контакти</h1>
 
+            <p>Независимо дали имате технически въпрос, предложение за нови категории или искате да ни изпратите обратна връзка —
+                нашият екип е тук, за да помогне.</p>
+
+            <div class="contacts">
+                <section class="contacts-info">
+                    <div>
+                        <h2>Свържете се с нас на:</h2>
+                        <p><strong>Имейл:</strong> support@quizapp.bg</p>
+                        <p><strong>Телефон:</strong> +359 888 123 456</p>
+                    </div>
+
+                    <div>
+                        <h2>Работно време:</h2>
+                        <p><strong>Понеделник–Петък:</strong> 09:00 – 18:00</p>
+                    </div>
+
+                    <div>
+                        <h2>Намерете ни и в:</h2>
+                        <div class="social-media-icons">
+                            <a href="#"><img src="/images/facebook-icon.png" th:alt="Facebook"></a>
+                            <a href="#"><img src="/images/instagram-icon.png" th:alt="Instagram"></a>
+                            <a href="https://github.com/SavinaDzhenimova/QuizApp-main">
+                                <img src="/images/github-icon.png" th:alt="GitHub">
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="contact-form">
+                    <form th:action="@{/contact}"
+                          th:method="POST">
+
+                        <div class="field">
+                            <label th:for="name">Име:</label>
+                            <input type="text" name="name" id="name" required>
+                        </div>
+
+                        <div class="field">
+                            <label th:for="email">Имейл:</label>
+                            <input type="email" name="email" id="email">
+                        </div>
+
+                        <div class="field">
+                            <label th:for="theme">Тема:</label>
+                            <input type="text" name="theme" id="theme">
+                        </div>
+
+                        <div class="field">
+                            <label th:for="message">Съобщение:</label>
+                            <textarea name="message" id="message" rows="4"></textarea>
+                        </div>
+
+                        <button type="submit">Изпрати</button>
+                    </form>
+                </section>
+            </div>
+        </div>
     </main>
 
     <footer th:replace="~{fragments/commons::footer}"></footer>

@@ -34,6 +34,7 @@ form h2 {
 .form-section,
 .profile-container,
 .admin-container,
+.contacts-container,
 .about-container,
 .categories-section,
 .questions-section {
@@ -46,7 +47,8 @@ form h2 {
 }
 
 .form-section form,
-.modal-content form {
+.modal-content form,
+.contact-form form {
     display: flex;
     flex-direction: column;
     gap: 1em;
