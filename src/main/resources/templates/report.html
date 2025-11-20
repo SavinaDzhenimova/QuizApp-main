@@ -45,14 +45,15 @@
                 <div class="field">
                     <label th:for="problemType">Тип на проблема:</label>
                     <select th:field="*{problemType}">
-                        <option value="">-- Изберете --</option>
-                        <option value="WRONG_QUESTION">Грешен въпрос</option>
-                        <option value="WRONG_ANSWER">Грешен отговор</option>
-                        <option value="CATEGORY_ISSUE">Проблем с категория</option>
-                        <option value="SPELLING_ERROR">Правописна/граматична грешка</option>
-                        <option value="TECHNICAL">Технически проблем</option>
-                        <option value="OTHER">Друго</option>
+                        <option value="">-- Изберете тип на проблема --</option>
+                        <option th:each="type : ${problemTypes}"
+                                th:value="${type}"
+                                th:text="${type.displayName}">
+                        </option>
                     </select>
+                    <small th:if="${#fields.hasErrors('problemType')}"
+                           th:errors="*{problemType}"
+                           class="text-danger">Problem type error message</small>
                 </div>
 
                 <div class="field">

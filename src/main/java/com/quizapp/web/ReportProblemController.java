@@ -46,10 +46,10 @@ public class ReportProblemController {
 
         this.applicationEventPublisher.publishEvent(
                 new ReportProblemEvent(this, reportProblemDTO.getFullName(), reportProblemDTO.getEmail(),
-                        reportProblemDTO.getProblemType(), reportProblemDTO.getQuestionIdentifier(),
+                        reportProblemDTO.getProblemType().getDisplayName(), reportProblemDTO.getQuestionIdentifier(),
                         reportProblemDTO.getDescription()));
 
-        redirectAttributes.addFlashAttribute("success", "Вашето запитване беше изпратено успешно!");
+        redirectAttributes.addFlashAttribute("success", "Докладът Ви за проблем беше изпратен успешно!");
 
         return new ModelAndView("redirect:/contacts");
     }

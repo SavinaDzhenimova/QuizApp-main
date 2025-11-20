@@ -2,6 +2,7 @@ package com.quizapp.web;
 
 import com.quizapp.model.dto.CategoryDTO;
 import com.quizapp.model.dto.CategoryPageDTO;
+import com.quizapp.model.enums.ProblemType;
 import com.quizapp.service.interfaces.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -19,5 +20,10 @@ public class GlobalController {
     public List<CategoryDTO> getCategoriesForSelectElement() {
         CategoryPageDTO<CategoryDTO> categoryPageDTO = this.categoryService.getAllCategories("", 0, 100);
         return categoryPageDTO.getCategories();
+    }
+
+    @ModelAttribute("problemTypes")
+    public ProblemType[] getProblemTypes() {
+        return ProblemType.values();
     }
 }
