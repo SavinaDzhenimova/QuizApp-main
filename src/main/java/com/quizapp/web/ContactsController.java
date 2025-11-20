@@ -45,8 +45,7 @@ public class ContactsController {
                 new SendInquiryEvent(this, addInquiryDTO.getFullName(), addInquiryDTO.getEmail(),
                         addInquiryDTO.getTheme(), addInquiryDTO.getMessage()));
 
-        redirectAttributes.addFlashAttribute("successMessage",
-                "Вашето запитване беше изпратено успешно!");
+        redirectAttributes.addFlashAttribute("success", "Вашето запитване беше изпратено успешно!");
 
         return new ModelAndView("redirect:/contacts");
     }
