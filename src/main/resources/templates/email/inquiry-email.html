@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+
+    <h1>Ново запитване от <span th:text="${fullName}"></span></h1>
+
+    <p>Име: <span th:text="${fullName}"></span></p>
+    <p>Имейл: <span th:text="${email}"></span></p>
+    <p>Тема: <span th:text="${theme}"></span></p>
+    <p>Съобщение:</p>
+    <p th:text="${message}"></p>
+
+</body>
+</html>
