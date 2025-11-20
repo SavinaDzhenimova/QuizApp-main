@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+</head>
+
+<body>
+
+    <h1>Заявка за <span th:text="${problemType}"></span></h1>
+
+    <p>Име (по желание): <span th:text="${fullName}"></span></p>
+    <p>Имейл: <span th:text="${email}"></span></p>
+    <p>Вид на проблема: <span th:text="${problemType}"></span></p>
+    <p>Текст на въпроса (ако има): <span th:text="${questionIdentifier}"></span></p>
+    <p>Описание:</p>
+    <p th:text="${description}"></p>
+
+</body>
+</html>
