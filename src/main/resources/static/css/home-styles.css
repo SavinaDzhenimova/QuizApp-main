@@ -2,7 +2,9 @@
     gap: 2em;
 }
 
-.profile-info, .profile-stats, .solved-quizzes {
+.profile-info,
+.profile-stats,
+.solved-quizzes {
     width: 60%;
     display: flex;
     flex-direction: column;
