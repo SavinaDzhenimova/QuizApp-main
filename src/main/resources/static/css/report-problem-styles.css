@@ -1,0 +1,21 @@
+.report-problem-container {
+    gap: 1em;
+}
+
+.report-problem-container > p {
+    width: 50%;
+    text-align: center;
+}
+
+.report-problem-container form {
+    width: 40%;
+}
+
+.report-problem-container form h2 {
+    font-family: 'Neucha', cursive;
+}
+
+form button {
+    align-self: center;
+    width: 20%;
+}

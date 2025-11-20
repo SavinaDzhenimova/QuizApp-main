@@ -56,7 +56,7 @@
                         <h2>Свържете се с нас чрез контактната форма</h2>
 
                         <div class="field">
-                            <label th:for="fullName">Име:</label>
+                            <label th:for="fullName">Име и фамилия</label>
                             <input type="text" name="fullName" id="fullName"
                                    th:field="*{fullName}"
                                    th:errorclass="is-invalid">
@@ -66,7 +66,7 @@
                         </div>
 
                         <div class="field">
-                            <label th:for="email">Имейл:</label>
+                            <label th:for="email">Имейл</label>
                             <input type="email" name="email" id="email"
                                    th:field="*{email}"
                                    th:errorclass="is-invalid">
@@ -76,7 +76,7 @@
                         </div>
 
                         <div class="field">
-                            <label th:for="theme">Тема:</label>
+                            <label th:for="theme">Тема</label>
                             <input type="text" name="theme" id="theme"
                                    th:field="*{theme}"
                                    th:errorclass="is-invalid">
@@ -86,7 +86,7 @@
                         </div>
 
                         <div class="field">
-                            <label th:for="message">Съобщение:</label>
+                            <label th:for="message">Съобщение</label>
                             <textarea name="message" id="message" rows="4"
                                       th:field="*{message}"
                                       th:errorclass="is-invalid"></textarea>

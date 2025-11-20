@@ -18,12 +18,17 @@
 
             <p>Ако забележиш грешка или неточност в приложение, моля сподели ни. Ще я разгледаме възможно най-бързо.</p>
 
+            <div th:if="${success}" class="success">
+                <p th:text="${success}"></p>
+            </div>
+
             <form th:action="@{/report-problem/send-report}"
                   th:method="POST"
                   th:object="${reportProblemDTO}">
+                <h2>Опишете проблема, на който се натъкнахте</h2>
 
                 <div class="field">
-                    <label th:for="fullName">Вашето име (по желание):</label>
+                    <label th:for="fullName">Име и фамилия</label>
                     <input type="text" name="fullName" id="fullName"
                            th:field="*{fullName}"
                            th:errorclass="is-invalid">
@@ -33,7 +38,7 @@
                 </div>
 
                 <div class="field">
-                    <label th:for="email">Имейл (за обратна връзка)</label>
+                    <label th:for="email">Имейл</label>
                     <input type="text" name="email" id="email"
                            th:field="*{email}"
                            th:errorclass="is-invalid">
@@ -43,7 +48,7 @@
                 </div>
 
                 <div class="field">
-                    <label th:for="problemType">Тип на проблема:</label>
+                    <label th:for="problemType">Тип на проблема</label>
                     <select th:field="*{problemType}">
                         <option value="">-- Изберете тип на проблема --</option>
                         <option th:each="type : ${problemTypes}"
@@ -57,7 +62,7 @@
                 </div>
 
                 <div class="field">
-                    <label th:for="questionIdentifier">Съдържание на въпрос (ако има):</label>
+                    <label th:for="questionIdentifier">Съдържание на въпрос (ако има)</label>
                     <input type="text" name="questionIdentifier" id="questionIdentifier"
                            th:field="*{questionIdentifier}"
                            th:errorclass="is-invalid">

@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ReportProblemDTO {
 
+    @NotBlank(message = "Моля въведете име и фамилия.")
     @Size(max = 20, message = "Името не трябва да бъде над 20 символа.")
     private String fullName;
 
@@ -30,7 +31,7 @@ public class ReportProblemDTO {
 
     private String questionIdentifier;
 
-    @NotBlank
+    @NotBlank(message = "Моля въведете описание на проблема.")
     @Size(min = 10, message = "Описанието трябва да съдържа поне 10 символа.")
     private String description;
 }
