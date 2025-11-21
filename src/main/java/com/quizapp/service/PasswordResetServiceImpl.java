@@ -1,5 +1,6 @@
 package com.quizapp.service;
 
+import com.quizapp.model.dto.ResetPasswordDTO;
 import com.quizapp.model.entity.PasswordResetToken;
 import com.quizapp.model.entity.Result;
 import com.quizapp.model.entity.User;
@@ -61,13 +62,17 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     @Override
-    public Result resetPassword(String password, String confirmPassword, String token) {
+    public Result resetPassword(ResetPasswordDTO resetPasswordDTO) {
 
-        if (!password.equals(confirmPassword)) {
+        if (resetPasswordDTO == null) {
+            return new Result(false, "Невалидни входни данни!");
+        }
+
+        if (!resetPasswordDTO.getPassword().equals(resetPasswordDTO.getConfirmPassword())) {
             return new Result(false, "Паролите не съвпадат!");
         }
 
-        Optional<PasswordResetToken> optionalToken = this.tokenRepository.findByToken(token);
+        Optional<PasswordResetToken> optionalToken = this.tokenRepository.findByToken(resetPasswordDTO.getToken());
         if (optionalToken.isEmpty()) {
             return new Result(false, "Невалиден линк за смяна на парола!");
         }
@@ -79,7 +84,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         }
 
         User user = passwordResetToken.getUser();
-        this.userService.resetUserPassword(user, password);
+        this.userService.resetUserPassword(user, resetPasswordDTO.getPassword());
 
         passwordResetToken.setUsed(true);
         this.tokenRepository.save(passwordResetToken);
