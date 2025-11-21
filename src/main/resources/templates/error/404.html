@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <link rel="stylesheet" href="/css/error-styles.css">
+    <title>Грешка 404</title>
+</head>
+
+<body>
+
+    <header th:replace="~{fragments/commons::header}"></header>
+
+    <main>
+        <h1>Грешка 404!</h1>
+
+        <div class="error-info">
+            <p class="error-description">Ресурсът, който се опитвате да достъпите, не е намерен!</p>
+            <p>Съжаляваме! Моля върнете се към <a th:href="@{/}">началната страница</a>...</p>
+        </div>
+
+        <div class="error-image">
+            <img th:src="@{/images/error/404-error.png}"/>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/commons::footer}"></footer>
+
+</body>
+</html>

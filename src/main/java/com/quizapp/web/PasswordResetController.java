@@ -1,5 +1,6 @@
 package com.quizapp.web;
 
+import com.quizapp.exception.InvalidPasswordResetToken;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.PasswordResetService;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,12 @@ public class PasswordResetController {
     @GetMapping("/reset-password")
     public ModelAndView showResetPassword(@RequestParam("token") String token) {
 
+        boolean isValid = this.passwordResetService.isValidToken(token);
+
+        if (!isValid) {
+            throw new InvalidPasswordResetToken("Линкът за смяна на паролата е невалиден или изтекъл.");
+        }
+
         ModelAndView modelAndView = new ModelAndView("reset-password");
 
         modelAndView.addObject("token", token);
@@ -58,7 +65,6 @@ public class PasswordResetController {
                                             RedirectAttributes redirectAttributes) {
 
         Result result = this.passwordResetService.resetPassword(password, confirmPassword, token);
-        this.passwordResetService.markTokenAsUsed(token);
 
         if (result.isSuccess()) {
             redirectAttributes.addFlashAttribute("success", result.getMessage());

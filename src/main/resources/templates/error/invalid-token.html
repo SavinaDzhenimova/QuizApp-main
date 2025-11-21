@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <link rel="stylesheet" href="/css/error-styles.css">
+    <title>Невалиден линк</title>
+</head>
+
+<body>
+
+    <header th:replace="~{fragments/commons::header}"></header>
+
+    <main>
+        <div class="error-container">
+            <h1>Невалиден линк</h1>
+
+            <div class="error-content">
+                <p th:text="${message}">Линкът за смяна на парола е невалиден или вече е използван.</p>
+                <a th:href="@{/forgot-password}" class="btn-start">Изпрати нов линк</a>
+            </div>
+
+            <div class="error-image">
+                <img th:src="@{/images/error/invalid-link.png}"/>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/commons::footer}"></footer>
+
+</body>
+</html>

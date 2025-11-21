@@ -23,12 +23,12 @@ public class PasswordResetToken {
     @Column(nullable = false, unique = true)
     private String token;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     private User user;
 
     @Column(nullable = false)
     private LocalDateTime expiryDate;
 
     @Column(nullable = false)
-    private boolean used = false;
+    private boolean used;
 }

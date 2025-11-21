@@ -7,7 +7,6 @@ import com.quizapp.repository.PasswordResetTokenRepository;
 import com.quizapp.service.events.ForgotPasswordEvent;
 import com.quizapp.service.interfaces.PasswordResetService;
 import com.quizapp.service.interfaces.UserService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,9 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    public void createTokenForUser(User user, String token) {
+    public String createTokenForUser(User user) {
+
+        String token = UUID.randomUUID().toString();
 
         PasswordResetToken resetToken = PasswordResetToken.builder()
                 .token(token)
@@ -35,37 +36,23 @@ public class PasswordResetServiceImpl implements PasswordResetService {
                 .build();
 
         this.tokenRepository.saveAndFlush(resetToken);
-    }
-
-    @Override
-    public Result resetPassword(String password, String confirmPassword, String token) {
-
-        Optional<User> optionalUser = this.validateToken(token);
-
-        if (optionalUser.isEmpty()) {
-            return new Result(false, "Паролите не съвпадат!");
-        }
-
-        User user = optionalUser.get();
-
-        this.userService.resetUserPassword(user, password);
-
-        return new Result(true, "Успешно променихте своята парола!");
+        return token;
     }
 
     @Override
     public Result sendEmailForForgottenPassword(String email) {
 
         Optional<User> optionalUser = this.userService.getUserByEmail(email);
-
         if (optionalUser.isEmpty()) {
             return new Result(false, "Не открихме потребител с посочения имейл!");
         }
 
         User user = optionalUser.get();
 
-        String token = UUID.randomUUID().toString();
-        this.createTokenForUser(user, token);
+        String token = this.tokenRepository.findByUserId(user.getId())
+                .map(PasswordResetToken::getToken)
+                .filter(this::isValidToken)
+                .orElseGet(() -> this.createTokenForUser(user));
 
         this.applicationEventPublisher.publishEvent(
                 new ForgotPasswordEvent(this, user.getUsername(), user.getEmail(), token));
@@ -74,23 +61,38 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     @Override
-    public Optional<User> validateToken(String token) {
+    public Result resetPassword(String password, String confirmPassword, String token) {
+
+        if (!password.equals(confirmPassword)) {
+            return new Result(false, "Паролите не съвпадат!");
+        }
+
+        Optional<PasswordResetToken> optionalToken = this.tokenRepository.findByToken(token);
+        if (optionalToken.isEmpty()) {
+            return new Result(false, "Невалиден линк за смяна на парола!");
+        }
+
+        PasswordResetToken passwordResetToken = optionalToken.get();
+
+        if (!this.isValidToken(passwordResetToken.getToken())) {
+            return new Result(false, "Този линк за смяна на паролата е изтекъл!");
+        }
+
+        User user = passwordResetToken.getUser();
+        this.userService.resetUserPassword(user, password);
+
+        passwordResetToken.setUsed(true);
+        this.tokenRepository.save(passwordResetToken);
+
+        return new Result(true, "Успешно променихте своята парола!");
+    }
+
+    @Override
+    public boolean isValidToken(String token) {
 
         return this.tokenRepository.findByToken(token)
                 .filter(resetToken ->
                         !resetToken.isUsed() && resetToken.getExpiryDate().isAfter(LocalDateTime.now()))
-                .map(PasswordResetToken::getUser);
-    }
-
-    @Override
-    @Transactional
-    public void markTokenAsUsed(String token) {
-
-        this.tokenRepository.findByToken(token).ifPresent(resetToken -> {
-            resetToken.setUsed(true);
-            this.tokenRepository.saveAndFlush(resetToken);
-        });
-
-        this.tokenRepository.deleteByToken(token);
+                .isPresent();
     }
 }
