@@ -30,9 +30,9 @@ public class SubscribeController {
                     .addFlashAttribute("org.springframework.validation.BindingResult.subscribeDTO",
                             bindingResult);
 
-            return new ModelAndView("redirect:/");
+            return new ModelAndView("redirect:/#subscribe");
         }
-        
+
         Result result = this.subscribeService.subscribe(subscribeDTO);
 
         if (result.isSuccess()) {
@@ -41,6 +41,6 @@ public class SubscribeController {
             redirectAttributes.addFlashAttribute("error", result.getMessage());
         }
 
-        return new ModelAndView("redirect:/");
+        return new ModelAndView("redirect:/#subscribe");
     }
 }

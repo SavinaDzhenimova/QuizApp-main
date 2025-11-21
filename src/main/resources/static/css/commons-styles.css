@@ -50,7 +50,8 @@ form h2 {
 .form-section form,
 .modal-content form,
 .contact-form form,
-.report-problem-container form {
+.report-problem-container form,
+.subscribe-section form {
     display: flex;
     flex-direction: column;
     gap: 1em;

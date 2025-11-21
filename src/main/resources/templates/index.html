@@ -37,20 +37,26 @@
             </section>
         </div>
 
-        <section class="subscribe-section">
+        <section class="subscribe-section" id="subscribe">
             <form th:action="@{/subscribe}"
                   th:method="POST"
                   th:object="${subscribeDTO}">
 
+                <h2>Искаш ли първи да научаваш всички новости?</h2>
+
+                <p>Абонирай се, за да получаваш имейли за всички актуализации, нови категории и промени в приложението.</p>
+
                 <div class="field">
-                    <input type="email" name="email" id="email" placeholder="Въведете своя имейл..."
-                           th:field="*{email}"
-                           th:errorclass="is-invalid">
+                    <div class="input-field">
+                        <input type="email" name="email" id="email" placeholder="Въведете своя имейл..."
+                               th:field="*{email}"
+                               th:errorclass="is-invalid">
+                        <button type="submit">Абонирай се</button>
+                    </div>
+
                     <small th:if="${#fields.hasErrors('email')}"
                            th:errors="*{email}"
                            class="text-danger">Email error message</small>
-
-                    <button type="submit">Абонирай се</button>
                 </div>
             </form>
         </section>
