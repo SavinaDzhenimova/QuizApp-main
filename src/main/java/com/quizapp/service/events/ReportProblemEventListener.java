@@ -17,5 +17,8 @@ public class ReportProblemEventListener {
         this.emailService.sendReportProblemEmail(reportProblemEvent.getFullName(), reportProblemEvent.getEmail(),
                 reportProblemEvent.getProblemType(), reportProblemEvent.getQuestionIdentifier(),
                 reportProblemEvent.getDescription());
+
+        this.emailService.sendProblemReceivedEmail(reportProblemEvent.getFullName(), reportProblemEvent.getEmail(),
+                reportProblemEvent.getProblemType());
     }
 }

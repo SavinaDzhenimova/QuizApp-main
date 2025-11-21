@@ -1,14 +1,15 @@
 .report-problem-container {
+    width: 60%;
     gap: 1em;
 }
 
 .report-problem-container > p {
-    width: 50%;
+    width: 60%;
     text-align: center;
 }
 
 .report-problem-container form {
-    width: 40%;
+    width: 70%;
 }
 
 .report-problem-container form h2 {

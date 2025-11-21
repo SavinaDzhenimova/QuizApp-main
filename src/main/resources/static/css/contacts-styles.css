@@ -49,6 +49,11 @@ p {
     width: 100%;
 }
 
+form button {
+    width: 20%;
+    align-self: center;
+}
+
 .social-media-icons {
     display: flex;
     gap: 0.7em;

@@ -12,5 +12,7 @@ public interface EmailService {
 
     void sendReportProblemEmail(String fullName, String email, String phoneNumber, String address, String requestType);
 
+    void sendProblemReceivedEmail(String fullName, String email, String problemType);
+
     void sendSubscribeEmail(String email);
 }

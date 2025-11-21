@@ -89,6 +89,18 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    public void sendProblemReceivedEmail(String fullName, String email, String problemType) {
+        Map<String, Object> variables = Map.of(
+                "fullName", fullName,
+                "email", email,
+                "problemType", problemType
+        );
+
+        String content = generateEmailContent("/email/problem-report-received-email", variables);
+        sendEmail(email, "Вашият доклад за проблем е получен", content, this.email);
+    }
+
+    @Override
     public void sendSubscribeEmail(String email) {
         Map<String, Object> variables = Map.of(
                 "email", email
