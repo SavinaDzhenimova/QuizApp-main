@@ -40,6 +40,17 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    public void sendInquiryReceivedEmail(String fullName, String email) {
+        Map<String, Object> variables = Map.of(
+                "fullName", fullName,
+                "email", email
+        );
+
+        String content = generateEmailContent("/email/inquiry-received-email", variables);
+        sendEmail(email, "Вашето запитване е получено", content, this.email);
+    }
+
+    @Override
     public void sendForgotPasswordEmail(String fullName, String email, String token) {
         Map<String, Object> variables = Map.of(
                 "fullName", fullName,

@@ -12,9 +12,11 @@ public class SendInquiryEventListener {
     private final EmailService emailService;
 
     @EventListener
-    public void handleSendInquiry(SendInquiryEvent sendInquiryEvent) {
+    public void handleInquiryEvent(SendInquiryEvent sendInquiryEvent) {
 
         this.emailService.sendInquiryEmail(sendInquiryEvent.getFullName(), sendInquiryEvent.getEmail(),
                 sendInquiryEvent.getTheme(), sendInquiryEvent.getMessage());
+
+        this.emailService.sendInquiryReceivedEmail(sendInquiryEvent.getFullName(), sendInquiryEvent.getEmail());
     }
 }
