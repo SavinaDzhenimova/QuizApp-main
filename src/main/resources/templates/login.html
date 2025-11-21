@@ -4,6 +4,7 @@
 
 <head>
     <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <link rel="stylesheet" href="/css/login-styles.css">
     <title>Вход</title>
 </head>
 
@@ -36,6 +37,8 @@
               </div>
 
               <button type="submit">Вход</button>
+
+              <p>Забравили сте паролата си?</br><a th:href="@{/users/forgot-password}">Забравена парола</a></p>
           </form>
       </div>
   </main>

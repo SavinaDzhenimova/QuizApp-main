@@ -51,9 +51,9 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendForgotPasswordEmail(String fullName, String email, String token) {
+    public void sendForgotPasswordEmail(String username, String email, String token) {
         Map<String, Object> variables = Map.of(
-                "fullName", fullName,
+                "username", username,
                 "email", email,
                 "token", token
         );

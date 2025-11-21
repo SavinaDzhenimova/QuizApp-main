@@ -6,7 +6,7 @@ public interface EmailService {
 
     void sendInquiryReceivedEmail(String fullName, String email);
 
-    void sendForgotPasswordEmail(String fullName, String email, String token);
+    void sendForgotPasswordEmail(String username, String email, String token);
 
     void sendUserRegisterEmail(String fullName, String email);
 

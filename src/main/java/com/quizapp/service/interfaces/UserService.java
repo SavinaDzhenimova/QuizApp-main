@@ -15,7 +15,11 @@ public interface UserService {
 
     Result registerUser(UserRegisterDTO registerUserDTO);
 
+    void resetUserPassword(User user, String password);
+
     Optional<User> getUserByUsername(String username);
+
+    Optional<User> getUserByEmail(String email);
 
     User saveAndFlushUser(User user);
 }

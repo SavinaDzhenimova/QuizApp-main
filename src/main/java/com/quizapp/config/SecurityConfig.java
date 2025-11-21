@@ -24,6 +24,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/**", "/", "/users/login", "/users/register",
                                 "/start-quiz", "/quiz/**", "/about-us", "/contacts", "/contacts/send-inquiry",
                                 "/report-problem", "/report-problem/send-report").permitAll()
+                        .requestMatchers("/users/forgot-password", "/users/reset-password/**").anonymous()
                         .requestMatchers("/users/logout", "/users/home", "/users/quizzes").authenticated()
                         .requestMatchers("/admin", "/categories", "/categories/add-category",
                                 "/questions", "/questions/add-question").hasRole("ADMIN")

@@ -6,7 +6,6 @@ import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.entity.*;
 import com.quizapp.model.enums.RoleName;
 import com.quizapp.repository.UserRepository;
-import com.quizapp.service.events.SendInquiryEvent;
 import com.quizapp.service.events.UserRegisterEvent;
 import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.RoleService;
@@ -116,8 +115,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void resetUserPassword(User user, String password) {
+        user.setPassword(this.passwordEncoder.encode(password));
+        this.userRepository.saveAndFlush(user);
+    }
+
+    @Override
     public Optional<User> getUserByUsername(String username) {
         return this.userRepository.findByUsername(username);
+    }
+
+    @Override
+    public Optional<User> getUserByEmail(String email) {
+        return this.userRepository.findByEmail(email);
     }
 
     @Override
