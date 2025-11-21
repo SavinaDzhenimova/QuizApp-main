@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+    <div style="padding: 1em 2em; border-radius: 0.5em; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+        <h1 style="text-align: center;">Успешен абонамент</h1>
+
+        <div style="font-size: 16px;">
+            <p style="padding-bottom: 0.5em;">Здравей, записа се успешно за бюлетина на QuizApp. Сега първи ще получаваш
+                    информация за новите категории, въпроси и обновленията в приложението.</p>
+
+            <p style="padding-bottom: 0.5em;">Пожелаваме ти да научиш много любопитни факти и да се забавляваш с нас.</p>
+
+            <a style="text-decoration: none; padding: 0.5em 1.5em; background-color: #fff; color: #000; border: 1px solid #ccc;
+                          text-align: center; font-weight: 600; border-radius: 2em; font-size: 14px;
+                          margin-bottom: 3em;"
+               th:href="@{'http://localhost:8090/start-quiz'}">Започни сега</a>
+
+            <p style="margin-top: 1em;">С най-добри пожелания,<br>
+                <strong>Екипът на QuizApp</strong></p>
+        </div>
+    </div>
+
+</body>
+</html>

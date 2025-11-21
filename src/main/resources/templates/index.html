@@ -46,6 +46,14 @@
 
                 <p>Абонирай се, за да получаваш имейли за всички актуализации, нови категории и промени в приложението.</p>
 
+                <div th:if="${success}" class="success">
+                    <p th:text="${success}"></p>
+                </div>
+
+                <div th:if="${error}" class="error">
+                    <p th:text="${error}"></p>
+                </div>
+
                 <div class="field">
                     <div class="input-field">
                         <input type="email" name="email" id="email" placeholder="Въведете своя имейл..."
