@@ -13,55 +13,52 @@
     <header th:replace="~{fragments/commons::header}"></header>
 
     <main>
-      <section class="hero">
-        <h2>Предизвикай себе си с QuizTime!</h2>
+        <section class="hero">
+            <h2>Предизвикай себе си с QuizTime!</h2>
 
-        <p>Разнообразни категории, стотици въпроси и безкрайно забавление за всеки!</p>
-        <a th:href="@{/categories}" class="btn-start">Започни сега</a>
-      </section>
+            <p>Разнообразни категории, стотици въпроси и безкрайно забавление за всеки!</p>
+            <a th:href="@{/categories}" class="btn-start">Започни сега</a>
+        </section>
 
-      <div class="sections">
-        <section id="section1" class="feature-section">
-          <h2>Нови въпроси всяка седмица</h2>
-          <p>Поддържаме играта свежа и интересна с нови въпроси всеки понеделник.</p>
+        <div class="sections">
+            <section id="section1" class="feature-section">
+                <h2>Нови въпроси всяка седмица</h2>
+                <p>Поддържаме играта свежа и интересна с нови въпроси всеки понеделник.</p>
+            </section>
+
+            <section id="section2" class="feature-section">
+                <h2>10+ категории въпроси</h2>
+                <p>От наука и история до забавни и развлекателни въпроси — има по нещо за всеки!</p>
+            </section>
+
+            <section id="section3" class="feature-section">
+                <h2>500+ въпроса в разнообразни категории</h2>
+                <p>Голямо разнообразие, за да можеш да тестваш знанията си и да се забавляваш.</p>
+            </section>
+        </div>
+
+        <section class="subscribe-section">
+            <form th:action="@{/subscribe}"
+                  th:method="POST"
+                  th:object="${subscribeDTO}">
+
+                <div class="field">
+                    <input type="email" name="email" id="email" placeholder="Въведете своя имейл..."
+                           th:field="*{email}"
+                           th:errorclass="is-invalid">
+                    <small th:if="${#fields.hasErrors('email')}"
+                           th:errors="*{email}"
+                           class="text-danger">Email error message</small>
+
+                    <button type="submit">Абонирай се</button>
+                </div>
+            </form>
         </section>
-  
-        <section id="section2" class="feature-section">
-          <h2>10+ категории въпроси</h2>
-          <p>От наука и история до забавни и развлекателни въпроси — има по нещо за всеки!</p>
-        </section>
-      
-        <section id="section3" class="feature-section">
-          <h2>500+ въпроса в разнообразни категории</h2>
-          <p>Голямо разнообразие, за да можеш да тестваш знанията си и да се забавляваш.</p>
-        </section>
-      </div>
     </main>
 
     <footer th:replace="~{fragments/commons::footer}"></footer>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const sections = document.querySelectorAll('.feature-section');
-    
-        const revealOnScroll = () => {
-          const triggerBottom = window.innerHeight * 0.85;
-    
-          sections.forEach(section => {
-            const sectionTop = section.getBoundingClientRect().top;
-    
-            if (sectionTop < triggerBottom) {
-              section.classList.add("visible");
-            } else {
-              section.classList.remove("visible");
-            }
-          });
-        };
-    
-        window.addEventListener("scroll", revealOnScroll);
-        revealOnScroll();
-      });
-    </script>    
+    <script src="\js\reveal-sections-on-scroll.js"></script>
 
 </body>
 </html>

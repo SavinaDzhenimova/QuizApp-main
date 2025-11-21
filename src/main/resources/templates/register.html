@@ -36,7 +36,7 @@
 
                   <div class="field">
                       <label th:for="email">Имейл</label>
-                      <input type="text" name="email" id="email" placeholder="Напр. example@domain.com"
+                      <input type="email" name="email" id="email" placeholder="Напр. example@domain.com"
                              th:field="*{email}"
                              th:errorclass="is-invalid">
                       <small th:if="${#fields.hasErrors('email')}"
