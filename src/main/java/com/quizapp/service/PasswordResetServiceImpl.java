@@ -75,7 +75,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         PasswordResetToken passwordResetToken = optionalToken.get();
 
         if (!this.isValidToken(passwordResetToken.getToken())) {
-            return new Result(false, "Този линк за смяна на паролата е изтекъл!");
+            return new Result(false, "Този линк за смяна на паролата е изтекъл или е използван!");
         }
 
         User user = passwordResetToken.getUser();
@@ -94,5 +94,10 @@ public class PasswordResetServiceImpl implements PasswordResetService {
                 .filter(resetToken ->
                         !resetToken.isUsed() && resetToken.getExpiryDate().isAfter(LocalDateTime.now()))
                 .isPresent();
+    }
+
+    @Override
+    public void deleteInvalidPasswordResetTokens(LocalDateTime now) {
+        this.tokenRepository.deleteExpiredOrUsedTokens(now);
     }
 }
