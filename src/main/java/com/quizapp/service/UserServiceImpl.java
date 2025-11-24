@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,17 +41,17 @@ public class UserServiceImpl implements UserService {
         User user = optionalUser.get();
 
         List<QuizDTO> solvedQuizDTOs = user.getSolvedQuizzes().stream()
-                .limit(3)
                 .sorted(Comparator.comparing(SolvedQuiz::getSolvedAt).reversed())
+                .limit(3)
                 .map(solvedQuiz -> QuizDTO.builder()
                         .id(solvedQuiz.getId())
                         .categoryId(solvedQuiz.getCategoryId())
                         .categoryName(this.categoryService.getCategoryNameById(solvedQuiz.getCategoryId()))
-                        .score(solvedQuiz.getScore())
-                        .maxScore(solvedQuiz.getMaxScore())
+                        .correctAnswers(solvedQuiz.getScore())
+                        .totalQuestions(solvedQuiz.getMaxScore())
                         .solvedAt(solvedQuiz.getSolvedAt())
                         .build())
-                .toList();
+                .collect(Collectors.toList());
 
         return UserDTO.builder()
                 .id(user.getId())

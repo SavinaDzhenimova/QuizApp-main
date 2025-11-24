@@ -3,7 +3,7 @@ package com.quizapp.web;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.entity.SolvedQuiz;
-import com.quizapp.service.interfaces.SolvedQuizService;
+import com.quizapp.service.interfaces.UserQuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserQuizController {
 
-    private final SolvedQuizService solvedQuizService;
+    private final UserQuizService solvedQuizService;
 
     @PostMapping("/category")
     public String createQuiz(@RequestParam("categoryId") Long categoryId,

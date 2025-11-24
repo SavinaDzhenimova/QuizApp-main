@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 
 import java.util.Map;
 
-public interface SolvedQuizService {
+public interface UserQuizService {
 
     QuizDTO getSolvedQuizById(Long id);
 

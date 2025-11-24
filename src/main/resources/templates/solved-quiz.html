@@ -19,7 +19,7 @@
             <h2 th:text="'Куиз в категория ' + ${solvedQuiz.categoryName}"></h2>
 
             <p>Резултат:
-                <span th:text="${solvedQuiz.score}"></span>/<span th:text="${solvedQuiz.maxScore}"></span>
+                <span th:text="${solvedQuiz.correctAnswers}"></span>/<span th:text="${solvedQuiz.totalQuestions}"></span>
             </p>
             <p>Решен на: <span th:text="${#temporals.format(solvedQuiz.solvedAt, 'dd.MM.yyyy г. HH:mm')}"></span></p>
         </div>

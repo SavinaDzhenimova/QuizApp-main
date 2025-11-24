@@ -10,9 +10,5 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class QuizResultDTO extends BaseQuizDTO {
 
-    private int correctAnswers;
-
-    private int totalQuestions;
-
     private double scorePercent;
 }

@@ -14,4 +14,8 @@ public class BaseQuizDTO {
     private Long id;
 
     private String viewToken;
+
+    private int correctAnswers;
+
+    private int totalQuestions;
 }

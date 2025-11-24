@@ -23,9 +23,5 @@ public class QuizDTO extends BaseQuizDTO {
 
     private LocalDateTime solvedAt;
 
-    private int score;
-
-    private int maxScore;
-
     private Map<Long, String> userAnswers;
 }

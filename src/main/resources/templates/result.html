@@ -26,7 +26,7 @@
 
             <div class="buttons">
                 <a class="btn-start" sec:authorize="isAnonymous()"
-                   th:href="@{/guest/quiz/result/{token}(token=${result.token})}">Прегледай решението</a>
+                   th:href="@{/guest/quiz/result/{viewToken}(viewToken=${result.viewToken})}">Прегледай решението</a>
 
                 <a class="btn-start" sec:authorize="isAuthenticated()"
                    th:href="@{/users/solved-quiz/result/{id}(id=${result.id})}">Прегледай решението</a>

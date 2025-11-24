@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SolvedQuizServiceImpl implements SolvedQuizService {
+public class UserQuizServiceImpl implements UserQuizService {
 
     private final SolvedQuizRepository solvedQuizRepository;
     private final CategoryService categoryService;
@@ -49,8 +49,8 @@ public class SolvedQuizServiceImpl implements SolvedQuizService {
                 .id(solvedQuiz.getId())
                 .categoryId(solvedQuiz.getCategoryId())
                 .categoryName(this.categoryService.getCategoryNameById(solvedQuiz.getCategoryId()))
-                .score(solvedQuiz.getScore())
-                .maxScore(solvedQuiz.getMaxScore())
+                .correctAnswers(solvedQuiz.getScore())
+                .totalQuestions(solvedQuiz.getMaxScore())
                 .solvedAt(solvedQuiz.getSolvedAt())
                 .questions(questionDTOs)
                 .userAnswers(solvedQuiz.getUserAnswers())
@@ -70,8 +70,8 @@ public class SolvedQuizServiceImpl implements SolvedQuizService {
                         .id(solvedQuiz.getId())
                         .categoryId(solvedQuiz.getCategoryId())
                         .categoryName(this.categoryService.getCategoryNameById(solvedQuiz.getCategoryId()))
-                        .score(solvedQuiz.getScore())
-                        .maxScore(solvedQuiz.getMaxScore())
+                        .correctAnswers(solvedQuiz.getScore())
+                        .totalQuestions(solvedQuiz.getMaxScore())
                         .solvedAt(solvedQuiz.getSolvedAt())
                         .build()
         );

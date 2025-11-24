@@ -80,8 +80,8 @@ public class GuestQuizServiceImpl implements GuestQuizService {
     private void saveQuizResult(int correctAnswers, int totalQuestions, Quiz quiz, Map<Long, String> userAnswers) {
         QuizDTO quizDTO = QuizDTO.builder()
                 .viewToken(quiz.getViewToken())
-                .score(correctAnswers)
-                .maxScore(totalQuestions)
+                .correctAnswers(correctAnswers)
+                .totalQuestions(totalQuestions)
                 .categoryName(quiz.getCategoryName())
                 .solvedAt(LocalDateTime.now())
                 .questions(quiz.getQuestions())

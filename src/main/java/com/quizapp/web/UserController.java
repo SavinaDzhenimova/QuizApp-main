@@ -2,7 +2,7 @@ package com.quizapp.web;
 
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.user.UserDTO;
-import com.quizapp.service.interfaces.SolvedQuizService;
+import com.quizapp.service.interfaces.UserQuizService;
 import com.quizapp.service.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class UserController {
 
     private final UserService userService;
-    private final SolvedQuizService solvedQuizService;
+    private final UserQuizService solvedQuizService;
 
     @GetMapping("/home")
     public ModelAndView showHomePage(@AuthenticationPrincipal UserDetails userDetails) {
