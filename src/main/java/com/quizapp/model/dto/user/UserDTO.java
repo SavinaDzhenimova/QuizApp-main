@@ -1,7 +1,6 @@
 package com.quizapp.model.dto.user;
 
-import com.quizapp.model.dto.SolvedQuizDTO;
-import com.quizapp.model.entity.SolvedQuiz;
+import com.quizapp.model.dto.QuizDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +21,7 @@ public class UserDTO {
 
     private String email;
 
-    private List<SolvedQuizDTO> solvedQuizzes;
+    private List<QuizDTO> solvedQuizzes;
 
     private int totalQuizzes;
 

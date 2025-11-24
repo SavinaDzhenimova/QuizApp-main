@@ -2,7 +2,7 @@ package com.quizapp.service;
 
 import com.quizapp.model.dto.QuestionDTO;
 import com.quizapp.model.dto.QuizResultDTO;
-import com.quizapp.model.dto.SolvedQuizDTO;
+import com.quizapp.model.dto.QuizDTO;
 import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.service.interfaces.CategoryService;
@@ -22,7 +22,7 @@ public class GuestQuizServiceImpl implements GuestQuizService {
     private final QuestionService questionService;
     private final CategoryService categoryService;
     private final Map<String, Quiz> tempQuizzes = new ConcurrentHashMap<>();
-    private final Map<String, SolvedQuizDTO> guestQuizResults = new ConcurrentHashMap<>();
+    private final Map<String, QuizDTO> guestQuizResults = new ConcurrentHashMap<>();
 
     @Override
     public Quiz getSolvedQuizByViewToken(String viewToken) {
@@ -67,20 +67,19 @@ public class GuestQuizServiceImpl implements GuestQuizService {
 
         this.tempQuizzes.remove(viewToken);
 
-        String token = this.saveQuizResult((int) correctAnswers, totalQuestions, quiz, userAnswers);
+        this.saveQuizResult((int) correctAnswers, totalQuestions, quiz, userAnswers);
 
         return QuizResultDTO.builder()
                 .totalQuestions(totalQuestions)
                 .correctAnswers((int) correctAnswers)
                 .scorePercent((double) correctAnswers / totalQuestions * 100)
-                .token(token)
+                .viewToken(viewToken)
                 .build();
     }
 
-    private String saveQuizResult(int correctAnswers, int totalQuestions, Quiz quiz, Map<Long, String> userAnswers) {
-        String token = UUID.randomUUID().toString();
-
-        SolvedQuizDTO solvedQuizDTO = SolvedQuizDTO.builder()
+    private void saveQuizResult(int correctAnswers, int totalQuestions, Quiz quiz, Map<Long, String> userAnswers) {
+        QuizDTO quizDTO = QuizDTO.builder()
+                .viewToken(quiz.getViewToken())
                 .score(correctAnswers)
                 .maxScore(totalQuestions)
                 .categoryName(quiz.getCategoryName())
@@ -89,14 +88,12 @@ public class GuestQuizServiceImpl implements GuestQuizService {
                 .userAnswers(userAnswers)
                 .build();
 
-        this.guestQuizResults.put(token, solvedQuizDTO);
-
-        return token;
+        this.guestQuizResults.put(quiz.getViewToken(), quizDTO);
     }
 
     @Override
-    public SolvedQuizDTO showSolvedQuizResult(String token) {
-        return this.guestQuizResults.get(token);
+    public QuizDTO showQuizResult(String viewToken) {
+        return this.guestQuizResults.get(viewToken);
     }
 
     private Long getCorrectAnswers(Quiz quiz, Map<Long, String> userAnswers) {

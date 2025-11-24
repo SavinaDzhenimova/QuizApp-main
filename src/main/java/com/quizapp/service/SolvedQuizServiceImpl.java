@@ -2,7 +2,7 @@ package com.quizapp.service;
 
 import com.quizapp.model.dto.QuestionDTO;
 import com.quizapp.model.dto.QuizResultDTO;
-import com.quizapp.model.dto.SolvedQuizDTO;
+import com.quizapp.model.dto.QuizDTO;
 import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.model.entity.SolvedQuiz;
 import com.quizapp.model.entity.User;
@@ -32,7 +32,7 @@ public class SolvedQuizServiceImpl implements SolvedQuizService {
     private final UserStatisticsService userStatisticsService;
 
     @Override
-    public SolvedQuizDTO getSolvedQuizById(Long id) {
+    public QuizDTO getSolvedQuizById(Long id) {
         Optional<SolvedQuiz> optionalSolvedQuiz = this.solvedQuizRepository.findById(id);
 
         if (optionalSolvedQuiz.isEmpty()) {
@@ -45,7 +45,7 @@ public class SolvedQuizServiceImpl implements SolvedQuizService {
                 .map(this.questionService::getQuestionById)
                 .toList();
 
-        return SolvedQuizDTO.builder()
+        return QuizDTO.builder()
                 .id(solvedQuiz.getId())
                 .categoryId(solvedQuiz.getCategoryId())
                 .categoryName(this.categoryService.getCategoryNameById(solvedQuiz.getCategoryId()))
@@ -59,14 +59,14 @@ public class SolvedQuizServiceImpl implements SolvedQuizService {
 
     @Override
     @Transactional
-    public Page<SolvedQuizDTO> getSolvedQuizzesByUsername(String username, int page, int size) {
+    public Page<QuizDTO> getSolvedQuizzesByUsername(String username, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("solvedAt").descending());
 
         Page<SolvedQuiz> solvedQuizzesPage = this.solvedQuizRepository
                 .findByUserUsernameOrderBySolvedAtDesc(username, pageable);
 
         return solvedQuizzesPage.map(solvedQuiz ->
-                SolvedQuizDTO.builder()
+                QuizDTO.builder()
                         .id(solvedQuiz.getId())
                         .categoryId(solvedQuiz.getCategoryId())
                         .categoryName(this.categoryService.getCategoryNameById(solvedQuiz.getCategoryId()))

@@ -1,7 +1,7 @@
 package com.quizapp.web;
 
 import com.quizapp.model.dto.QuizResultDTO;
-import com.quizapp.model.dto.SolvedQuizDTO;
+import com.quizapp.model.dto.QuizDTO;
 import com.quizapp.model.entity.SolvedQuiz;
 import com.quizapp.service.interfaces.SolvedQuizService;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public class UserQuizController {
 
         ModelAndView modelAndView = new ModelAndView("quiz");
 
-        SolvedQuizDTO solvedQuizDTO = this.solvedQuizService.getSolvedQuizById(quizId);
+        QuizDTO solvedQuizDTO = this.solvedQuizService.getSolvedQuizById(quizId);
         modelAndView.addObject("quiz", solvedQuizDTO);
         modelAndView.addObject("isLogged", true);
 
@@ -65,7 +65,7 @@ public class UserQuizController {
     public ModelAndView showSolvedQuizById(@PathVariable Long id) {
         ModelAndView modelAndView = new ModelAndView("solved-quiz");
 
-        SolvedQuizDTO solvedQuizDTO = this.solvedQuizService.getSolvedQuizById(id);
+        QuizDTO solvedQuizDTO = this.solvedQuizService.getSolvedQuizById(id);
         modelAndView.addObject("solvedQuiz", solvedQuizDTO);
 
         return modelAndView;

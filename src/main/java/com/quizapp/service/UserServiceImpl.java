@@ -1,6 +1,6 @@
 package com.quizapp.service;
 
-import com.quizapp.model.dto.SolvedQuizDTO;
+import com.quizapp.model.dto.QuizDTO;
 import com.quizapp.model.dto.user.UserDTO;
 import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.entity.*;
@@ -39,10 +39,10 @@ public class UserServiceImpl implements UserService {
 
         User user = optionalUser.get();
 
-        List<SolvedQuizDTO> solvedQuizDTOs = user.getSolvedQuizzes().stream()
+        List<QuizDTO> solvedQuizDTOs = user.getSolvedQuizzes().stream()
                 .limit(3)
                 .sorted(Comparator.comparing(SolvedQuiz::getSolvedAt).reversed())
-                .map(solvedQuiz -> SolvedQuizDTO.builder()
+                .map(solvedQuiz -> QuizDTO.builder()
                         .id(solvedQuiz.getId())
                         .categoryId(solvedQuiz.getCategoryId())
                         .categoryName(this.categoryService.getCategoryNameById(solvedQuiz.getCategoryId()))

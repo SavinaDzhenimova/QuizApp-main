@@ -1,23 +1,18 @@
 package com.quizapp.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class SolvedQuizDTO {
-
-    private Long id;
-
-    private String viewToken;
+@SuperBuilder
+public class QuizDTO extends BaseQuizDTO {
 
     private Long categoryId;
 

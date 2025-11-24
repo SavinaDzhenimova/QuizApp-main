@@ -1,23 +1,18 @@
 package com.quizapp.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class QuizResultDTO {
+@SuperBuilder
+public class QuizResultDTO extends BaseQuizDTO {
 
     private int correctAnswers;
 
     private int totalQuestions;
 
     private double scorePercent;
-
-    private String token;
-
-    private Long id;
 }

@@ -1,6 +1,6 @@
 package com.quizapp.web;
 
-import com.quizapp.model.dto.SolvedQuizDTO;
+import com.quizapp.model.dto.QuizDTO;
 import com.quizapp.model.dto.user.UserDTO;
 import com.quizapp.service.interfaces.SolvedQuizService;
 import com.quizapp.service.interfaces.UserService;
@@ -40,7 +40,7 @@ public class UserController {
                                         @RequestParam(defaultValue = "0") int page) {
 
         int pageSize = 5;
-        Page<SolvedQuizDTO> quizPage = this.solvedQuizService
+        Page<QuizDTO> quizPage = this.solvedQuizService
                 .getSolvedQuizzesByUsername(userDetails.getUsername(), page, pageSize);
 
         ModelAndView modelAndView = new ModelAndView("quizzes");

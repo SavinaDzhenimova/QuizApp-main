@@ -1,7 +1,7 @@
 package com.quizapp.web;
 
 import com.quizapp.model.dto.QuizResultDTO;
-import com.quizapp.model.dto.SolvedQuizDTO;
+import com.quizapp.model.dto.QuizDTO;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.service.interfaces.GuestQuizService;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +61,7 @@ public class GuestQuizController {
     public ModelAndView showSolvedGuestQuiz(@PathVariable String token) {
         ModelAndView modelAndView = new ModelAndView("solved-quiz");
 
-        SolvedQuizDTO solvedQuizDTO = this.guestQuizService.showSolvedQuizResult(token);
+        QuizDTO solvedQuizDTO = this.guestQuizService.showQuizResult(token);
         modelAndView.addObject("solvedQuiz", solvedQuizDTO);
 
         return modelAndView;
