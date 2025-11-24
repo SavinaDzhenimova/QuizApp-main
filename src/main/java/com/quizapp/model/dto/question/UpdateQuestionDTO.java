@@ -1,17 +1,15 @@
-package com.quizapp.model.dto;
+package com.quizapp.model.dto.question;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class QuestionDTO {
+public class UpdateQuestionDTO {
 
     private Long id;
 
@@ -21,5 +19,5 @@ public class QuestionDTO {
 
     private String correctAnswer;
 
-    private List<String> options;
+    private String options;
 }

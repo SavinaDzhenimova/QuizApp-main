@@ -1,7 +1,7 @@
 package com.quizapp.service.interfaces;
 
-import com.quizapp.model.dto.QuizResultDTO;
-import com.quizapp.model.dto.QuizDTO;
+import com.quizapp.model.dto.quiz.QuizResultDTO;
+import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.entity.Quiz;
 
 import java.util.Map;

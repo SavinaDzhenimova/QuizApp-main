@@ -1,6 +1,6 @@
 package com.quizapp.web;
 
-import com.quizapp.model.dto.QuizDTO;
+import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.user.UserDTO;
 import com.quizapp.service.interfaces.SolvedQuizService;
 import com.quizapp.service.interfaces.UserService;

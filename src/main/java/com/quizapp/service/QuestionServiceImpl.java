@@ -2,6 +2,10 @@ package com.quizapp.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quizapp.model.dto.*;
+import com.quizapp.model.dto.question.AddQuestionDTO;
+import com.quizapp.model.dto.question.QuestionDTO;
+import com.quizapp.model.dto.question.QuestionPageDTO;
+import com.quizapp.model.dto.question.UpdateQuestionDTO;
 import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.QuestionService;

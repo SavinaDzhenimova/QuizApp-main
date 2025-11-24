@@ -1,4 +1,4 @@
-package com.quizapp.model.dto;
+package com.quizapp.model.dto.category;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AddCategoryDTO {
+public class UpdateCategoryDTO {
 
-    @NotBlank(message = "Въведете име на категорията!")
+    private Long id;
+
     private String name;
 
     @NotBlank(message = "Въведете описание за категорията!")

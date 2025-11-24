@@ -1,10 +1,10 @@
 package com.quizapp.service.interfaces;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.quizapp.model.dto.AddCategoryDTO;
-import com.quizapp.model.dto.CategoryDTO;
-import com.quizapp.model.dto.CategoryPageDTO;
-import com.quizapp.model.dto.UpdateCategoryDTO;
+import com.quizapp.model.dto.category.AddCategoryDTO;
+import com.quizapp.model.dto.category.CategoryDTO;
+import com.quizapp.model.dto.category.CategoryPageDTO;
+import com.quizapp.model.dto.category.UpdateCategoryDTO;
 import com.quizapp.model.entity.Result;
 
 public interface CategoryService {

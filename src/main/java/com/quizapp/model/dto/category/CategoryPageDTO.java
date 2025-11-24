@@ -1,5 +1,6 @@
-package com.quizapp.model.dto;
+package com.quizapp.model.dto.category;
 
+import com.quizapp.model.dto.PageDTO;
 import lombok.*;
 
 import java.util.List;

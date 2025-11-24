@@ -1,4 +1,4 @@
-package com.quizapp.model.dto;
+package com.quizapp.model.dto.quiz;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;

@@ -1,7 +1,7 @@
 package com.quizapp.web;
 
-import com.quizapp.model.dto.CategoryDTO;
-import com.quizapp.model.dto.CategoryPageDTO;
+import com.quizapp.model.dto.category.CategoryDTO;
+import com.quizapp.model.dto.category.CategoryPageDTO;
 import com.quizapp.model.enums.ProblemType;
 import com.quizapp.service.interfaces.CategoryService;
 import lombok.RequiredArgsConstructor;

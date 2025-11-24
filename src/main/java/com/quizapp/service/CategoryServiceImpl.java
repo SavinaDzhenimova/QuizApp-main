@@ -2,6 +2,10 @@ package com.quizapp.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quizapp.model.dto.*;
+import com.quizapp.model.dto.category.AddCategoryDTO;
+import com.quizapp.model.dto.category.CategoryDTO;
+import com.quizapp.model.dto.category.CategoryPageDTO;
+import com.quizapp.model.dto.category.UpdateCategoryDTO;
 import com.quizapp.model.rest.CategoryApiDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.CategoryService;

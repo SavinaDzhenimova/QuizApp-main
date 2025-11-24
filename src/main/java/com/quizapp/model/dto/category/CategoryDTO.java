@@ -1,17 +1,19 @@
-package com.quizapp.model.dto;
+package com.quizapp.model.dto.category;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class BaseQuizDTO {
+@Builder
+public class CategoryDTO {
 
     private Long id;
 
-    private String viewToken;
+    private String name;
+
+    private String description;
 }

@@ -1,6 +1,6 @@
 package com.quizapp.model.dto.user;
 
-import com.quizapp.model.dto.QuizDTO;
+import com.quizapp.model.dto.quiz.QuizDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.quizapp.model.entity;
 
-import com.quizapp.model.dto.QuestionDTO;
+import com.quizapp.model.dto.question.QuestionDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
