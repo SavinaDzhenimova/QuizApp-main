@@ -16,7 +16,13 @@
         <form th:action="@{/quiz/submit}" th:method="POST" id="quizForm">
             <h2 th:text="'Куиз в категория ' + ${quiz.categoryName}"></h2>
 
-            <input type="hidden" th:name="quizId" th:value="${quiz.id}" />
+            <!-- Ако е guest quiz -->
+            <input type="hidden" name="viewToken" th:value="${quiz.viewToken}"
+                   th:if="${quiz.viewToken != null}" />
+
+            <!-- Ако е записан quiz в базата -->
+            <input type="hidden" name="quizId" th:value="${quiz.id}"
+                   th:if="${quiz.id != null}" />
 
             <div class="question-pages">
                 <div th:each="question, iter : ${quiz.questions}"

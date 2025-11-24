@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec='http://www.thymeleaf.org/extras/spring-security'>
 
 <head>
     <th:block th:replace="~{fragments/commons::head}"></th:block>
@@ -43,7 +44,7 @@
         <div class="pagination-buttons">
             <button type="button" id="prevBtn">⬅ Предишен</button>
             <button type="button" id="nextBtn">Следващ ➡</button>
-            <a th:href="@{/users/quizzes}" class="btn-start">Обратно към всички</a>
+            <a sec:authorize="isAuthenticated()" th:href="@{/users/quizzes}" class="btn-start">Обратно към всички</a>
         </div>
       </div>
     </main>

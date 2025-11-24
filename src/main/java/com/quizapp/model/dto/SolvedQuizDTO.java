@@ -17,6 +17,8 @@ public class SolvedQuizDTO {
 
     private Long id;
 
+    private String viewToken;
+
     private Long categoryId;
 
     private String categoryName;

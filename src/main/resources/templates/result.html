@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec='http://www.thymeleaf.org/extras/spring-security'>
 
 <head>
     <th:block th:replace="~{fragments/commons::head}"></th:block>
@@ -23,7 +24,15 @@
             </div>
             <p>Резултат: <span th:text="${#numbers.formatDecimal(result.scorePercent, 0, 2)}"></span>%</p>
 
-            <a th:href="@{/categories}" class="btn-start">Започни нов куиз</a>
+            <div class="buttons">
+                <a sec:authorize="isAnonymous()"
+                   th:href="@{/quiz/view/{token}(token=${result.token})}" class="btn-start">Прегледай решението</a>
+
+                <a sec:authorize="isAuthenticated()"
+                   th:href="@{/solved-quiz/{id}(id=${result.id})}" class="btn-start">Прегледай решението</a>
+
+                <a th:href="@{/categories}" class="btn-start">Започни нов куиз</a>
+            </div>
         </div>
     </main>
 

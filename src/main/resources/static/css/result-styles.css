@@ -21,3 +21,9 @@ h2 {
 .quiz-result p {
     font-size: 26px;
 }
+
+.buttons {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 2em;
+}

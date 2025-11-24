@@ -32,7 +32,9 @@ public class QuizController {
 
         if (userDetails == null) {
             Quiz quiz = this.guestQuizService.createQuiz(categoryId, numberOfQuestions);
-            id = quiz.getId();
+            String viewToken = quiz.getViewToken();
+
+            return "redirect:/quiz/view-token/" + viewToken;
         } else {
             SolvedQuiz solvedQuiz = this.solvedQuizService.createQuiz(categoryId, numberOfQuestions, userDetails.getUsername());
             id = solvedQuiz.getId();
@@ -40,28 +42,33 @@ public class QuizController {
 
         redirectAttributes.addAttribute("page", 0);
 
-        return "redirect:/quiz/" + id;
+        return "redirect:/quiz/id/" + id;
     }
 
-    @GetMapping("/quiz/{quizId}")
-    public ModelAndView showQuiz(@PathVariable Long quizId,
-                                 @AuthenticationPrincipal UserDetails userDetails) {
+    @GetMapping("/quiz/view-token/{viewToken}")
+    public ModelAndView showQuiz(@PathVariable String viewToken) {
+        ModelAndView modelAndView = new ModelAndView("quiz");
+
+        Quiz quiz = this.guestQuizService.getSolvedQuizByViewToken(viewToken);
+        modelAndView.addObject("quiz", quiz);
+
+        return modelAndView;
+    }
+
+    @GetMapping("/quiz/id/{quizId}")
+    public ModelAndView showQuiz(@PathVariable Long quizId) {
 
         ModelAndView modelAndView = new ModelAndView("quiz");
 
-        if (userDetails == null) {
-            Quiz quiz = this.guestQuizService.getSolvedQuizById(quizId);
-            modelAndView.addObject("quiz", quiz);
-        } else {
-            SolvedQuizDTO solvedQuizDTO = this.solvedQuizService.getSolvedQuizById(quizId);
-            modelAndView.addObject("quiz", solvedQuizDTO);
-        }
+        SolvedQuizDTO solvedQuizDTO = this.solvedQuizService.getSolvedQuizById(quizId);
+        modelAndView.addObject("quiz", solvedQuizDTO);
 
         return modelAndView;
     }
 
     @PostMapping("/quiz/submit")
-    public ModelAndView submitQuiz(@RequestParam("quizId") Long quizId,
+    public ModelAndView submitQuiz(@RequestParam(value = "quizId", required = false) Long quizId,
+                                   @RequestParam(value = "viewToken", required = false) String viewToken,
                                    @AuthenticationPrincipal UserDetails userDetails,
                                    @RequestParam Map<String, String> formData) {
 
@@ -69,12 +76,22 @@ public class QuizController {
         QuizResultDTO quizResultDTO;
 
         if (userDetails == null) {
-            quizResultDTO = this.guestQuizService.evaluateQuiz(quizId, formData);
+            quizResultDTO = this.guestQuizService.evaluateQuiz(viewToken, formData);
         } else {
             quizResultDTO = this.solvedQuizService.evaluateQuiz(quizId, formData, userDetails.getUsername());
         }
 
         modelAndView.addObject("result", quizResultDTO);
+
+        return modelAndView;
+    }
+
+    @GetMapping("/quiz/view/{token}")
+    public ModelAndView showSolvedGuestQuiz(@PathVariable String token) {
+        ModelAndView modelAndView = new ModelAndView("solved-quiz");
+
+        SolvedQuizDTO solvedQuizDTO = this.guestQuizService.showSolvedQuizResult(token);
+        modelAndView.addObject("solvedQuiz", solvedQuizDTO);
 
         return modelAndView;
     }

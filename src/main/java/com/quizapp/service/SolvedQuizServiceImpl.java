@@ -166,6 +166,7 @@ public class SolvedQuizServiceImpl implements SolvedQuizService {
                 .totalQuestions(totalQuestions)
                 .correctAnswers((int) correctAnswers)
                 .scorePercent(scorePercent)
+                .id(solvedQuiz.getId())
                 .build();
     }
 

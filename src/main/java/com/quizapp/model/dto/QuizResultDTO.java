@@ -16,4 +16,8 @@ public class QuizResultDTO {
     private int totalQuestions;
 
     private double scorePercent;
+
+    private String token;
+
+    private Long id;
 }

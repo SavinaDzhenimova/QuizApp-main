@@ -16,6 +16,8 @@ public class Quiz {
 
     private Long id;
 
+    private String viewToken;
+
     private Long categoryId;
 
     private String categoryName;
