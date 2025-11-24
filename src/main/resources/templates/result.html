@@ -25,11 +25,11 @@
             <p>Резултат: <span th:text="${#numbers.formatDecimal(result.scorePercent, 0, 2)}"></span>%</p>
 
             <div class="buttons">
-                <a sec:authorize="isAnonymous()"
-                   th:href="@{/quiz/view/{token}(token=${result.token})}" class="btn-start">Прегледай решението</a>
+                <a class="btn-start" sec:authorize="isAnonymous()"
+                   th:href="@{/guest/quiz/result/{token}(token=${result.token})}">Прегледай решението</a>
 
-                <a sec:authorize="isAuthenticated()"
-                   th:href="@{/solved-quiz/{id}(id=${result.id})}" class="btn-start">Прегледай решението</a>
+                <a class="btn-start" sec:authorize="isAuthenticated()"
+                   th:href="@{/users/solved-quiz/result/{id}(id=${result.id})}">Прегледай решението</a>
 
                 <a th:href="@{/categories}" class="btn-start">Започни нов куиз</a>
             </div>

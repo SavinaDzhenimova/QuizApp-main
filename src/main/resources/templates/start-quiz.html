@@ -28,7 +28,7 @@
                 <button type="submit" class="search-btn">Търсене</button>
             </form>
 
-            <form th:action="@{/quiz/category}"
+            <form th:action="${isLogged == false} ? @{/guest/quiz/category} : @{/users/solved-quiz/category}"
                   th:method="POST">
 
                 <div class="categories-container">

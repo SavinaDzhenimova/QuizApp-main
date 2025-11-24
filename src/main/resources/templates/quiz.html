@@ -13,7 +13,9 @@
     <header th:replace="~{fragments/commons::header}"></header>
 
     <main>
-        <form th:action="@{/quiz/submit}" th:method="POST" id="quizForm">
+        <form th:action="${isLogged == false} ? @{/guest/quiz/submit} : @{/users/solved-quiz/submit}"
+              th:method="POST"
+              id="quizForm">
             <h2 th:text="'Куиз в категория ' + ${quiz.categoryName}"></h2>
 
             <!-- Ако е guest quiz -->
