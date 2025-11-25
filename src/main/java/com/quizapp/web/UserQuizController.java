@@ -1,6 +1,7 @@
 package com.quizapp.web;
 
 import com.quizapp.model.dto.quiz.QuizDTO;
+import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.entity.SolvedQuiz;
 import com.quizapp.service.interfaces.UserQuizService;
 import lombok.RequiredArgsConstructor;
@@ -14,13 +15,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/users/solved-quiz")
+@RequestMapping("/users/quizzes")
 @RequiredArgsConstructor
 public class UserQuizController {
 
     private final UserQuizService solvedQuizService;
 
-    @PostMapping("/category")
+    @PostMapping("/start")
     public String createQuiz(@RequestParam("categoryId") Long categoryId,
                              @AuthenticationPrincipal UserDetails userDetails,
                              RedirectAttributes redirectAttributes) {
@@ -31,7 +32,7 @@ public class UserQuizController {
 
         redirectAttributes.addAttribute("page", 0);
 
-        return "redirect:/users/solved-quiz/" + id;
+        return "redirect:/users/quizzes/" + id;
     }
 
     @GetMapping("/{quizId}")
@@ -46,21 +47,27 @@ public class UserQuizController {
         return modelAndView;
     }
 
-    @PostMapping("/submit/{id}")
-    public ModelAndView submitQuiz(@PathVariable Long quizId,
-                                   @AuthenticationPrincipal UserDetails userDetails,
-                                   @RequestParam Map<String, String> formData) {
+    @PostMapping("/{id}/submit")
+    public String submitQuiz(@PathVariable Long quizId,
+                             @AuthenticationPrincipal UserDetails userDetails,
+                             @RequestParam Map<String, String> formData) {
+        this.solvedQuizService.evaluateQuiz(quizId, formData, userDetails.getUsername());
 
+        return "redirect:/users/quizzes/" + quizId + "/result";
+    }
+
+    @GetMapping("/{id}/result")
+    public ModelAndView showSolvedQuizResult(@PathVariable Long id) {
         ModelAndView modelAndView = new ModelAndView("result");
 
-        QuizDTO quizDTO = this.solvedQuizService.evaluateQuiz(quizId, formData, userDetails.getUsername());
+        QuizResultDTO quizResultDTO = this.solvedQuizService.getQuizResult(id);
 
-        modelAndView.addObject("result", quizDTO);
+        modelAndView.addObject("result", quizResultDTO);
 
         return modelAndView;
     }
 
-    @GetMapping("/result/{id}")
+    @GetMapping("/{id}/review")
     public ModelAndView showSolvedQuizById(@PathVariable Long id) {
         ModelAndView modelAndView = new ModelAndView("solved-quiz");
 

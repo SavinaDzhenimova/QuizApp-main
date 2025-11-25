@@ -14,31 +14,31 @@
     <header th:replace="~{fragments/commons::header}"></header>
 
     <main>
-      <div class="quiz-container">
-        <div class="quiz-info">
-            <h2 th:text="'Куиз в категория ' + ${solvedQuiz.categoryName}"></h2>
+        <div class="quiz-container">
+            <div class="quiz-info">
+                <h2 th:text="'Куиз в категория ' + ${solvedQuiz.categoryName}"></h2>
 
-            <p>Резултат:
-                <span th:text="${solvedQuiz.correctAnswers}"></span>/<span th:text="${solvedQuiz.totalQuestions}"></span>
-            </p>
-            <p>Решен на: <span th:text="${#temporals.format(solvedQuiz.solvedAt, 'dd.MM.yyyy г. HH:mm')}"></span></p>
-        </div>
+                <p>Резултат:
+                    <span th:text="${solvedQuiz.correctAnswers}"></span>/<span th:text="${solvedQuiz.totalQuestions}"></span>
+                </p>
+                <p>Решен на: <span th:text="${#temporals.format(solvedQuiz.solvedAt, 'dd.MM.yyyy г. HH:mm')}"></span></p>
+            </div>
 
-          <div class="question-pages">
-              <div th:each="question, iter : ${solvedQuiz.questions}"
-                   th:id="'q' + ${iter.index}"
-                   class="question-page">
-                  <h3 th:text="${question.questionText}" class="question-text"></h3>
-                  <ul class="options-list">
-                      <li th:each="option : ${question.options}"
-                          class="answer-option"
-                          th:classappend="${option == question.correctAnswer} ? 'correct' :
-                          (${option == solvedQuiz.userAnswers[question.id]} ? 'wrong' : '')">
-                          <span th:text="${option}"></span>
-                      </li>
-                  </ul>
-              </div>
-          </div>
+            <div class="question-pages">
+                <div th:each="question, iter : ${solvedQuiz.questions}"
+                     th:id="'q' + ${iter.index}"
+                     class="question-page">
+                    <h3 th:text="${question.questionText}" class="question-text"></h3>
+                    <ul class="options-list">
+                        <li th:each="option : ${question.options}"
+                            class="answer-option"
+                            th:classappend="${option == question.correctAnswer} ? 'correct' :
+                              (${option == solvedQuiz.userAnswers[question.id]} ? 'wrong' : '')">
+                            <span th:text="${option}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <div class="pagination-buttons">
@@ -47,11 +47,11 @@
             <a class="btn-start" sec:authorize="isAuthenticated()"
                th:href="@{/users/quizzes}">Обратно към всички</a>
             <a class="btn-start" sec:authorize="isAuthenticated()"
-               th:href="@{/users/quiz/result/{id}(id=${solvedQuiz.id})}">Обратно към резултата</a>
+               th:href="@{/users/quizzes/{id}/result(id=${solvedQuiz.id})}">Обратно към резултата</a>
             <a class="btn-start" sec:authorize="isAnonymous()"
-               th:href="@{/guest/quiz/result/{viewToken}(viewToken=${solvedQuiz.viewToken})}">Обратно към резултата</a>
+               th:href="@{/guest/quiz/{viewToken}/result(viewToken=${solvedQuiz.viewToken})}">Обратно към резултата</a>
         </div>
-      </div>
+        </div>
     </main>
 
     <footer th:replace="~{fragments/commons::footer}"></footer>

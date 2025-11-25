@@ -13,8 +13,8 @@
     <header th:replace="~{fragments/commons::header}"></header>
 
     <main>
-        <form th:action="${isLogged == false} ? @{/guest/quiz/submit/{viewToken}(viewToken=${quiz.viewToken})}
-                                              : @{/users/solved-quiz/submit/{id}(id=${quiz.id})}"
+        <form th:action="${isLogged == false} ? @{/guest/quizzes/{viewToken}/submit(viewToken=${quiz.viewToken})}
+                                              : @{/users/quizzes/{id}/submit(id=${quiz.id})}"
               th:method="POST"
               id="quizForm">
             <h2 th:text="'Куиз в категория ' + ${quiz.categoryName}"></h2>

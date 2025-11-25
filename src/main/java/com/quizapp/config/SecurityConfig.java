@@ -25,9 +25,8 @@ public class SecurityConfig {
                                 "/start-quiz", "/about-us", "/contacts", "/contacts/send-inquiry",
                                 "/report-problem", "/report-problem/send-report", "/subscribe").permitAll()
                         .requestMatchers("/users/forgot-password", "/users/reset-password/**",
-                                "/guest/quiz/**").anonymous()
-                        .requestMatchers("/users/logout", "/users/home", "/users/quizzes",
-                                "/users/solved-quiz/**").authenticated()
+                                "/guest/quizzes/**").anonymous()
+                        .requestMatchers("/users/logout", "/users/home", "/users/quizzes/**").authenticated()
                         .requestMatchers("/admin", "/categories", "/categories/add-category",
                                 "/questions", "/questions/add-question").hasRole("ADMIN")
                         .anyRequest().authenticated()

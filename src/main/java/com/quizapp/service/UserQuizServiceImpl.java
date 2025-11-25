@@ -2,6 +2,7 @@ package com.quizapp.service;
 
 import com.quizapp.model.dto.question.QuestionDTO;
 import com.quizapp.model.dto.quiz.QuizDTO;
+import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.model.entity.SolvedQuiz;
 import com.quizapp.model.entity.User;
@@ -120,21 +121,25 @@ public class UserQuizServiceImpl implements UserQuizService {
 
     @Override
     @Transactional
-    public QuizDTO evaluateQuiz(Long quizId, Map<String, String> formData, String username) {
+    public void evaluateQuiz(Long quizId, Map<String, String> formData, String username) {
         Optional<User> optionalUser = this.userService.getUserByUsername(username);
         if (optionalUser.isEmpty()) {
-            return null;
+            return;
         }
         User user = optionalUser.get();
 
         Optional<SolvedQuiz> optionalSolvedQuiz = this.solvedQuizRepository.findById(quizId);
         if (optionalSolvedQuiz.isEmpty()) {
-            return null;
+            return;
         }
         SolvedQuiz solvedQuiz = optionalSolvedQuiz.get();
 
         Map<Long, String> userAnswers = this.mapUserAnswers(formData);
 
+        this.saveSolvedQuizResult(solvedQuiz, user, userAnswers);
+    }
+
+    private void saveSolvedQuizResult(SolvedQuiz solvedQuiz, User user, Map<Long, String> userAnswers) {
         List<QuestionApiDTO> questionApiDTOs = solvedQuiz.getQuestionIds().stream()
                 .map(this.questionService::makeGetRequestById)
                 .toList();
@@ -144,8 +149,6 @@ public class UserQuizServiceImpl implements UserQuizService {
                 .count();
 
         int totalQuestions = questionApiDTOs.size();
-
-        double scorePercent = ((double) correctAnswers / totalQuestions) * 100;
 
         LocalDateTime solvedAt = LocalDateTime.now();
         solvedQuiz.setUserAnswers(userAnswers);
@@ -160,12 +163,27 @@ public class UserQuizServiceImpl implements UserQuizService {
         user.setUserStatistics(userStatistics);
         user.getSolvedQuizzes().add(solvedQuiz);
         this.userService.saveAndFlushUser(user);
+    }
+
+    @Override
+    public QuizResultDTO getQuizResult(Long id) {
+        Optional<SolvedQuiz> optionalSolvedQuiz = this.solvedQuizRepository.findById(id);
+
+        if (optionalSolvedQuiz.isEmpty()) {
+            return null;
+        }
+
+        SolvedQuiz solvedQuiz = optionalSolvedQuiz.get();
+
+        int correctAnswers = solvedQuiz.getScore();
+        int totalQuestions = solvedQuiz.getMaxScore();
+        double scorePercent = ((double) correctAnswers / totalQuestions) * 100;
 
         return QuizDTO.builder()
-                .totalQuestions(totalQuestions)
-                .correctAnswers((int) correctAnswers)
-                .scorePercent(scorePercent)
                 .id(solvedQuiz.getId())
+                .totalQuestions(correctAnswers)
+                .correctAnswers(totalQuestions)
+                .scorePercent(scorePercent)
                 .build();
     }
 

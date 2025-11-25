@@ -1,6 +1,7 @@
 package com.quizapp.service.interfaces;
 
 import com.quizapp.model.dto.quiz.QuizDTO;
+import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.entity.SolvedQuiz;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,9 @@ public interface UserQuizService {
     SolvedQuiz createQuiz(Long categoryId, int numberOfQuestions, String username);
 
     @Transactional
-    QuizDTO evaluateQuiz(Long quizId, Map<String, String> formData, String username);
+    void evaluateQuiz(Long quizId, Map<String, String> formData, String username);
+
+    QuizResultDTO getQuizResult(Long id);
 
     boolean deleteQuizById(Long id);
 }

@@ -13,13 +13,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/guest/quiz")
+@RequestMapping("/guest/quizzes")
 @RequiredArgsConstructor
 public class GuestQuizController {
 
     private final GuestQuizService guestQuizService;
 
-    @PostMapping("/category")
+    @PostMapping("/start")
     public String createQuiz(@RequestParam("categoryId") Long categoryId,
                              RedirectAttributes redirectAttributes) {
 
@@ -30,7 +30,7 @@ public class GuestQuizController {
 
         redirectAttributes.addAttribute("page", 0);
 
-        return "redirect:/guest/quiz/" + viewToken;
+        return "redirect:/guest/quizzes/" + viewToken;
     }
 
     @GetMapping("/{viewToken}")
@@ -44,14 +44,14 @@ public class GuestQuizController {
         return modelAndView;
     }
 
-    @PostMapping("/submit/{viewToken}")
+    @PostMapping("/{viewToken}/submit")
     public String submitQuiz(@PathVariable String viewToken, @RequestParam Map<String, String> formData) {
         this.guestQuizService.evaluateQuiz(viewToken, formData);
 
-        return "redirect:/guest/quiz/result/" + viewToken;
+        return "redirect:/guest/quizzes/" + viewToken + "/result";
     }
 
-    @GetMapping("/result/{token}")
+    @GetMapping("/{token}/result")
     public ModelAndView showSolvedGuestQuizResult(@PathVariable String token) {
         ModelAndView modelAndView = new ModelAndView("result");
 
@@ -62,7 +62,7 @@ public class GuestQuizController {
         return modelAndView;
     }
 
-    @GetMapping("/solved-quiz/{token}")
+    @GetMapping("/{token}/review")
     public ModelAndView showSolvedGuestQuiz(@PathVariable String token) {
         ModelAndView modelAndView = new ModelAndView("solved-quiz");
 
