@@ -14,7 +14,7 @@
 
     <main>
         <form th:action="${isLogged == false} ? @{/guest/quizzes/{viewToken}/submit(viewToken=${quiz.viewToken})}
-                                              : @{/users/quizzes/{id}/submit(id=${quiz.id})}"
+                                              : @{/users/quizzes/{viewToken}/submit(viewToken=${quiz.viewToken})}"
               th:method="POST"
               id="quizForm">
             <h2 th:text="'Куиз в категория ' + ${quiz.categoryName}"></h2>
@@ -24,7 +24,7 @@
                    th:if="${quiz.viewToken != null}" />
 
             <!-- Ако е записан quiz в базата -->
-            <input type="hidden" name="quizId" th:value="${quiz.id}"
+            <input type="hidden" name="id" th:value="${quiz.id}"
                    th:if="${quiz.id != null}" />
 
             <div class="question-pages">

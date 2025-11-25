@@ -42,7 +42,6 @@ public class GuestQuizServiceImpl implements GuestQuizService {
     @Override
     public Quiz createQuiz(Long categoryId, int numberOfQuestions) {
         List<QuestionApiDTO> questionApiDTOs = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
-
         if (questionApiDTOs.isEmpty()) {
             throw new NoQuestionsFoundException("Няма налични въпроси в тази категория.");
         }
@@ -51,6 +50,10 @@ public class GuestQuizServiceImpl implements GuestQuizService {
             throw new NotEnoughQuestionsException("Броят на въпросите налични в тази категория не е достатъчен, за да започнете куиз.");
         }
 
+        String categoryName = this.categoryService.getCategoryNameById(categoryId)
+                .describeConstable()
+                .orElseThrow(() -> new CategoryNotFoundException("Категорията не е намерена."));
+
         Collections.shuffle(questionApiDTOs);
         List<QuestionDTO> questionDTOs = questionApiDTOs.stream()
                 .limit(numberOfQuestions)
@@ -58,9 +61,6 @@ public class GuestQuizServiceImpl implements GuestQuizService {
                 .toList();
 
         String viewToken = UUID.randomUUID().toString();
-        String categoryName = this.categoryService.getCategoryNameById(categoryId)
-                .describeConstable()
-                .orElseThrow(() -> new CategoryNotFoundException("Категорията не е намерена."));
 
         Quiz quiz = Quiz.builder()
                 .viewToken(viewToken)

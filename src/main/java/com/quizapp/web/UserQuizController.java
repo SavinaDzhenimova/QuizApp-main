@@ -2,7 +2,7 @@ package com.quizapp.web;
 
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
-import com.quizapp.model.entity.SolvedQuiz;
+import com.quizapp.model.entity.Quiz;
 import com.quizapp.service.interfaces.UserQuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,48 +19,46 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserQuizController {
 
-    private final UserQuizService solvedQuizService;
+    private final UserQuizService userQuizService;
 
     @PostMapping("/start")
     public String createQuiz(@RequestParam("categoryId") Long categoryId,
-                             @AuthenticationPrincipal UserDetails userDetails,
                              RedirectAttributes redirectAttributes) {
         int numberOfQuestions = 5;
 
-        SolvedQuiz solvedQuiz = this.solvedQuizService.createQuiz(categoryId, numberOfQuestions, userDetails.getUsername());
-        Long id = solvedQuiz.getId();
+        Quiz quiz = this.userQuizService.createQuiz(categoryId, numberOfQuestions);
 
         redirectAttributes.addAttribute("page", 0);
 
-        return "redirect:/users/quizzes/" + id;
+        return "redirect:/users/quizzes/" + quiz.getViewToken();
     }
 
-    @GetMapping("/{quizId}")
-    public ModelAndView showQuiz(@PathVariable Long quizId) {
+    @GetMapping("/{viewToken}")
+    public ModelAndView showQuiz(@PathVariable String viewToken) {
 
         ModelAndView modelAndView = new ModelAndView("quiz");
 
-        QuizDTO solvedQuizDTO = this.solvedQuizService.getSolvedQuizById(quizId);
-        modelAndView.addObject("quiz", solvedQuizDTO);
+        Quiz quiz = this.userQuizService.getSolvedQuizByViewToken(viewToken);
+        modelAndView.addObject("quiz", quiz);
         modelAndView.addObject("isLogged", true);
 
         return modelAndView;
     }
 
-    @PostMapping("/{id}/submit")
-    public String submitQuiz(@PathVariable Long quizId,
+    @PostMapping("/{viewToken}/submit")
+    public String submitQuiz(@PathVariable String viewToken,
                              @AuthenticationPrincipal UserDetails userDetails,
                              @RequestParam Map<String, String> formData) {
-        this.solvedQuizService.evaluateQuiz(quizId, formData, userDetails.getUsername());
+        Long id = this.userQuizService.evaluateQuiz(viewToken, formData, userDetails.getUsername());
 
-        return "redirect:/users/quizzes/" + quizId + "/result";
+        return "redirect:/users/quizzes/" + id + "/result";
     }
 
     @GetMapping("/{id}/result")
     public ModelAndView showSolvedQuizResult(@PathVariable Long id) {
         ModelAndView modelAndView = new ModelAndView("result");
 
-        QuizResultDTO quizResultDTO = this.solvedQuizService.getQuizResult(id);
+        QuizResultDTO quizResultDTO = this.userQuizService.getQuizResult(id);
 
         modelAndView.addObject("result", quizResultDTO);
 
@@ -71,7 +69,7 @@ public class UserQuizController {
     public ModelAndView showSolvedQuizById(@PathVariable Long id) {
         ModelAndView modelAndView = new ModelAndView("solved-quiz");
 
-        QuizDTO solvedQuizDTO = this.solvedQuizService.getSolvedQuizById(id);
+        QuizDTO solvedQuizDTO = this.userQuizService.getSolvedQuizById(id);
         modelAndView.addObject("solvedQuiz", solvedQuizDTO);
 
         return modelAndView;

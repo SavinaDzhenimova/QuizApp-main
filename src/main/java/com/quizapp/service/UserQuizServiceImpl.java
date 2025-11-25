@@ -1,12 +1,10 @@
 package com.quizapp.service;
 
-import com.quizapp.exception.NotEnoughQuestionsException;
-import com.quizapp.exception.NoQuestionsFoundException;
-import com.quizapp.exception.QuizNotFoundException;
-import com.quizapp.exception.UserNotFoundException;
+import com.quizapp.exception.*;
 import com.quizapp.model.dto.question.QuestionDTO;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
+import com.quizapp.model.entity.Quiz;
 import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.model.entity.SolvedQuiz;
 import com.quizapp.model.entity.User;
@@ -23,7 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +32,7 @@ public class UserQuizServiceImpl implements UserQuizService {
     private final QuestionService questionService;
     private final UserService userService;
     private final UserStatisticsService userStatisticsService;
+    private final Map<String, Quiz> tempQuizzes = new ConcurrentHashMap<>();
 
     @Override
     public QuizDTO getSolvedQuizById(Long id) {
@@ -77,10 +76,7 @@ public class UserQuizServiceImpl implements UserQuizService {
     }
 
     @Override
-    public SolvedQuiz createQuiz(Long categoryId, int numberOfQuestions, String username) {
-        User user = this.userService.getUserByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("Потребителят не е намерен."));
-
+    public Quiz createQuiz(Long categoryId, int numberOfQuestions) {
         List<QuestionApiDTO> questionApiDTOs = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
         if (questionApiDTOs.isEmpty()) {
             throw new NoQuestionsFoundException("Няма налични въпроси в тази категория.");
@@ -90,19 +86,38 @@ public class UserQuizServiceImpl implements UserQuizService {
             throw new NotEnoughQuestionsException("Броят на въпросите налични в тази категория не е достатъчен, за да започнете куиз.");
         }
 
-        Collections.shuffle(questionApiDTOs);
-        List<Long> selectedIds = questionApiDTOs.stream()
-                .limit(numberOfQuestions)
-                .map(QuestionApiDTO::getId)
-                .collect(Collectors.toList());
+        String categoryName = this.categoryService.getCategoryNameById(categoryId)
+                .describeConstable()
+                .orElseThrow(() -> new CategoryNotFoundException("Категорията не е намерена."));
 
-        SolvedQuiz solvedQuiz = SolvedQuiz.builder()
-                .user(user)
+        Collections.shuffle(questionApiDTOs);
+        List<QuestionDTO> questionDTOs = questionApiDTOs.stream()
+                .limit(numberOfQuestions)
+                .map(this.questionService::mapQuestionApiToDTO)
+                .toList();
+
+        String viewToken = UUID.randomUUID().toString();
+        Quiz quiz = Quiz.builder()
+                .viewToken(viewToken)
                 .categoryId(categoryId)
-                .questionIds(selectedIds)
+                .categoryName(categoryName)
+                .questions(questionDTOs)
+                .expireAt(LocalDateTime.now().plusMinutes(30))
                 .build();
 
-        return this.solvedQuizRepository.saveAndFlush(solvedQuiz);
+        this.tempQuizzes.put(viewToken, quiz);
+        return quiz;
+    }
+
+    @Override
+    public Quiz getSolvedQuizByViewToken(String viewToken) {
+        Quiz quiz = this.tempQuizzes.get(viewToken);
+
+        if (quiz == null) {
+            throw new QuizNotFoundException("Куизът не е намерен.");
+        }
+
+        return quiz;
     }
 
     private Map<Long, String> mapUserAnswers(Map<String, String> formData) {
@@ -120,42 +135,57 @@ public class UserQuizServiceImpl implements UserQuizService {
 
     @Override
     @Transactional
-    public void evaluateQuiz(Long quizId, Map<String, String> formData, String username) {
+    public Long evaluateQuiz(String viewToken, Map<String, String> formData, String username) {
+        Quiz quiz = this.tempQuizzes.get(viewToken);
+
+        if (quiz == null) {
+            throw new QuizNotFoundException("Куизът не е намерен.");
+        }
+
         User user = this.userService.getUserByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("Потребителят не е намерен."));
 
-        SolvedQuiz solvedQuiz = this.solvedQuizRepository.findById(quizId)
-                .orElseThrow(() -> new QuizNotFoundException("Куизът не е намерен."));
-
         Map<Long, String> userAnswers = this.mapUserAnswers(formData);
 
-        this.saveSolvedQuizResult(solvedQuiz, user, userAnswers);
+        this.tempQuizzes.remove(viewToken);
+
+        return this.saveSolvedQuiz(quiz, user, userAnswers);
     }
 
-    private void saveSolvedQuizResult(SolvedQuiz solvedQuiz, User user, Map<Long, String> userAnswers) {
-        List<QuestionApiDTO> questionApiDTOs = solvedQuiz.getQuestionIds().stream()
-                .map(this.questionService::makeGetRequestById)
+    private Long saveSolvedQuiz(Quiz quiz, User user, Map<Long, String> userAnswers) {
+        long correctAnswers = this.getCorrectAnswers(quiz, userAnswers);
+        int totalQuestions = quiz.getQuestions().size();
+        LocalDateTime solvedAt = LocalDateTime.now();
+
+        List<Long> questionIds = quiz.getQuestions().stream()
+                .map(QuestionDTO::getId)
                 .toList();
 
-        long correctAnswers = questionApiDTOs.stream()
-                .filter(q -> q.getCorrectAnswer().equals(userAnswers.get(q.getId())))
-                .count();
+        SolvedQuiz solvedQuiz = SolvedQuiz.builder()
+                .categoryId(quiz.getCategoryId())
+                .user(user)
+                .score((int) correctAnswers)
+                .maxScore(totalQuestions)
+                .questionIds(questionIds)
+                .userAnswers(userAnswers)
+                .solvedAt(solvedAt)
+                .build();
 
-        int totalQuestions = questionApiDTOs.size();
-
-        LocalDateTime solvedAt = LocalDateTime.now();
-        solvedQuiz.setUserAnswers(userAnswers);
-        solvedQuiz.setSolvedAt(solvedAt);
-        solvedQuiz.setScore((int) correctAnswers);
-        solvedQuiz.setMaxScore(totalQuestions);
-        this.solvedQuizRepository.saveAndFlush(solvedQuiz);
+        SolvedQuiz savedQuiz = this.solvedQuizRepository.saveAndFlush(solvedQuiz);
 
         UserStatistics userStatistics = this.userStatisticsService
                 .updateUserStatistics(user.getUserStatistics(), correctAnswers, totalQuestions, solvedAt);
 
         user.setUserStatistics(userStatistics);
-        user.getSolvedQuizzes().add(solvedQuiz);
         this.userService.saveAndFlushUser(user);
+
+        return savedQuiz.getId();
+    }
+
+    private Long getCorrectAnswers(Quiz quiz, Map<Long, String> userAnswers) {
+        return quiz.getQuestions().stream()
+                .filter(q -> q.getCorrectAnswer().equals(userAnswers.get(q.getId())))
+                .count();
     }
 
     @Override

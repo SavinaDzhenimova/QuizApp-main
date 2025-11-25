@@ -26,11 +26,10 @@ public class GuestQuizController {
         int numberOfQuestions = 5;
 
         Quiz quiz = this.guestQuizService.createQuiz(categoryId, numberOfQuestions);
-        String viewToken = quiz.getViewToken();
 
         redirectAttributes.addAttribute("page", 0);
 
-        return "redirect:/guest/quizzes/" + viewToken;
+        return "redirect:/guest/quizzes/" + quiz.getViewToken();
     }
 
     @GetMapping("/{viewToken}")

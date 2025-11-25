@@ -25,7 +25,7 @@
                     <ul>
                         <li>Категория: <span th:text="${quiz.categoryName}"></span></li>
                         <li>Резултат:
-                            <span th:text="${quiz.score}"></span>/<span th:text="${quiz.maxScore}"></span>
+                            <span th:text="${quiz.correctAnswers}"></span>/<span th:text="${quiz.totalQuestions}"></span>
                         </li>
                         <li>Решен на: <span th:text="${#temporals.format(quiz.solvedAt, 'dd.MM.yyyy г. HH:mm')}"></span></li>
                         <li>

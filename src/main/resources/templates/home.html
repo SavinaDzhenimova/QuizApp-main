@@ -50,8 +50,8 @@
                     <tr th:each="sq : ${user.solvedQuizzes}">
                         <td th:text="${#temporals.format(sq.solvedAt, 'dd.MM.yyyy г. HH:mm')}">01.01.2025</td>
                         <td th:text="${sq.categoryName}">Наука</td>
-                        <td th:text="${sq.score}">4</td>
-                        <td th:text="${sq.maxScore}">5</td>
+                        <td th:text="${sq.correctAnswers}">4</td>
+                        <td th:text="${sq.totalQuestions}">5</td>
                     </tr>
                     </tbody>
                 </table>
