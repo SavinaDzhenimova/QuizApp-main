@@ -4,20 +4,20 @@
 <head>
     <th:block th:replace="~{fragments/commons::head}"></th:block>
     <link rel="stylesheet" href="/css/error-styles.css">
-    <title>Недостатъчно въпроси</title>
+    <title>Обектът не е намерен</title>
 </head>
 
 <body>
 
-    <header th:replace="~{fragments/commons::header}"></header>
+<header th:replace="~{fragments/commons::header}"></header>
 
     <main>
         <div class="error-container">
-            <h1>Недостатъчен брой въпроси</h1>
+            <h1>Обектът не е намерен</h1>
 
             <div class="error-content">
-                <p th:text="${message}">Броят на въпросите налични в тази категория не е достатъчен, за да започнете куиз.</p>
-                <p>Очаквайте в най-скоро време да бъдат добавени още въпроси.</p>
+                <p>Изглежда нещо се обърка.</p>
+                <p th:text="${message}">Обектът не е намерен.</p>
                 <a th:href="@{/start-quiz}" class="btn-start">Нов куиз</a>
             </div>
 

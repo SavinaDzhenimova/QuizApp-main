@@ -28,6 +28,33 @@ public class GlobalExceptionHandler {
         return modelAndView;
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ModelAndView handleUserNotFound(UserNotFoundException ex) {
+        ModelAndView modelAndView = new ModelAndView("error/object-not-found");
+
+        modelAndView.addObject("message", ex.getMessage());
+
+        return modelAndView;
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ModelAndView handleCategoryNotFound(CategoryNotFoundException ex) {
+        ModelAndView modelAndView = new ModelAndView("error/object-not-found");
+
+        modelAndView.addObject("message", ex.getMessage());
+
+        return modelAndView;
+    }
+
+    @ExceptionHandler(QuestionsNotFoundException.class)
+    public ModelAndView handleQuestionsNotFound(QuestionsNotFoundException ex) {
+        ModelAndView modelAndView = new ModelAndView("error/object-not-found");
+
+        modelAndView.addObject("message", ex.getMessage());
+
+        return modelAndView;
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ModelAndView handleAccessDenied(AccessDeniedException ex) {
         return new ModelAndView("error/403");

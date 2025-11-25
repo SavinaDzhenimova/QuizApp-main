@@ -1,6 +1,8 @@
 package com.quizapp.service;
 
 import com.quizapp.exception.NotEnoughQuestionsException;
+import com.quizapp.exception.QuestionsNotFoundException;
+import com.quizapp.exception.UserNotFoundException;
 import com.quizapp.model.dto.question.QuestionDTO;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
@@ -80,14 +82,12 @@ public class UserQuizServiceImpl implements UserQuizService {
 
     @Override
     public SolvedQuiz createQuiz(Long categoryId, int numberOfQuestions, String username) {
-        Optional<User> optionalUser = this.userService.getUserByUsername(username);
-        if (optionalUser.isEmpty()) {
-            return null;
-        }
+        User user = this.userService.getUserByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("Потребителят не е намерен."));
 
         List<QuestionApiDTO> questionApiDTOs = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
         if (questionApiDTOs.isEmpty()) {
-            return null;
+            throw new QuestionsNotFoundException("Няма налични въпроси в тази категория.");
         }
 
         if (questionApiDTOs.size() < numberOfQuestions) {
@@ -101,7 +101,7 @@ public class UserQuizServiceImpl implements UserQuizService {
                 .collect(Collectors.toList());
 
         SolvedQuiz solvedQuiz = SolvedQuiz.builder()
-                .user(optionalUser.get())
+                .user(user)
                 .categoryId(categoryId)
                 .questionIds(selectedIds)
                 .build();

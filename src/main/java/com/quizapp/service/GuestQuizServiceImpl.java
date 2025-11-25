@@ -1,6 +1,8 @@
 package com.quizapp.service;
 
+import com.quizapp.exception.CategoryNotFoundException;
 import com.quizapp.exception.NotEnoughQuestionsException;
+import com.quizapp.exception.QuestionsNotFoundException;
 import com.quizapp.model.dto.question.QuestionDTO;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
@@ -34,6 +36,10 @@ public class GuestQuizServiceImpl implements GuestQuizService {
     public Quiz createQuiz(Long categoryId, int numberOfQuestions) {
         List<QuestionApiDTO> questionApiDTOs = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
 
+        if (questionApiDTOs.isEmpty()) {
+            throw new QuestionsNotFoundException("Няма налични въпроси в тази категория.");
+        }
+
         if (questionApiDTOs.size() < numberOfQuestions) {
             throw new NotEnoughQuestionsException("Броят на въпросите налични в тази категория не е достатъчен, за да започнете куиз.");
         }
@@ -46,7 +52,9 @@ public class GuestQuizServiceImpl implements GuestQuizService {
                 .toList();
 
         String viewToken = UUID.randomUUID().toString();
-        String categoryName = this.categoryService.getCategoryNameById(categoryId);
+        String categoryName = this.categoryService.getCategoryNameById(categoryId)
+                .describeConstable()
+                .orElseThrow(() -> new CategoryNotFoundException("Категорията не е намерена."));
 
         Quiz quiz = Quiz.builder()
                 .viewToken(viewToken)
