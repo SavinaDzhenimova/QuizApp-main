@@ -36,7 +36,7 @@ public class GuestQuizController {
     public ModelAndView showQuiz(@PathVariable String viewToken) {
         ModelAndView modelAndView = new ModelAndView("quiz");
 
-        Quiz quiz = this.guestQuizService.getSolvedQuizByViewToken(viewToken);
+        Quiz quiz = this.guestQuizService.getQuizFromTemp(viewToken);
         modelAndView.addObject("quiz", quiz);
         modelAndView.addObject("isLogged", false);
 

@@ -9,9 +9,9 @@ import java.util.Map;
 
 public interface GuestQuizService {
 
-    Quiz getSolvedQuizByViewToken(String viewToken);
-
     Quiz createQuiz(Long categoryId, int numberOfQuestions);
+
+    Quiz getQuizFromTemp(String viewToken);
 
     void evaluateQuiz(String quizId, Map<String, String> answers);
 

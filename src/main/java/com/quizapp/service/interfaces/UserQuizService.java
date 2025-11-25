@@ -10,14 +10,14 @@ import java.util.Map;
 
 public interface UserQuizService {
 
+    Quiz createQuiz(Long categoryId, int numberOfQuestions);
+
+    Quiz getQuizFromTemp(String viewToken);
+
     QuizDTO getSolvedQuizById(Long id);
 
     @Transactional
     Page<QuizDTO> getSolvedQuizzesByUsername(String username, int page, int size);
-
-    Quiz createQuiz(Long categoryId, int numberOfQuestions);
-
-    Quiz getSolvedQuizByViewToken(String viewToken);
 
     @Transactional
     Long evaluateQuiz(String viewToken, Map<String, String> formData, String username);

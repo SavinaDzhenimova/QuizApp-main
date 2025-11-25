@@ -38,7 +38,7 @@ public class UserQuizController {
 
         ModelAndView modelAndView = new ModelAndView("quiz");
 
-        Quiz quiz = this.userQuizService.getSolvedQuizByViewToken(viewToken);
+        Quiz quiz = this.userQuizService.getQuizFromTemp(viewToken);
         modelAndView.addObject("quiz", quiz);
         modelAndView.addObject("isLogged", true);
 
