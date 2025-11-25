@@ -4,6 +4,7 @@ import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.entity.Quiz;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 public interface GuestQuizService {
@@ -17,4 +18,6 @@ public interface GuestQuizService {
     QuizResultDTO getQuizResult(String viewToken);
 
     QuizDTO showQuizResult(String token);
+
+    void deleteExpiredGuestQuizzes(LocalDateTime dateTime);
 }

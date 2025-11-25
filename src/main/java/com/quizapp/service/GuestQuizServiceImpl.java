@@ -67,6 +67,7 @@ public class GuestQuizServiceImpl implements GuestQuizService {
                 .categoryId(categoryId)
                 .categoryName(categoryName)
                 .questions(questionDTOs)
+                .expireAt(LocalDateTime.now().plusMinutes(30))
                 .build();
 
         this.tempQuizzes.put(viewToken, quiz);
@@ -117,6 +118,7 @@ public class GuestQuizServiceImpl implements GuestQuizService {
                 .scorePercent(scorePercent)
                 .categoryName(quiz.getCategoryName())
                 .solvedAt(LocalDateTime.now())
+                .expireAt(quiz.getExpireAt())
                 .questions(quiz.getQuestions())
                 .userAnswers(userAnswers)
                 .build();
@@ -133,6 +135,12 @@ public class GuestQuizServiceImpl implements GuestQuizService {
         }
 
         return quizDTO;
+    }
+
+    @Override
+    public void deleteExpiredGuestQuizzes(LocalDateTime dateTime) {
+        this.guestQuizResults.entrySet()
+                .removeIf(entry -> entry.getValue().getExpireAt().isBefore(dateTime));
     }
 
     private Long getCorrectAnswers(Quiz quiz, Map<Long, String> userAnswers) {

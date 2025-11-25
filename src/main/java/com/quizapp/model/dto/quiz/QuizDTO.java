@@ -23,5 +23,7 @@ public class QuizDTO extends QuizResultDTO {
 
     private LocalDateTime solvedAt;
 
+    private LocalDateTime expireAt;
+
     private Map<Long, String> userAnswers;
 }
