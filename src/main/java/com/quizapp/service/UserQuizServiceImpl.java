@@ -89,18 +89,12 @@ public class UserQuizServiceImpl extends AbstractQuizService implements UserQuiz
     @Override
     @Transactional
     public Long evaluateQuiz(String viewToken, Map<String, String> formData, String username) {
-        Quiz quiz = super.tempQuizzes.get(viewToken);
-
-        if (quiz == null) {
-            throw new QuizNotFoundException("Куизът не е намерен.");
-        }
+        Quiz quiz = super.loadAndRemoveTempQuiz(viewToken);
 
         User user = this.userService.getUserByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("Потребителят не е намерен."));
 
-        Map<Long, String> userAnswers = this.mapUserAnswers(formData);
-
-        super.tempQuizzes.remove(viewToken);
+        Map<Long, String> userAnswers = super.mapUserAnswers(formData);
 
         return this.saveSolvedQuiz(quiz, user, userAnswers);
     }

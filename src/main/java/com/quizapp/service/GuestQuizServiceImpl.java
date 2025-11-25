@@ -34,15 +34,9 @@ public class GuestQuizServiceImpl extends AbstractQuizService implements GuestQu
 
     @Override
     public void evaluateQuiz(String viewToken, Map<String, String> formData) {
-        Quiz quiz = super.tempQuizzes.get(viewToken);
-
-        if (quiz == null) {
-            throw new QuizNotFoundException("Куизът не е намерен.");
-        }
+        Quiz quiz = super.loadAndRemoveTempQuiz(viewToken);
 
         Map<Long, String> userAnswers = super.mapUserAnswers(formData);
-
-        super.tempQuizzes.remove(viewToken);
 
         this.saveQuizResult(quiz, userAnswers);
     }

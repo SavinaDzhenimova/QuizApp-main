@@ -68,6 +68,18 @@ public abstract class AbstractQuizService {
         return quiz;
     }
 
+    protected Quiz loadAndRemoveTempQuiz(String viewToken) {
+        Quiz quiz = this.tempQuizzes.get(viewToken);
+
+        if (quiz == null) {
+            throw new QuizNotFoundException("Куизът не е намерен.");
+        }
+
+        this.tempQuizzes.remove(viewToken);
+
+        return quiz;
+    }
+
     protected Long getCorrectAnswers(Quiz quiz, Map<Long, String> userAnswers) {
         return quiz.getQuestions().stream()
                 .filter(q -> q.getCorrectAnswer().equals(userAnswers.get(q.getId())))
@@ -85,9 +97,5 @@ public abstract class AbstractQuizService {
         });
 
         return userAnswers;
-    }
-
-    protected void removeTempQuiz(String viewToken) {
-        tempQuizzes.remove(viewToken);
     }
 }
