@@ -1,7 +1,6 @@
 package com.quizapp.exception;
 
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
@@ -14,6 +13,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidPasswordResetToken.class)
     public ModelAndView handleInvalidPasswordResetToken(InvalidPasswordResetToken ex) {
         ModelAndView modelAndView = new ModelAndView("error/invalid-token");
+
+        modelAndView.addObject("message", ex.getMessage());
+
+        return modelAndView;
+    }
+
+    @ExceptionHandler(NotEnoughQuestionsException.class)
+    public ModelAndView handleNotEnoughQuestions(NotEnoughQuestionsException ex) {
+        ModelAndView modelAndView = new ModelAndView("error/not-enough-questions");
 
         modelAndView.addObject("message", ex.getMessage());
 

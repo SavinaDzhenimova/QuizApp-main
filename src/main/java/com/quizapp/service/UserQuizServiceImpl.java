@@ -1,5 +1,6 @@
 package com.quizapp.service;
 
+import com.quizapp.exception.NotEnoughQuestionsException;
 import com.quizapp.model.dto.question.QuestionDTO;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
@@ -80,15 +81,17 @@ public class UserQuizServiceImpl implements UserQuizService {
     @Override
     public SolvedQuiz createQuiz(Long categoryId, int numberOfQuestions, String username) {
         Optional<User> optionalUser = this.userService.getUserByUsername(username);
-
         if (optionalUser.isEmpty()) {
             return null;
         }
 
         List<QuestionApiDTO> questionApiDTOs = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
-
         if (questionApiDTOs.isEmpty()) {
             return null;
+        }
+
+        if (questionApiDTOs.size() < numberOfQuestions) {
+            throw new NotEnoughQuestionsException("Броят на въпросите налични в тази категория не е достатъчен, за да започнете куиз.");
         }
 
         Collections.shuffle(questionApiDTOs);

@@ -31,7 +31,7 @@
                 <a class="btn-start" sec:authorize="isAuthenticated()"
                    th:href="@{/users/quizzes/{id}/review(id=${result.id})}">Прегледай решението</a>
 
-                <a th:href="@{/categories}" class="btn-start">Започни нов куиз</a>
+                <a th:href="@{/start-quiz}" class="btn-start">Започни нов куиз</a>
             </div>
         </div>
     </main>

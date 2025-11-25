@@ -49,7 +49,7 @@
             <a class="btn-start" sec:authorize="isAuthenticated()"
                th:href="@{/users/quizzes/{id}/result(id=${solvedQuiz.id})}">Обратно към резултата</a>
             <a class="btn-start" sec:authorize="isAnonymous()"
-               th:href="@{/guest/quiz/{viewToken}/result(viewToken=${solvedQuiz.viewToken})}">Обратно към резултата</a>
+               th:href="@{/guest/quizzes/{viewToken}/result(viewToken=${solvedQuiz.viewToken})}">Обратно към резултата</a>
         </div>
         </div>
     </main>

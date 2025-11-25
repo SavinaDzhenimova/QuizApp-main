@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <link rel="stylesheet" href="/css/error-styles.css">
+    <title>Недостатъчно въпроси</title>
+</head>
+
+<body>
+
+    <header th:replace="~{fragments/commons::header}"></header>
+
+    <main>
+      <div class="error-container">
+        <h1>Недостатъчен брой въпроси</h1>
+
+        <div class="error-content">
+            <p th:text="${message}">Броят на въпросите налични в тази категория не е достатъчен, за да започнете куиз.</p>
+            <p>Очаквайте в най-скоро време да бъдат добавени още въпроси.</p>
+            <a th:href="@{/start-quiz}" class="btn-start">Нов куиз</a>
+        </div>
+
+        <div class="error-image">
+            <img th:src="@{/images/error/not-enough-questions.png}"/>
+        </div>
+      </div>
+    </main>
+
+    <footer th:replace="~{fragments/commons::footer}"></footer>
+
+</body>
+</html>

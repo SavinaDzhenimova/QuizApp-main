@@ -1,5 +1,6 @@
 package com.quizapp.service;
 
+import com.quizapp.exception.NotEnoughQuestionsException;
 import com.quizapp.model.dto.question.QuestionDTO;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
@@ -32,6 +33,10 @@ public class GuestQuizServiceImpl implements GuestQuizService {
     @Override
     public Quiz createQuiz(Long categoryId, int numberOfQuestions) {
         List<QuestionApiDTO> questionApiDTOs = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
+
+        if (questionApiDTOs.size() < numberOfQuestions) {
+            throw new NotEnoughQuestionsException("Броят на въпросите налични в тази категория не е достатъчен, за да започнете куиз.");
+        }
 
         Collections.shuffle(questionApiDTOs);
 
