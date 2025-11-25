@@ -2,7 +2,8 @@ package com.quizapp.service;
 
 import com.quizapp.exception.CategoryNotFoundException;
 import com.quizapp.exception.NotEnoughQuestionsException;
-import com.quizapp.exception.QuestionsNotFoundException;
+import com.quizapp.exception.NoQuestionsFoundException;
+import com.quizapp.exception.QuizNotFoundException;
 import com.quizapp.model.dto.question.QuestionDTO;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
@@ -29,7 +30,13 @@ public class GuestQuizServiceImpl implements GuestQuizService {
 
     @Override
     public Quiz getSolvedQuizByViewToken(String viewToken) {
-        return this.tempQuizzes.get(viewToken);
+        Quiz quiz = this.tempQuizzes.get(viewToken);
+
+        if (quiz == null) {
+            throw new QuizNotFoundException("Куизът не е намерен.");
+        }
+
+        return quiz;
     }
 
     @Override
@@ -37,7 +44,7 @@ public class GuestQuizServiceImpl implements GuestQuizService {
         List<QuestionApiDTO> questionApiDTOs = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
 
         if (questionApiDTOs.isEmpty()) {
-            throw new QuestionsNotFoundException("Няма налични въпроси в тази категория.");
+            throw new NoQuestionsFoundException("Няма налични въпроси в тази категория.");
         }
 
         if (questionApiDTOs.size() < numberOfQuestions) {
@@ -45,7 +52,6 @@ public class GuestQuizServiceImpl implements GuestQuizService {
         }
 
         Collections.shuffle(questionApiDTOs);
-
         List<QuestionDTO> questionDTOs = questionApiDTOs.stream()
                 .limit(numberOfQuestions)
                 .map(this.questionService::mapQuestionApiToDTO)
@@ -71,7 +77,9 @@ public class GuestQuizServiceImpl implements GuestQuizService {
     public void evaluateQuiz(String viewToken, Map<String, String> formData) {
         Quiz quiz = this.tempQuizzes.get(viewToken);
 
-        if (quiz == null) return;
+        if (quiz == null) {
+            throw new QuizNotFoundException("Куизът не е намерен.");
+        }
 
         Map<Long, String> userAnswers = this.parseUserAnswers(formData);
 
@@ -83,6 +91,10 @@ public class GuestQuizServiceImpl implements GuestQuizService {
     @Override
     public QuizResultDTO getQuizResult(String viewToken) {
         QuizDTO quizDTO = this.guestQuizResults.get(viewToken);
+
+        if (quizDTO == null) {
+            throw new QuizNotFoundException("Куизът не е намерен.");
+        }
 
         return QuizResultDTO.builder()
                 .viewToken(viewToken)
@@ -114,7 +126,13 @@ public class GuestQuizServiceImpl implements GuestQuizService {
 
     @Override
     public QuizDTO showQuizResult(String viewToken) {
-        return this.guestQuizResults.get(viewToken);
+        QuizDTO quizDTO = this.guestQuizResults.get(viewToken);
+
+        if (quizDTO == null) {
+            throw new QuizNotFoundException("Куизът не е намерен.");
+        }
+
+        return quizDTO;
     }
 
     private Long getCorrectAnswers(Quiz quiz, Map<Long, String> userAnswers) {

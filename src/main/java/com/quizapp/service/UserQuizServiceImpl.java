@@ -1,7 +1,8 @@
 package com.quizapp.service;
 
 import com.quizapp.exception.NotEnoughQuestionsException;
-import com.quizapp.exception.QuestionsNotFoundException;
+import com.quizapp.exception.NoQuestionsFoundException;
+import com.quizapp.exception.QuizNotFoundException;
 import com.quizapp.exception.UserNotFoundException;
 import com.quizapp.model.dto.question.QuestionDTO;
 import com.quizapp.model.dto.quiz.QuizDTO;
@@ -36,13 +37,8 @@ public class UserQuizServiceImpl implements UserQuizService {
 
     @Override
     public QuizDTO getSolvedQuizById(Long id) {
-        Optional<SolvedQuiz> optionalSolvedQuiz = this.solvedQuizRepository.findById(id);
-
-        if (optionalSolvedQuiz.isEmpty()) {
-            return null;
-        }
-
-        SolvedQuiz solvedQuiz = optionalSolvedQuiz.get();
+        SolvedQuiz solvedQuiz = this.solvedQuizRepository.findById(id)
+                .orElseThrow(() -> new QuizNotFoundException("Куизът не е намерен."));
 
         List<QuestionDTO> questionDTOs = solvedQuiz.getQuestionIds().stream()
                 .map(this.questionService::getQuestionById)
@@ -87,7 +83,7 @@ public class UserQuizServiceImpl implements UserQuizService {
 
         List<QuestionApiDTO> questionApiDTOs = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
         if (questionApiDTOs.isEmpty()) {
-            throw new QuestionsNotFoundException("Няма налични въпроси в тази категория.");
+            throw new NoQuestionsFoundException("Няма налични въпроси в тази категория.");
         }
 
         if (questionApiDTOs.size() < numberOfQuestions) {
@@ -125,17 +121,11 @@ public class UserQuizServiceImpl implements UserQuizService {
     @Override
     @Transactional
     public void evaluateQuiz(Long quizId, Map<String, String> formData, String username) {
-        Optional<User> optionalUser = this.userService.getUserByUsername(username);
-        if (optionalUser.isEmpty()) {
-            return;
-        }
-        User user = optionalUser.get();
+        User user = this.userService.getUserByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("Потребителят не е намерен."));
 
-        Optional<SolvedQuiz> optionalSolvedQuiz = this.solvedQuizRepository.findById(quizId);
-        if (optionalSolvedQuiz.isEmpty()) {
-            return;
-        }
-        SolvedQuiz solvedQuiz = optionalSolvedQuiz.get();
+        SolvedQuiz solvedQuiz = this.solvedQuizRepository.findById(quizId)
+                .orElseThrow(() -> new QuizNotFoundException("Куизът не е намерен."));
 
         Map<Long, String> userAnswers = this.mapUserAnswers(formData);
 
@@ -170,13 +160,8 @@ public class UserQuizServiceImpl implements UserQuizService {
 
     @Override
     public QuizResultDTO getQuizResult(Long id) {
-        Optional<SolvedQuiz> optionalSolvedQuiz = this.solvedQuizRepository.findById(id);
-
-        if (optionalSolvedQuiz.isEmpty()) {
-            return null;
-        }
-
-        SolvedQuiz solvedQuiz = optionalSolvedQuiz.get();
+        SolvedQuiz solvedQuiz = this.solvedQuizRepository.findById(id)
+                .orElseThrow(() -> new QuizNotFoundException("Куизът не е намерен."));
 
         int correctAnswers = solvedQuiz.getScore();
         int totalQuestions = solvedQuiz.getMaxScore();
