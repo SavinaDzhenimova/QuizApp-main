@@ -44,7 +44,12 @@
         <div class="pagination-buttons">
             <button type="button" id="prevBtn">⬅ Предишен</button>
             <button type="button" id="nextBtn">Следващ ➡</button>
-            <a sec:authorize="isAuthenticated()" th:href="@{/users/quizzes}" class="btn-start">Обратно към всички</a>
+            <a class="btn-start" sec:authorize="isAuthenticated()"
+               th:href="@{/users/quizzes}">Обратно към всички</a>
+            <a class="btn-start" sec:authorize="isAuthenticated()"
+               th:href="@{/users/quiz/result/{id}(id=${solvedQuiz.id})}">Обратно към резултата</a>
+            <a class="btn-start" sec:authorize="isAnonymous()"
+               th:href="@{/guest/quiz/result/{viewToken}(viewToken=${solvedQuiz.viewToken})}">Обратно към резултата</a>
         </div>
       </div>
     </main>

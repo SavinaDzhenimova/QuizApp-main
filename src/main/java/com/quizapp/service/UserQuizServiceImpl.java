@@ -1,7 +1,6 @@
 package com.quizapp.service;
 
 import com.quizapp.model.dto.question.QuestionDTO;
-import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.model.entity.SolvedQuiz;
@@ -121,7 +120,7 @@ public class UserQuizServiceImpl implements UserQuizService {
 
     @Override
     @Transactional
-    public QuizResultDTO evaluateQuiz(Long quizId, Map<String, String> formData, String username) {
+    public QuizDTO evaluateQuiz(Long quizId, Map<String, String> formData, String username) {
         Optional<User> optionalUser = this.userService.getUserByUsername(username);
         if (optionalUser.isEmpty()) {
             return null;
@@ -162,7 +161,7 @@ public class UserQuizServiceImpl implements UserQuizService {
         user.getSolvedQuizzes().add(solvedQuiz);
         this.userService.saveAndFlushUser(user);
 
-        return QuizResultDTO.builder()
+        return QuizDTO.builder()
                 .totalQuestions(totalQuestions)
                 .correctAnswers((int) correctAnswers)
                 .scorePercent(scorePercent)

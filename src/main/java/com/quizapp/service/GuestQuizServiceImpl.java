@@ -1,8 +1,8 @@
 package com.quizapp.service;
 
 import com.quizapp.model.dto.question.QuestionDTO;
-import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.dto.quiz.QuizDTO;
+import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.service.interfaces.CategoryService;
@@ -55,33 +55,41 @@ public class GuestQuizServiceImpl implements GuestQuizService {
     }
 
     @Override
-    public QuizResultDTO evaluateQuiz(String viewToken, Map<String, String> formData) {
+    public void evaluateQuiz(String viewToken, Map<String, String> formData) {
         Quiz quiz = this.tempQuizzes.get(viewToken);
 
-        if (quiz == null) return null;
+        if (quiz == null) return;
 
         Map<Long, String> userAnswers = this.parseUserAnswers(formData);
 
-        int totalQuestions = quiz.getQuestions().size();
-        long correctAnswers = this.getCorrectAnswers(quiz, userAnswers);
-
         this.tempQuizzes.remove(viewToken);
 
-        this.saveQuizResult((int) correctAnswers, totalQuestions, quiz, userAnswers);
+        this.saveQuizResult(quiz, userAnswers);
+    }
+
+    @Override
+    public QuizResultDTO getQuizResult(String viewToken) {
+        QuizDTO quizDTO = this.guestQuizResults.get(viewToken);
 
         return QuizResultDTO.builder()
-                .totalQuestions(totalQuestions)
-                .correctAnswers((int) correctAnswers)
-                .scorePercent((double) correctAnswers / totalQuestions * 100)
                 .viewToken(viewToken)
+                .correctAnswers(quizDTO.getCorrectAnswers())
+                .totalQuestions(quizDTO.getTotalQuestions())
+                .scorePercent(quizDTO.getScorePercent())
                 .build();
     }
 
-    private void saveQuizResult(int correctAnswers, int totalQuestions, Quiz quiz, Map<Long, String> userAnswers) {
+    private void saveQuizResult(Quiz quiz, Map<Long, String> userAnswers) {
+
+        int totalQuestions = quiz.getQuestions().size();
+        long correctAnswers = this.getCorrectAnswers(quiz, userAnswers);
+        double scorePercent = ((double) correctAnswers / totalQuestions) * 100;
+
         QuizDTO quizDTO = QuizDTO.builder()
                 .viewToken(quiz.getViewToken())
-                .correctAnswers(correctAnswers)
+                .correctAnswers((int) correctAnswers)
                 .totalQuestions(totalQuestions)
+                .scorePercent(scorePercent)
                 .categoryName(quiz.getCategoryName())
                 .solvedAt(LocalDateTime.now())
                 .questions(quiz.getQuestions())

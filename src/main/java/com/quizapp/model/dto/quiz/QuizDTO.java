@@ -13,7 +13,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class QuizDTO extends BaseQuizDTO {
+public class QuizDTO extends QuizResultDTO {
 
     private Long categoryId;
 

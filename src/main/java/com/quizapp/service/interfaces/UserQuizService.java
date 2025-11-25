@@ -1,6 +1,5 @@
 package com.quizapp.service.interfaces;
 
-import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.entity.SolvedQuiz;
 import jakarta.transaction.Transactional;
@@ -18,7 +17,7 @@ public interface UserQuizService {
     SolvedQuiz createQuiz(Long categoryId, int numberOfQuestions, String username);
 
     @Transactional
-    QuizResultDTO evaluateQuiz(Long quizId, Map<String, String> formData, String username);
+    QuizDTO evaluateQuiz(Long quizId, Map<String, String> formData, String username);
 
     boolean deleteQuizById(Long id);
 }

@@ -1,6 +1,5 @@
 package com.quizapp.web;
 
-import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.entity.SolvedQuiz;
 import com.quizapp.service.interfaces.UserQuizService;
@@ -47,16 +46,16 @@ public class UserQuizController {
         return modelAndView;
     }
 
-    @PostMapping("/submit")
-    public ModelAndView submitQuiz(@RequestParam(value = "quizId", required = false) Long quizId,
+    @PostMapping("/submit/{id}")
+    public ModelAndView submitQuiz(@PathVariable Long quizId,
                                    @AuthenticationPrincipal UserDetails userDetails,
                                    @RequestParam Map<String, String> formData) {
 
         ModelAndView modelAndView = new ModelAndView("result");
 
-        QuizResultDTO quizResultDTO = this.solvedQuizService.evaluateQuiz(quizId, formData, userDetails.getUsername());
+        QuizDTO quizDTO = this.solvedQuizService.evaluateQuiz(quizId, formData, userDetails.getUsername());
 
-        modelAndView.addObject("result", quizResultDTO);
+        modelAndView.addObject("result", quizDTO);
 
         return modelAndView;
     }
