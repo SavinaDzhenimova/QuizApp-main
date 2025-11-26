@@ -9,22 +9,23 @@ import com.quizapp.model.entity.Quiz;
 import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.QuestionService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Service
-@RequiredArgsConstructor
 public abstract class AbstractQuizService {
 
     protected final QuestionService questionService;
     protected final CategoryService categoryService;
-    protected final Map<String, Quiz> tempQuizzes = new ConcurrentHashMap<>();
+    private final Map<String, Quiz> tempQuizzes = new ConcurrentHashMap<>();
 
-    protected Quiz getQuizFromTemp(String viewToken) {
+    public AbstractQuizService(QuestionService questionService, CategoryService categoryService) {
+        this.questionService = questionService;
+        this.categoryService = categoryService;
+    }
+
+    public Quiz getQuizFromTemp(String viewToken) {
         Quiz quiz = this.tempQuizzes.get(viewToken);
 
         if (quiz == null) {
@@ -34,7 +35,7 @@ public abstract class AbstractQuizService {
         return quiz;
     }
 
-    protected Quiz createQuiz(Long categoryId, int numberOfQuestions) {
+    public Quiz createQuiz(Long categoryId, int numberOfQuestions) {
         List<QuestionApiDTO> questionApiDTOs = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
         if (questionApiDTOs.isEmpty()) {
             throw new NoQuestionsFoundException("Няма налични въпроси в тази категория.");
