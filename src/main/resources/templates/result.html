@@ -29,7 +29,7 @@
                    th:href="@{/guest/quizzes/{viewToken}/review(viewToken=${result.viewToken})}">Прегледай решението</a>
 
                 <a class="btn-start" sec:authorize="isAuthenticated()"
-                   th:href="@{/users/quizzes/{id}/review(id=${result.id})}">Прегледай решението</a>
+                   th:href="@{/users/quizzes/{id}/review(id=${result.id}, from='result')}">Прегледай решението</a>
 
                 <a th:href="@{/start-quiz}" class="btn-start">Започни нов куиз</a>
             </div>
