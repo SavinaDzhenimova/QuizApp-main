@@ -31,6 +31,7 @@
 
                     <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin}">Админ панел</a></li>
 
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/users/quizzes}">Решени куизове</a></li>
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/users/home}">Профил</a></li>
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/users/logout}">Изход</a></li>
                 </ul>

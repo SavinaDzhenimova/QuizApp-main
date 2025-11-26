@@ -6,6 +6,7 @@ import com.quizapp.model.entity.Result;
 import com.quizapp.model.entity.User;
 import jakarta.transaction.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
@@ -22,4 +23,6 @@ public interface UserService {
     Optional<User> getUserByEmail(String email);
 
     User saveAndFlushUser(User user);
+
+    void deleteById(Long id);
 }
