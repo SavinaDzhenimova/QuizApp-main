@@ -4,9 +4,10 @@ import com.quizapp.exception.QuizNotFoundException;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.entity.Quiz;
-import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.GuestQuizService;
-import com.quizapp.service.interfaces.QuestionService;
+import com.quizapp.service.utils.AbstractQuizHelper;
+import com.quizapp.service.utils.TempQuizStorage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,29 +15,21 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class GuestQuizServiceImpl extends AbstractQuizService implements GuestQuizService {
+public class GuestQuizServiceImpl extends AbstractQuizHelper implements GuestQuizService {
 
     private final Map<String, QuizDTO> guestQuizResults = new ConcurrentHashMap<>();
 
-    public GuestQuizServiceImpl(QuestionService questionService, CategoryService categoryService) {
-        super(questionService, categoryService);
-    }
-
-    @Override
-    public Quiz getQuizFromTemp(String viewToken) {
-        return super.getQuizFromTemp(viewToken);
-    }
-
-    @Override
-    public Quiz createQuiz(Long categoryId, int numberOfQuestions) {
-        return super.createQuiz(categoryId, numberOfQuestions);
+    public GuestQuizServiceImpl(TempQuizStorage tempQuizStorage) {
+        super(tempQuizStorage);
     }
 
     @Override
     public void evaluateQuiz(String viewToken, Map<String, String> formData) {
-        Quiz quiz = super.loadAndRemoveTempQuiz(viewToken);
+        Quiz quiz = super.loadTempQuiz(viewToken);
 
         Map<Long, String> userAnswers = super.mapUserAnswers(formData);
+
+        super.removeTempQuiz(viewToken);
 
         this.saveQuizResult(quiz, userAnswers);
     }

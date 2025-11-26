@@ -10,6 +10,8 @@ import com.quizapp.model.entity.User;
 import com.quizapp.model.entity.UserStatistics;
 import com.quizapp.repository.SolvedQuizRepository;
 import com.quizapp.service.interfaces.*;
+import com.quizapp.service.utils.AbstractQuizHelper;
+import com.quizapp.service.utils.TempQuizStorage;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,28 +23,23 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-public class UserQuizServiceImpl extends AbstractQuizService implements UserQuizService {
+public class UserQuizServiceImpl extends AbstractQuizHelper implements UserQuizService {
 
+    private final QuestionService questionService;
+    private final CategoryService categoryService;
     private final SolvedQuizRepository solvedQuizRepository;
     private final UserService userService;
     private final UserStatisticsService userStatisticsService;
 
-    public UserQuizServiceImpl(QuestionService questionService, CategoryService categoryService, UserService userService,
-                               SolvedQuizRepository solvedQuizRepository, UserStatisticsService userStatisticsService) {
-        super(questionService, categoryService);
-        this.userService = userService;
+    public UserQuizServiceImpl(TempQuizStorage tempQuizStorage, QuestionService questionService,
+                               CategoryService categoryService, SolvedQuizRepository solvedQuizRepository,
+                               UserService userService, UserStatisticsService userStatisticsService) {
+        super(tempQuizStorage);
+        this.questionService = questionService;
+        this.categoryService = categoryService;
         this.solvedQuizRepository = solvedQuizRepository;
+        this.userService = userService;
         this.userStatisticsService = userStatisticsService;
-    }
-
-    @Override
-    public Quiz getQuizFromTemp(String viewToken) {
-        return super.getQuizFromTemp(viewToken);
-    }
-
-    @Override
-    public Quiz createQuiz(Long categoryId, int numberOfQuestions) {
-        return super.createQuiz(categoryId, numberOfQuestions);
     }
 
     @Override
@@ -51,13 +48,13 @@ public class UserQuizServiceImpl extends AbstractQuizService implements UserQuiz
                 .orElseThrow(() -> new QuizNotFoundException("Куизът не е намерен."));
 
         List<QuestionDTO> questionDTOs = solvedQuiz.getQuestionIds().stream()
-                .map(super.questionService::getQuestionById)
+                .map(this.questionService::getQuestionById)
                 .toList();
 
         return QuizDTO.builder()
                 .id(solvedQuiz.getId())
                 .categoryId(solvedQuiz.getCategoryId())
-                .categoryName(super.categoryService.getCategoryNameById(solvedQuiz.getCategoryId()))
+                .categoryName(this.categoryService.getCategoryNameById(solvedQuiz.getCategoryId()))
                 .correctAnswers(solvedQuiz.getScore())
                 .totalQuestions(solvedQuiz.getMaxScore())
                 .solvedAt(solvedQuiz.getSolvedAt())
@@ -78,7 +75,7 @@ public class UserQuizServiceImpl extends AbstractQuizService implements UserQuiz
                 QuizDTO.builder()
                         .id(solvedQuiz.getId())
                         .categoryId(solvedQuiz.getCategoryId())
-                        .categoryName(super.categoryService.getCategoryNameById(solvedQuiz.getCategoryId()))
+                        .categoryName(this.categoryService.getCategoryNameById(solvedQuiz.getCategoryId()))
                         .correctAnswers(solvedQuiz.getScore())
                         .totalQuestions(solvedQuiz.getMaxScore())
                         .solvedAt(solvedQuiz.getSolvedAt())
@@ -89,7 +86,7 @@ public class UserQuizServiceImpl extends AbstractQuizService implements UserQuiz
     @Override
     @Transactional
     public Long evaluateQuiz(String viewToken, Map<String, String> formData, String username) {
-        Quiz quiz = super.loadAndRemoveTempQuiz(viewToken);
+        Quiz quiz = super.loadTempQuiz(viewToken);
 
         User user = this.userService.getUserByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("Потребителят не е намерен."));
