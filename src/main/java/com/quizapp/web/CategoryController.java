@@ -9,8 +9,6 @@ import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -86,8 +84,7 @@ public class CategoryController {
     }
 
     @GetMapping("/start-quiz")
-    public ModelAndView showCategoriesPage(@RequestParam(required = false) String categoryName,
-                                           @AuthenticationPrincipal UserDetails userDetails) {
+    public ModelAndView showCategoriesPage(@RequestParam(required = false) String categoryName) {
         ModelAndView modelAndView = new ModelAndView("start-quiz");
 
         String decodedText = "";
@@ -99,7 +96,6 @@ public class CategoryController {
 
         modelAndView.addObject("categories", categoryPageDTO.getCategories());
         modelAndView.addObject("categoryName", categoryName);
-        modelAndView.addObject("isLogged", userDetails != null);
 
         return modelAndView;
     }

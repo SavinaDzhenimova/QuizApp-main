@@ -21,13 +21,17 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/api/**", "/", "/users/login", "/users/register",
-                                "/start-quiz", "/about-us", "/contacts", "/contacts/send-inquiry",
-                                "/report-problem", "/report-problem/send-report", "/subscribe").permitAll()
+                        .requestMatchers("/api/**", "/", "/about-us", "/subscribe",
+                                "/contacts", "/contacts/send-inquiry",
+                                "/report-problem", "/report-problem/send-report",
+                                "/users/login", "/users/register",
+                                "/start-quiz", "/quizzes/start", "/quizzes/quiz/**").permitAll()
                         .requestMatchers("/users/forgot-password", "/users/reset-password/**",
                                 "/guest/quizzes/**").anonymous()
-                        .requestMatchers("/users/logout", "/users/home", "/users/quizzes/**").authenticated()
-                        .requestMatchers("/admin", "/categories", "/categories/add-category",
+                        .requestMatchers("/users/logout", "/users/home",
+                                "/users/quizzes/**").authenticated()
+                        .requestMatchers("/admin",
+                                "/categories", "/categories/add-category",
                                 "/questions", "/questions/add-question").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
