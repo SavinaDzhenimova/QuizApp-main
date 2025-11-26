@@ -6,21 +6,21 @@ import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.service.interfaces.GuestQuizService;
 import com.quizapp.service.utils.AbstractQuizHelper;
+import com.quizapp.service.utils.GuestQuizStorage;
 import com.quizapp.service.utils.TempQuizStorage;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class GuestQuizServiceImpl extends AbstractQuizHelper implements GuestQuizService {
 
-    private final Map<String, QuizDTO> guestQuizResults = new ConcurrentHashMap<>();
+    private final GuestQuizStorage guestQuizStorage;
 
-    public GuestQuizServiceImpl(TempQuizStorage tempQuizStorage) {
+    public GuestQuizServiceImpl(TempQuizStorage tempQuizStorage, GuestQuizStorage guestQuizStorage) {
         super(tempQuizStorage);
+        this.guestQuizStorage = guestQuizStorage;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class GuestQuizServiceImpl extends AbstractQuizHelper implements GuestQui
 
     @Override
     public QuizResultDTO getQuizResult(String viewToken) {
-        QuizDTO quizDTO = this.guestQuizResults.get(viewToken);
+        QuizDTO quizDTO = this.guestQuizStorage.get(viewToken);
 
         if (quizDTO == null) {
             throw new QuizNotFoundException("Куизът не е намерен.");
@@ -68,12 +68,12 @@ public class GuestQuizServiceImpl extends AbstractQuizHelper implements GuestQui
                 .userAnswers(userAnswers)
                 .build();
 
-        this.guestQuizResults.put(quiz.getViewToken(), quizDTO);
+        this.guestQuizStorage.put(quiz.getViewToken(), quizDTO);
     }
 
     @Override
     public QuizDTO showQuizResult(String viewToken) {
-        QuizDTO quizDTO = this.guestQuizResults.get(viewToken);
+        QuizDTO quizDTO = this.guestQuizStorage.get(viewToken);
 
         if (quizDTO == null) {
             throw new QuizNotFoundException("Куизът не е намерен.");
@@ -84,7 +84,6 @@ public class GuestQuizServiceImpl extends AbstractQuizHelper implements GuestQui
 
     @Override
     public void deleteExpiredGuestQuizzes(LocalDateTime dateTime) {
-        this.guestQuizResults.entrySet()
-                .removeIf(entry -> entry.getValue().getExpireAt().isBefore(dateTime));
+        this.guestQuizStorage.deleteExpiredQuizzes(dateTime);
     }
 }
