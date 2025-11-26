@@ -66,12 +66,12 @@
                 <a th:if="${currentPage > 0}"
                    th:href="@{/categories(
                        page=${currentPage - 1},
-                       size=${size})}" class="btn-start">⬅ Предишна</a>
+                       size=${size})}" class="btn-start"><i class="fa-solid fa-angle-left"></i></a>
                 <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
                 <a th:if="${currentPage + 1 < totalPages}"
                    th:href="@{/categories(
                         page=${currentPage + 1},
-                        size=${size})}" class="btn-start">Следваща ➡</a>
+                        size=${size})}" class="btn-start"><i class="fa-solid fa-angle-right"></i></a>
             </div>
 
             <div id="editModal" class="modal" th:data-open-modal="${openModal}">

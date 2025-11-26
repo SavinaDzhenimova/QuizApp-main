@@ -3,8 +3,27 @@ document.addEventListener("DOMContentLoaded", function () {
     const nextBtn = document.getElementById("nextBtn");
     const prevBtn = document.getElementById("prevBtn");
     const submitBtn = document.getElementById("submitBtn");
+    const pageNumbersContainer = document.getElementById("pageNumbers");
 
     let current = 0;
+
+    function generatePageNumbers() {
+        pageNumbersContainer.innerHTML = "";
+
+        questions.forEach((_, i) => {
+            const span = document.createElement("span");
+            span.textContent = i + 1;
+
+            if (i === current) span.classList.add("active");
+
+            span.addEventListener("click", () => {
+                current = i;
+                showQuestion(current);
+            });
+
+            pageNumbersContainer.appendChild(span);
+        });
+    }
 
     function showQuestion(index) {
         questions.forEach((q, i) => {
@@ -14,6 +33,8 @@ document.addEventListener("DOMContentLoaded", function () {
         prevBtn.style.display = index === 0 ? "none" : "inline-block";
         nextBtn.style.display = index === questions.length - 1 ? "none" : "inline-block";
         submitBtn.style.display = index === questions.length - 1 ? "inline-block" : "none";
+
+        generatePageNumbers();
     }
 
     nextBtn.addEventListener("click", () => {

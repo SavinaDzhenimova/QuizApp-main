@@ -38,10 +38,12 @@
 
             <div class="pagination" th:if="${totalPages > 1}">
                 <a th:if="${currentPage > 0}"
-                   th:href="@{/users/quizzes(page=${currentPage - 1})}" class="btn-start">⬅ Предишна</a>
+                   th:href="@{/users/quizzes(page=${currentPage - 1})}" class="btn-start">
+                    <i class="fa-solid fa-angle-left"></i></a>
                 <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
                 <a th:if="${currentPage + 1 < totalPages}"
-                   th:href="@{/users/quizzes(page=${currentPage + 1})}" class="btn-start">Следваща ➡</a>
+                   th:href="@{/users/quizzes(page=${currentPage + 1})}" class="btn-start">
+                    <i class="fa-solid fa-angle-right"></i></a>
             </div>
         </div>
     </main>

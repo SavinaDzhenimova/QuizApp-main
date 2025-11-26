@@ -132,7 +132,7 @@ button[type="submit"],
 #nextBtn,
 #submitBtn {
     margin-top: 2em;
-    padding: 0.8em 1.5em;
+    padding: 0.5em 1.2em;
     border: none;
     border-radius: 1em;
     background: linear-gradient(135deg, #d4a7ec, #b57edc);
@@ -155,6 +155,25 @@ button[type="submit"]:active,
 .btn-start:active {
     transform: translateY(1px);
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.page-numbers {
+    display: flex;
+    gap: 0.5em;
+    margin-top: 2em;
+}
+
+.page-numbers span {
+    padding: 0.5em 1.2em;
+    border: 1px solid rgba(128, 0, 128, 0.8);
+    border-radius: 2em;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.page-numbers span.active {
+    background: linear-gradient(135deg, #d4a7ec, #b57edc);
+    border: none;
 }
 
 table {
