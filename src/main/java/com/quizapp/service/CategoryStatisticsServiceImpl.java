@@ -1,5 +1,6 @@
 package com.quizapp.service;
 
+import com.quizapp.model.dto.category.CategoryStatsDTO;
 import com.quizapp.model.entity.CategoryStatistics;
 import com.quizapp.repository.CategoryStatisticsRepository;
 import com.quizapp.service.interfaces.CategoryService;
@@ -7,12 +8,31 @@ import com.quizapp.service.interfaces.CategoryStatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryStatisticsServiceImpl implements CategoryStatisticsService {
 
     private final CategoryStatisticsRepository categoryStatisticsRepository;
     private final CategoryService categoryService;
+
+    @Override
+    public List<CategoryStatsDTO> getAllCategoriesStatsForCharts() {
+        return this.categoryStatisticsRepository.findAll().stream()
+                .map(cat -> CategoryStatsDTO.builder()
+                        .categoryId(cat.getCategoryId())
+                        .categoryName(cat.getCategoryName())
+                        .totalStartedQuizzes(cat.getTotalStartedQuizzes())
+                        .totalCompletedQuizzes(cat.getTotalCompletedQuizzes())
+                        .totalUnfinishedQuizzes(cat.getTotalStartedQuizzes() - cat.getTotalCompletedQuizzes())
+                        .totalCorrectAnswers(cat.getTotalCorrectAnswers())
+                        .totalQuestions(cat.getTotalQuestions())
+                        .averageAccuracy(cat.getAverageAccuracy())
+                        .completionRate(cat.getCompletionRate())
+                        .build())
+                .toList();
+    }
 
     @Override
     public void increaseStartedQuizzes(Long categoryId) {
@@ -36,39 +56,32 @@ public class CategoryStatisticsServiceImpl implements CategoryStatisticsService 
                 .categoryName(this.categoryService.getCategoryNameById(categoryId))
                 .totalStartedQuizzes(0)
                 .totalCompletedQuizzes(0)
-                .averageScore(0)
+                .totalCorrectAnswers(0)
+                .totalQuestions(0)
                 .averageAccuracy(0)
                 .completionRate(0)
                 .build();
     }
 
     @Override
-    public void updateOnQuizCompleted(Long categoryId, double scorePercent, int correctAnswers, int totalQuestions) {
+    public void updateOnQuizCompleted(Long categoryId, int correctAnswers, int totalQuestions) {
         CategoryStatistics stats = categoryStatisticsRepository
                 .findByCategoryId(categoryId)
                 .orElseGet(() -> this.createNewStatistics(categoryId));
 
-        // Увеличаване на броя завършени куизове
         stats.setTotalCompletedQuizzes(stats.getTotalCompletedQuizzes() + 1);
 
-        // Обновяване на среден резултат (averageScore)
-        double oldAvgScore = stats.getAverageScore();
-        int completed = stats.getTotalCompletedQuizzes();
+        stats.setTotalQuestions(stats.getTotalQuestions() + totalQuestions);
 
-        double newAvgScore = ((oldAvgScore * (completed - 1)) + scorePercent) / completed;
-        stats.setAverageScore(newAvgScore);
+        stats.setTotalCorrectAnswers(stats.getTotalCorrectAnswers() + correctAnswers);
 
-        // Обновяване на averageAccuracy (точност на отговорите)
-        double accuracy = (correctAnswers * 100.0) / totalQuestions;
-        double oldAccuracy = stats.getAverageAccuracy();
+        double newAverageAccuracy = (stats.getTotalCorrectAnswers() * 100.00) / stats.getTotalQuestions();
+        stats.setAverageAccuracy(newAverageAccuracy);
 
-        double newAccuracy = ((oldAccuracy * (completed - 1)) + accuracy) / completed;
-        stats.setAverageAccuracy(newAccuracy);
-
-        // Completion rate = completed / started
         int started = stats.getTotalStartedQuizzes();
         if (started > 0) {
-            stats.setCompletionRate((completed * 100.0) / started);
+            double completionRate = (stats.getTotalCompletedQuizzes() * 100.00) / started;
+            stats.setCompletionRate(completionRate);
         }
 
         this.categoryStatisticsRepository.saveAndFlush(stats);

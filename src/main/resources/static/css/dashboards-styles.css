@@ -1,0 +1,21 @@
+.chart-container {
+    width: 60%;
+    margin: 2em auto;
+    padding: 2em 4em;
+
+    background: rgba(212, 167, 236, 0.9);
+    border-radius: 2em;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chart-container:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}

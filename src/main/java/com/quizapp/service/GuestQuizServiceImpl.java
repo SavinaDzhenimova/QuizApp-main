@@ -60,8 +60,7 @@ public class GuestQuizServiceImpl extends AbstractQuizHelper implements GuestQui
         long correctAnswers = super.getCorrectAnswers(quiz, userAnswers);
         double scorePercent = ((double) correctAnswers / totalQuestions) * 100;
 
-        this.categoryStatisticsService.updateOnQuizCompleted(quiz.getCategoryId(), scorePercent,
-                (int) correctAnswers, totalQuestions);
+        this.categoryStatisticsService.updateOnQuizCompleted(quiz.getCategoryId(), (int) correctAnswers, totalQuestions);
 
         QuizDTO quizDTO = QuizDTO.builder()
                 .viewToken(quiz.getViewToken())

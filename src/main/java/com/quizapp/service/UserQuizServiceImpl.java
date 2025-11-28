@@ -102,7 +102,6 @@ public class UserQuizServiceImpl extends AbstractQuizHelper implements UserQuizS
     private Long saveSolvedQuiz(Quiz quiz, User user, Map<Long, String> userAnswers) {
         long correctAnswers = this.getCorrectAnswers(quiz, userAnswers);
         int totalQuestions = quiz.getQuestions().size();
-        double scorePercent = ((double) correctAnswers / totalQuestions) * 100;
         LocalDateTime solvedAt = LocalDateTime.now();
 
         List<Long> questionIds = quiz.getQuestions().stream()
@@ -121,8 +120,7 @@ public class UserQuizServiceImpl extends AbstractQuizHelper implements UserQuizS
 
         SolvedQuiz savedQuiz = this.solvedQuizRepository.saveAndFlush(solvedQuiz);
 
-        this.categoryStatisticsService.updateOnQuizCompleted(quiz.getCategoryId(), scorePercent,
-                (int) correctAnswers, totalQuestions);
+        this.categoryStatisticsService.updateOnQuizCompleted(quiz.getCategoryId(), (int) correctAnswers, totalQuestions);
 
         UserStatistics userStatistics = this.userStatisticsService
                 .updateUserStatistics(user.getUserStatistics(), correctAnswers, totalQuestions, solvedAt);

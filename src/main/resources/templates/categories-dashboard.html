@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/css/dashboards-styles.css">
+    <title>Статистика по категории</title>
+</head>
+
+<body>
+
+    <header th:replace="~{fragments/commons::header}"></header>
+
+    <main>
+        <div class="dashboard-container">
+            <h1>Статистики по категории</h1>
+
+            <div class="chart-container">
+                <canvas id="completedQuizzesChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="unfinishedQuizzesChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="totalCorrectAnswersChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="averageAccuracyChart"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/commons::footer}"></footer>
+
+    <script th:inline="javascript">
+      const categoriesStats = [[${categoriesStats}]];
+
+      const labels = categoriesStats.map(c => c.categoryName);
+      const totalCompleted = categoriesStats.map(c => c.totalCompletedQuizzes);
+      const totalUnfinished = categoriesStats.map(c => c.totalUnfinishedQuizzes);
+      const totalCorrectAnswers = categoriesStats.map(c => c.totalCorrectAnswers);
+      const avgAccuracy = categoriesStats.map(c => c.averageAccuracy);
+
+      // Най-често решавани категории
+      new Chart(document.getElementById('completedQuizzesChart'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Завършени куизове',
+            data: totalCompleted,
+            backgroundColor: 'rgba(128, 0, 128, 0.6)'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            title: { display: true,
+                     text: 'Най-често решавани категории',
+                     color: 'rgba(128, 0, 128, 0.6)',
+                     font: { size: 20, weight: '600' },
+                     padding: { bottom: 20 }
+            }
+          }
+        }
+      });
+
+      // Най-много недовършени куизове
+      new Chart(document.getElementById('unfinishedQuizzesChart'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Недовършени куизове',
+            data: totalUnfinished,
+            backgroundColor: 'rgba(128, 0, 128, 0.6)'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            title: { display: true,
+                     text: 'Най-много недовършени куизове',
+                     color: 'rgba(128, 0, 128, 0.6)',
+                     font: { size: 20, weight: '600' },
+                     padding: { bottom: 20 }
+            }
+          }
+        }
+      });
+
+      // Най-много правилни отговори по категории
+      new Chart(document.getElementById('totalCorrectAnswersChart'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Правилни отговори',
+            data: totalCorrectAnswers,
+            backgroundColor: 'rgba(128, 0, 128, 0.6)'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            title: { display: true,
+                     text: 'Най-много правилни отговори по категории',
+                     color: 'rgba(128, 0, 128, 0.6)',
+                     font: { size: 20, weight: '600' },
+                     padding: { bottom: 20 }
+            }
+          }
+        }
+      });
+
+      // Средна точност по категории
+      new Chart(document.getElementById('averageAccuracyChart'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Средна точност (%)',
+            data: avgAccuracy,
+            backgroundColor: 'rgba(128, 0, 128, 0.6)'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            title: { display: true,
+                     text: 'Средна точност на отговорите по категории',
+                     color: 'rgba(128, 0, 128, 0.6)',
+                     font: { size: 20, weight: '600' },
+                     padding: { bottom: 20 }
+            }
+          }
+        }
+      });
+    </script>
+</body>
+</html>
