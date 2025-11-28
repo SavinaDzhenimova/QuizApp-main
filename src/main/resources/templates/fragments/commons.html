@@ -25,6 +25,14 @@
                 <ul>
                     <li><a th:href="@{/}">Начало</a></li>
                     <li><a th:href="@{/start-quiz}">Категории</a></li>
+                    <li class="dropdown">
+                        <a href="#">Статистики ▾</a>
+                        <ul class="dropdown-content">
+                            <li><a th:href="@{/statistics/categories}">Категории</a></li>
+                            <li><a th:href="@{/statistics/questions}">Въпроси</a></li>
+                            <li><a th:href="@{/statistics/quizzes}">Куизове</a></li>
+                        </ul>
+                    </li>
 
                     <li sec:authorize="isAnonymous()"><a th:href="@{/users/login}">Вход</a></li>
                     <li sec:authorize="isAnonymous()"><a th:href="@{/users/register}">Регистрация</a></li>

@@ -11,7 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.List;
 
 @Controller
-@RequestMapping("/categories/dashboard")
+@RequestMapping("/statistics/categories")
 @RequiredArgsConstructor
 public class CategoryStatsController {
 

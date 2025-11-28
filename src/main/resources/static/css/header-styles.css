@@ -36,3 +36,23 @@ header .menu ul {
 header .menu ul li a {
     transition: color 0.3s ease;
 }
+
+header .menu ul li .dropdown-content {
+    display: none;
+    position: absolute;
+    top: 60%;
+    left: 66%;
+    min-width: 150px;
+    background-color: rgba(128, 0, 128, 0.5);
+    z-index: 1000;
+}
+
+header .menu ul li:hover .dropdown-content,
+header .menu ul li .dropdown-content li {
+    display: block;
+}
+
+header .menu ul li .dropdown-content li a {
+    padding: 0.5em;
+    transition: color 0.3s ease;
+}
