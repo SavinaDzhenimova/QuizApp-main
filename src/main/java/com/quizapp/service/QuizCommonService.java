@@ -7,6 +7,7 @@ import com.quizapp.model.dto.question.QuestionDTO;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.service.interfaces.CategoryService;
+import com.quizapp.service.interfaces.CategoryStatisticsService;
 import com.quizapp.service.interfaces.QuestionService;
 import com.quizapp.service.utils.AbstractQuizHelper;
 import com.quizapp.service.utils.TempQuizStorage;
@@ -20,12 +21,14 @@ public class QuizCommonService extends AbstractQuizHelper {
 
     private final QuestionService questionService;
     private final CategoryService categoryService;
+    private final CategoryStatisticsService categoryStatisticsService;
 
     public QuizCommonService(TempQuizStorage tempQuizStorage, QuestionService questionService,
-                             CategoryService categoryService) {
+                             CategoryService categoryService, CategoryStatisticsService categoryStatisticsService) {
         super(tempQuizStorage);
         this.questionService = questionService;
         this.categoryService = categoryService;
+        this.categoryStatisticsService = categoryStatisticsService;
     }
 
     public Quiz getQuizFromTemp(String viewToken) {
@@ -61,6 +64,8 @@ public class QuizCommonService extends AbstractQuizHelper {
                 .questions(questionDTOs)
                 .expireAt(LocalDateTime.now().plusMinutes(30))
                 .build();
+
+        this.categoryStatisticsService.increaseStarted(categoryId);
 
         super.putTempQuiz(viewToken, quiz);
         return quiz;

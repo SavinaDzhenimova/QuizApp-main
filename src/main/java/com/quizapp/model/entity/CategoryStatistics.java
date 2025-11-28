@@ -24,9 +24,13 @@ public class CategoryStatistics {
     @Column(name = "category_name", nullable = false, unique = true)
     private String categoryName;
 
-    private int totalSolvedQuizzes;
+    private int totalStartedQuizzes;
+
+    private int totalCompletedQuizzes;
 
     private double averageScore;
 
     private double averageAccuracy;
+
+    private double completionRate;
 }
