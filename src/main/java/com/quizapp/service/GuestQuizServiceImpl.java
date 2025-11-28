@@ -4,6 +4,7 @@ import com.quizapp.exception.QuizNotFoundException;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.entity.Quiz;
+import com.quizapp.service.interfaces.CategoryStatisticsService;
 import com.quizapp.service.interfaces.GuestQuizService;
 import com.quizapp.service.utils.AbstractQuizHelper;
 import com.quizapp.service.utils.GuestQuizStorage;
@@ -17,10 +18,13 @@ import java.util.*;
 public class GuestQuizServiceImpl extends AbstractQuizHelper implements GuestQuizService {
 
     private final GuestQuizStorage guestQuizStorage;
+    private final CategoryStatisticsService categoryStatisticsService;
 
-    public GuestQuizServiceImpl(TempQuizStorage tempQuizStorage, GuestQuizStorage guestQuizStorage) {
+    public GuestQuizServiceImpl(TempQuizStorage tempQuizStorage, GuestQuizStorage guestQuizStorage,
+                                CategoryStatisticsService categoryStatisticsService) {
         super(tempQuizStorage);
         this.guestQuizStorage = guestQuizStorage;
+        this.categoryStatisticsService = categoryStatisticsService;
     }
 
     @Override
@@ -55,6 +59,9 @@ public class GuestQuizServiceImpl extends AbstractQuizHelper implements GuestQui
         int totalQuestions = quiz.getQuestions().size();
         long correctAnswers = this.getCorrectAnswers(quiz, userAnswers);
         double scorePercent = ((double) correctAnswers / totalQuestions) * 100;
+
+        this.categoryStatisticsService.updateOnQuizCompleted(quiz.getCategoryId(), scorePercent,
+                (int) correctAnswers, totalQuestions);
 
         QuizDTO quizDTO = QuizDTO.builder()
                 .viewToken(quiz.getViewToken())

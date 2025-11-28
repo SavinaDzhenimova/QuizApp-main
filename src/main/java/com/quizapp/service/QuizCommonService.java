@@ -65,7 +65,7 @@ public class QuizCommonService extends AbstractQuizHelper {
                 .expireAt(LocalDateTime.now().plusMinutes(30))
                 .build();
 
-        this.categoryStatisticsService.increaseStarted(categoryId);
+        this.categoryStatisticsService.increaseStartedQuizzes(categoryId);
 
         super.putTempQuiz(viewToken, quiz);
         return quiz;

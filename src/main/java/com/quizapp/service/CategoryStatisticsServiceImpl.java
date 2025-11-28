@@ -15,7 +15,7 @@ public class CategoryStatisticsServiceImpl implements CategoryStatisticsService 
     private final CategoryService categoryService;
 
     @Override
-    public void increaseStarted(Long categoryId) {
+    public void increaseStartedQuizzes(Long categoryId) {
         CategoryStatistics categoryStatistics = categoryStatisticsRepository.findByCategoryId(categoryId)
                 .orElseGet(() -> this.createNewStatistics(categoryId));
 
@@ -33,5 +33,37 @@ public class CategoryStatisticsServiceImpl implements CategoryStatisticsService 
                 .averageAccuracy(0)
                 .completionRate(0)
                 .build();
+    }
+
+    @Override
+    public void updateOnQuizCompleted(Long categoryId, double scorePercent, int correctAnswers, int totalQuestions) {
+        CategoryStatistics stats = categoryStatisticsRepository
+                .findById(categoryId)
+                .orElseGet(() -> this.createNewStatistics(categoryId));
+
+        // Увеличаване на броя завършени куизове
+        stats.setTotalCompletedQuizzes(stats.getTotalCompletedQuizzes() + 1);
+
+        // Обновяване на среден резултат (averageScore)
+        double oldAvgScore = stats.getAverageScore();
+        int completed = stats.getTotalCompletedQuizzes();
+
+        double newAvgScore = ((oldAvgScore * (completed - 1)) + scorePercent) / completed;
+        stats.setAverageScore(newAvgScore);
+
+        // Обновяване на averageAccuracy (точност на отговорите)
+        double accuracy = (correctAnswers * 100.0) / totalQuestions;
+        double oldAccuracy = stats.getAverageAccuracy();
+
+        double newAccuracy = ((oldAccuracy * (completed - 1)) + accuracy) / completed;
+        stats.setAverageAccuracy(newAccuracy);
+
+        // Completion rate = completed / started
+        int started = stats.getTotalStartedQuizzes();
+        if (started > 0) {
+            stats.setCompletionRate((completed * 100.0) / started);
+        }
+
+        this.categoryStatisticsRepository.saveAndFlush(stats);
     }
 }

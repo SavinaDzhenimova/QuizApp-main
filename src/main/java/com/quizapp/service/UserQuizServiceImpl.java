@@ -30,16 +30,19 @@ public class UserQuizServiceImpl extends AbstractQuizHelper implements UserQuizS
     private final SolvedQuizRepository solvedQuizRepository;
     private final UserService userService;
     private final UserStatisticsService userStatisticsService;
+    private final CategoryStatisticsService categoryStatisticsService;
 
     public UserQuizServiceImpl(TempQuizStorage tempQuizStorage, QuestionService questionService,
                                CategoryService categoryService, SolvedQuizRepository solvedQuizRepository,
-                               UserService userService, UserStatisticsService userStatisticsService) {
+                               UserService userService, UserStatisticsService userStatisticsService,
+                               CategoryStatisticsService categoryStatisticsService) {
         super(tempQuizStorage);
         this.questionService = questionService;
         this.categoryService = categoryService;
         this.solvedQuizRepository = solvedQuizRepository;
         this.userService = userService;
         this.userStatisticsService = userStatisticsService;
+        this.categoryStatisticsService = categoryStatisticsService;
     }
 
     @Override
@@ -99,6 +102,7 @@ public class UserQuizServiceImpl extends AbstractQuizHelper implements UserQuizS
     private Long saveSolvedQuiz(Quiz quiz, User user, Map<Long, String> userAnswers) {
         long correctAnswers = this.getCorrectAnswers(quiz, userAnswers);
         int totalQuestions = quiz.getQuestions().size();
+        double scorePercent = ((double) correctAnswers / totalQuestions) * 100;
         LocalDateTime solvedAt = LocalDateTime.now();
 
         List<Long> questionIds = quiz.getQuestions().stream()
@@ -116,6 +120,9 @@ public class UserQuizServiceImpl extends AbstractQuizHelper implements UserQuizS
                 .build();
 
         SolvedQuiz savedQuiz = this.solvedQuizRepository.saveAndFlush(solvedQuiz);
+
+        this.categoryStatisticsService.updateOnQuizCompleted(quiz.getCategoryId(), scorePercent,
+                (int) correctAnswers, totalQuestions);
 
         UserStatistics userStatistics = this.userStatisticsService
                 .updateUserStatistics(user.getUserStatistics(), correctAnswers, totalQuestions, solvedAt);
