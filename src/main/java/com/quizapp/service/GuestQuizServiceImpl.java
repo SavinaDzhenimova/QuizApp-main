@@ -57,7 +57,7 @@ public class GuestQuizServiceImpl extends AbstractQuizHelper implements GuestQui
     private void saveQuizResult(Quiz quiz, Map<Long, String> userAnswers) {
 
         int totalQuestions = quiz.getQuestions().size();
-        long correctAnswers = this.getCorrectAnswers(quiz, userAnswers);
+        long correctAnswers = super.getCorrectAnswers(quiz, userAnswers);
         double scorePercent = ((double) correctAnswers / totalQuestions) * 100;
 
         this.categoryStatisticsService.updateOnQuizCompleted(quiz.getCategoryId(), scorePercent,

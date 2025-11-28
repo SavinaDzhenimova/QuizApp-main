@@ -20,6 +20,13 @@ public class CategoryStatisticsServiceImpl implements CategoryStatisticsService 
                 .orElseGet(() -> this.createNewStatistics(categoryId));
 
         categoryStatistics.setTotalStartedQuizzes(categoryStatistics.getTotalStartedQuizzes() + 1);
+
+        int completed = categoryStatistics.getTotalCompletedQuizzes();
+        int started = categoryStatistics.getTotalStartedQuizzes();
+        if (started > 0) {
+            categoryStatistics.setCompletionRate((completed * 100.0) / started);
+        }
+
         this.categoryStatisticsRepository.saveAndFlush(categoryStatistics);
     }
 
@@ -38,7 +45,7 @@ public class CategoryStatisticsServiceImpl implements CategoryStatisticsService 
     @Override
     public void updateOnQuizCompleted(Long categoryId, double scorePercent, int correctAnswers, int totalQuestions) {
         CategoryStatistics stats = categoryStatisticsRepository
-                .findById(categoryId)
+                .findByCategoryId(categoryId)
                 .orElseGet(() -> this.createNewStatistics(categoryId));
 
         // Увеличаване на броя завършени куизове

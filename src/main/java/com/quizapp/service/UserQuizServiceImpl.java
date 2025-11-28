@@ -144,8 +144,8 @@ public class UserQuizServiceImpl extends AbstractQuizHelper implements UserQuizS
 
         return QuizDTO.builder()
                 .id(solvedQuiz.getId())
-                .totalQuestions(correctAnswers)
-                .correctAnswers(totalQuestions)
+                .correctAnswers(correctAnswers)
+                .totalQuestions(totalQuestions)
                 .scorePercent(scorePercent)
                 .build();
     }
