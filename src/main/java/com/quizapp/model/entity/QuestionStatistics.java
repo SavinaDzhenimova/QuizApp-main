@@ -24,6 +24,9 @@ public class QuestionStatistics {
     @Column(name = "question_text", nullable = false)
     private String questionText;
 
+    @Column(name = "category_id", nullable = false)
+    private Long categoryId;
+
     private int attempts;
 
     private int correctAnswers;

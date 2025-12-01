@@ -60,7 +60,8 @@ public class QuizCommonService extends AbstractQuizHelper {
                 .toList();
 
         questionDTOs.forEach(questionDTO ->
-                this.questionStatisticsService.increaseUsedQuestion(questionDTO.getId(), questionDTO.getQuestionText()));
+                this.questionStatisticsService.increaseUsedQuestion(questionDTO.getId(), questionDTO.getQuestionText(),
+                        categoryId));
 
         String viewToken = UUID.randomUUID().toString();
         Quiz quiz = Quiz.builder()

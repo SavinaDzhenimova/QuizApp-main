@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface QuestionStatisticsService {
 
-    void increaseUsedQuestion(Long questionId, String questionText);
+    void increaseUsedQuestion(Long questionId, String questionText, Long categoryId);
 
     void updateOnQuizCompleted(Quiz quiz, Map<Long, String> userAnswers);
 }

@@ -19,9 +19,9 @@ public class QuestionStatisticsServiceImpl implements QuestionStatisticsService 
     private final QuestionService questionService;
 
     @Override
-    public void increaseUsedQuestion(Long questionId, String questionText) {
+    public void increaseUsedQuestion(Long questionId, String questionText, Long categoryId) {
         QuestionStatistics questionStatistics = this.questionStatisticsRepository.findByQuestionId(questionId)
-                .orElseGet(() -> this.createNewStatistics(questionId, questionText));
+                .orElseGet(() -> this.createNewStatistics(questionId, questionText, categoryId));
 
         questionStatistics.setAttempts(questionStatistics.getAttempts() + 1);
 
@@ -34,9 +34,10 @@ public class QuestionStatisticsServiceImpl implements QuestionStatisticsService 
         this.questionStatisticsRepository.saveAndFlush(questionStatistics);
     }
 
-    private QuestionStatistics createNewStatistics(Long questionId, String questionText) {
+    private QuestionStatistics createNewStatistics(Long questionId, String questionText, Long categoryId) {
         return QuestionStatistics.builder()
                 .questionId(questionId)
+                .categoryId(categoryId)
                 .questionText(questionText)
                 .attempts(0)
                 .correctAnswers(0)
