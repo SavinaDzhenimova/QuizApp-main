@@ -1,12 +1,15 @@
 package com.quizapp.service;
 
 import com.quizapp.exception.QuestionStatisticsNotFound;
+import com.quizapp.model.dto.question.QuestionStatsDTO;
 import com.quizapp.model.entity.QuestionStatistics;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.repository.QuestionStatisticsRepository;
 import com.quizapp.service.interfaces.QuestionService;
 import com.quizapp.service.interfaces.QuestionStatisticsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -17,6 +20,22 @@ public class QuestionStatisticsServiceImpl implements QuestionStatisticsService 
 
     private final QuestionStatisticsRepository questionStatisticsRepository;
     private final QuestionService questionService;
+
+    @Override
+    public Page<QuestionStatsDTO> getAllQuestionStatsForChartsByCategoryId(Long categoryId, Pageable pageable) {
+        return this.questionStatisticsRepository.findAllByCategoryId(categoryId, pageable)
+                .map(questionStats -> QuestionStatsDTO.builder()
+                        .categoryId(questionStats.getCategoryId())
+                        .questionId(questionStats.getQuestionId())
+                        .questionText(questionStats.getQuestionText())
+                        .attempts(questionStats.getAttempts())
+                        .correctAnswers(questionStats.getCorrectAnswers())
+                        .wrongAnswers(questionStats.getWrongAnswers())
+                        .accuracy(questionStats.getAccuracy())
+                        .difficulty(questionStats.getDifficulty())
+                        .completionRate(questionStats.getCompletionRate())
+                        .build());
+    }
 
     @Override
     public void increaseUsedQuestion(Long questionId, String questionText, Long categoryId) {
