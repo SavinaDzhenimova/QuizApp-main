@@ -1,5 +1,6 @@
 package com.quizapp.service;
 
+import com.quizapp.exception.CategoryStatisticsNotFound;
 import com.quizapp.model.dto.category.CategoryStatsDTO;
 import com.quizapp.model.entity.CategoryStatistics;
 import com.quizapp.repository.CategoryStatisticsRepository;
@@ -67,7 +68,7 @@ public class CategoryStatisticsServiceImpl implements CategoryStatisticsService 
     public void updateOnQuizCompleted(Long categoryId, int correctAnswers, int totalQuestions) {
         CategoryStatistics stats = categoryStatisticsRepository
                 .findByCategoryId(categoryId)
-                .orElseGet(() -> this.createNewStatistics(categoryId));
+                .orElseThrow(() -> new CategoryStatisticsNotFound("Не е намерена статистика за тази категория."));
 
         stats.setTotalCompletedQuizzes(stats.getTotalCompletedQuizzes() + 1);
 

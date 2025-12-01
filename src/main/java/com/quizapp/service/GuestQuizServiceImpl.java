@@ -1,11 +1,13 @@
 package com.quizapp.service;
 
 import com.quizapp.exception.QuizNotFoundException;
+import com.quizapp.model.dto.question.QuestionDTO;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.service.interfaces.CategoryStatisticsService;
 import com.quizapp.service.interfaces.GuestQuizService;
+import com.quizapp.service.interfaces.QuestionStatisticsService;
 import com.quizapp.service.utils.AbstractQuizHelper;
 import com.quizapp.service.utils.GuestQuizStorage;
 import com.quizapp.service.utils.TempQuizStorage;
@@ -19,12 +21,15 @@ public class GuestQuizServiceImpl extends AbstractQuizHelper implements GuestQui
 
     private final GuestQuizStorage guestQuizStorage;
     private final CategoryStatisticsService categoryStatisticsService;
+    private final QuestionStatisticsService questionStatisticsService;
 
     public GuestQuizServiceImpl(TempQuizStorage tempQuizStorage, GuestQuizStorage guestQuizStorage,
-                                CategoryStatisticsService categoryStatisticsService) {
+                                CategoryStatisticsService categoryStatisticsService,
+                                QuestionStatisticsService questionStatisticsService) {
         super(tempQuizStorage);
         this.guestQuizStorage = guestQuizStorage;
         this.categoryStatisticsService = categoryStatisticsService;
+        this.questionStatisticsService = questionStatisticsService;
     }
 
     @Override
@@ -32,6 +37,8 @@ public class GuestQuizServiceImpl extends AbstractQuizHelper implements GuestQui
         Quiz quiz = super.loadTempQuiz(viewToken);
 
         Map<Long, String> userAnswers = super.mapUserAnswers(formData);
+
+        this.questionStatisticsService.updateOnQuizCompleted(quiz, userAnswers);
 
         super.removeTempQuiz(viewToken);
 

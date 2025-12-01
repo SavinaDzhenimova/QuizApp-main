@@ -31,11 +31,13 @@ public class UserQuizServiceImpl extends AbstractQuizHelper implements UserQuizS
     private final UserService userService;
     private final UserStatisticsService userStatisticsService;
     private final CategoryStatisticsService categoryStatisticsService;
+    private final QuestionStatisticsService questionStatisticsService;
 
     public UserQuizServiceImpl(TempQuizStorage tempQuizStorage, QuestionService questionService,
                                CategoryService categoryService, SolvedQuizRepository solvedQuizRepository,
                                UserService userService, UserStatisticsService userStatisticsService,
-                               CategoryStatisticsService categoryStatisticsService) {
+                               CategoryStatisticsService categoryStatisticsService,
+                               QuestionStatisticsService questionStatisticsService) {
         super(tempQuizStorage);
         this.questionService = questionService;
         this.categoryService = categoryService;
@@ -43,6 +45,7 @@ public class UserQuizServiceImpl extends AbstractQuizHelper implements UserQuizS
         this.userService = userService;
         this.userStatisticsService = userStatisticsService;
         this.categoryStatisticsService = categoryStatisticsService;
+        this.questionStatisticsService = questionStatisticsService;
     }
 
     @Override
@@ -95,6 +98,8 @@ public class UserQuizServiceImpl extends AbstractQuizHelper implements UserQuizS
                 .orElseThrow(() -> new UserNotFoundException("Потребителят не е намерен."));
 
         Map<Long, String> userAnswers = super.mapUserAnswers(formData);
+
+        this.questionStatisticsService.updateOnQuizCompleted(quiz, userAnswers);
 
         return this.saveSolvedQuiz(quiz, user, userAnswers);
     }
