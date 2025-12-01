@@ -9,6 +9,7 @@ import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.CategoryStatisticsService;
 import com.quizapp.service.interfaces.QuestionService;
+import com.quizapp.service.interfaces.QuestionStatisticsService;
 import com.quizapp.service.utils.AbstractQuizHelper;
 import com.quizapp.service.utils.TempQuizStorage;
 import org.springframework.stereotype.Service;
@@ -22,13 +23,16 @@ public class QuizCommonService extends AbstractQuizHelper {
     private final QuestionService questionService;
     private final CategoryService categoryService;
     private final CategoryStatisticsService categoryStatisticsService;
+    private final QuestionStatisticsService questionStatisticsService;
 
     public QuizCommonService(TempQuizStorage tempQuizStorage, QuestionService questionService,
-                             CategoryService categoryService, CategoryStatisticsService categoryStatisticsService) {
+                             CategoryService categoryService, CategoryStatisticsService categoryStatisticsService,
+                             QuestionStatisticsService questionStatisticsService) {
         super(tempQuizStorage);
         this.questionService = questionService;
         this.categoryService = categoryService;
         this.categoryStatisticsService = categoryStatisticsService;
+        this.questionStatisticsService = questionStatisticsService;
     }
 
     public Quiz getQuizFromTemp(String viewToken) {
@@ -55,8 +59,10 @@ public class QuizCommonService extends AbstractQuizHelper {
                 .map(this.questionService::mapQuestionApiToDTO)
                 .toList();
 
-        String viewToken = UUID.randomUUID().toString();
+        questionDTOs.forEach(questionDTO ->
+                this.questionStatisticsService.increaseUsedQuestion(questionDTO.getId(), questionDTO.getQuestionText()));
 
+        String viewToken = UUID.randomUUID().toString();
         Quiz quiz = Quiz.builder()
                 .viewToken(viewToken)
                 .categoryId(categoryId)

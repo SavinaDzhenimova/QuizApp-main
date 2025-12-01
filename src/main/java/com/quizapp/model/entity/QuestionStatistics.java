@@ -33,4 +33,6 @@ public class QuestionStatistics {
     private double accuracy;
 
     private double difficulty;
+
+    private double completionRate;
 }
