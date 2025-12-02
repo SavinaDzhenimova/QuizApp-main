@@ -29,7 +29,7 @@ header .menu ul {
     font-size: 18px;
     display: flex;
     justify-content: space-between;
-    gap: 4em;
+    gap: 2.5em;
     font-weight: 500;
 }
 
@@ -37,11 +37,15 @@ header .menu ul li a {
     transition: color 0.3s ease;
 }
 
-header .menu ul li .dropdown-content {
+header .menu ul .dropdown {
+    position: relative;
+}
+
+header .menu ul .dropdown .dropdown-content {
     display: none;
     position: absolute;
-    top: 60%;
-    left: 66%;
+    top: 40px;
+    left: 0;
     min-width: 150px;
     background-color: rgba(128, 0, 128, 0.5);
     z-index: 1000;

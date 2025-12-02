@@ -25,15 +25,14 @@ public class SecurityConfig {
                                 "/contacts", "/contacts/send-inquiry",
                                 "/report-problem", "/report-problem/send-report",
                                 "/users/login", "/users/register",
-                                "/start-quiz", "/quizzes/start", "/quizzes/quiz/**",
-                                "/statistics/**").permitAll()
+                                "/start-quiz", "/quizzes/start", "/quizzes/quiz/**").permitAll()
                         .requestMatchers("/users/forgot-password", "/users/reset-password/**",
                                 "/guest/quizzes/**").anonymous()
                         .requestMatchers("/users/logout", "/users/home",
                                 "/users/quizzes/**").authenticated()
                         .requestMatchers("/admin",
                                 "/categories", "/categories/add-category",
-                                "/questions", "/questions/add-question").hasRole("ADMIN")
+                                "/questions", "/questions/add-question", "/statistics/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin
