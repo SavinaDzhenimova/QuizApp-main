@@ -14,10 +14,14 @@
     <header th:replace="~{fragments/commons::header}"></header>
 
     <main>
-        <div class="dashboard-container">
+        <div class="questions-dashboard-container">
             <h1>Статистики за въпросите</h1>
 
-            <table th:unless="${questionsStats.isEmpty()}">
+            <div th:if="${warning}" class="warning">
+                <p th:text="${warning}"></p>
+            </div>
+
+            <table th:unless="${questionStats.isEmpty()}">
                 <thead>
                 <tr>
                     <th class="col-question-text">Въпрос</th>
@@ -31,27 +35,27 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="question : ${questionsStats}">
+                <tr th:each="question : ${questionStats}">
                     <td th:text="${question.questionText}" class="col-question-text">Въпрос</td>
                     <td th:text="${question.categoryName}" class="col-category">Категория</td>
                     <td th:text="${question.attempts}" class="col-category">Брой опити</td>
                     <td th:text="${question.correctAnswers}" class="col-correct-answers">Верни отговори</td>
                     <td th:text="${question.wrongAnswers}" class="col-wrong-answers">Верни отговори</td>
-                    <td th:text="${question.accuracy}" class="col-accuracy">Точност (%)</td>
-                    <td th:text="${question.difficulty}" class="col-accuracy">Трудност (%)</td>
-                    <td th:text="${question.completionRate}" class="col-accuracy">Завършеност (%)</td>
+                    <td th:text="${#numbers.formatDecimal(question.accuracy, 1, 2)}" class="col-accuracy">Точност (%)</td>
+                    <td th:text="${#numbers.formatDecimal(question.difficulty, 1, 2)}" class="col-difficulty">Трудност (%)</td>
+                    <td th:text="${#numbers.formatDecimal(question.completionRate, 1, 2)}" class="col-completion-rate">Завършеност (%)</td>
                 </tr>
                 </tbody>
             </table>
 
             <div class="pagination" th:if="${totalPages > 1}">
                 <a th:if="${currentPage > 0}"
-                   th:href="@{/questions(
+                   th:href="@{/statistics/questions(
                        page=${currentPage - 1},
                        size=${size})}" class="btn-start"><i class="fa-solid fa-angle-left"></i></a>
                 <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
                 <a th:if="${currentPage + 1 < totalPages}"
-                   th:href="@{/questions(
+                   th:href="@{/statistics/questions(
                         page=${currentPage + 1},
                         size=${size})}" class="btn-start"><i class="fa-solid fa-angle-right"></i></a>
             </div>

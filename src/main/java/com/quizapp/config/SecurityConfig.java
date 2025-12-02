@@ -26,7 +26,7 @@ public class SecurityConfig {
                                 "/report-problem", "/report-problem/send-report",
                                 "/users/login", "/users/register",
                                 "/start-quiz", "/quizzes/start", "/quizzes/quiz/**",
-                                "/statistics/categories").permitAll()
+                                "/statistics/**").permitAll()
                         .requestMatchers("/users/forgot-password", "/users/reset-password/**",
                                 "/guest/quizzes/**").anonymous()
                         .requestMatchers("/users/logout", "/users/home",

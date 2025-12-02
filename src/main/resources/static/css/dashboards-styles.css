@@ -19,3 +19,27 @@
     transform: translateY(-4px);
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
 }
+
+.questions-dashboard-container {
+    width: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
+}
+
+.col-wrong-answers,
+.col-correct-answers,
+.col-attempts,
+.col-accuracy,
+.col-difficulty,
+.col-completion-rate {
+    width: 8%;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 1.5em;
+}

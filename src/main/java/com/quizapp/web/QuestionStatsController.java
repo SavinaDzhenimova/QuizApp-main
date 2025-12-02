@@ -35,6 +35,10 @@ public class QuestionStatsController {
         modelAndView.addObject("totalElements", questionStatsDTOs.getTotalElements());
         modelAndView.addObject("size", questionStatsDTOs.getSize());
 
+        if (questionStatsDTOs.getTotalElements() == 0) {
+            modelAndView.addObject("warning", "Няма намерени статистики за въпроси.");
+        }
+
         return modelAndView;
     }
 }
