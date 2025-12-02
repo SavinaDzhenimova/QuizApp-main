@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface UserStatisticsService {
 
-    Page<UserStatisticsDTO> getUserStatisticsFiltered(Pageable pageable);
+    Page<UserStatisticsDTO> getUserStatisticsFiltered(String username, Pageable pageable);
 
     UserStatistics createInitialStatistics(User user);
 

@@ -58,11 +58,15 @@
                 <tbody>
                 <tr th:each="user : ${userStats}">
                     <td th:text="${user.username}" class="col-username">Потребител</td>
-                    <td th:text="${user.totalSolvedQuizzes}" class="col-quizzes">Решени куизове</td>
+                    <td th:text="${user.totalQuizzes}" class="col-quizzes">Решени куизове</td>
                     <td th:text="${user.totalCorrectAnswers}" class="col-correct-answers">Верни отговори</td>
                     <td th:text="${user.maxScore}" class="col-max-score">Решени въпроси</td>
                     <td th:text="${user.averageScore}" class="col-avg-score">Среден резултат (%)</td>
-                    <td th:text="${#temporals.format(user.lastSolvedAt, 'dd.MM.yyyy г. HH:mm')}" class="col-last-solved">Последно решавал</td>
+                    <td class="col-last-solved">
+                        <span th:if="${user.lastSolvedAt != null}"
+                              th:text="${#temporals.format(user.lastSolvedAt, 'dd.MM.yyyy г. HH:mm')}"></span>
+                        <span th:if="${user.lastSolvedAt == null}">-</span>
+                    </td>
                 </tr>
                 </tbody>
             </table>
@@ -71,12 +75,16 @@
                 <a th:if="${currentPage > 0}"
                    th:href="@{/statistics/users(
                                page=${currentPage - 1},
-                               size=${size})}" class="btn-start"><i class="fa-solid fa-angle-left"></i></a>
+                               size=${size},
+                               sortBy=${sortBy},
+                               username=${username})}" class="btn-start"><i class="fa-solid fa-angle-left"></i></a>
                 <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
                 <a th:if="${currentPage + 1 < totalPages}"
                    th:href="@{/statistics/users(
                                page=${currentPage + 1},
-                               size=${size})}" class="btn-start"><i class="fa-solid fa-angle-right"></i></a>
+                               size=${size},
+                               sortBy=${sortBy},
+                               username=${username})}" class="btn-start"><i class="fa-solid fa-angle-right"></i></a>
             </div>
         </div>
     </main>

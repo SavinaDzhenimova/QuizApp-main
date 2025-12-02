@@ -4,6 +4,7 @@ import com.quizapp.model.dto.category.CategoryStatsDTO;
 import com.quizapp.model.dto.question.QuestionStatsDTO;
 import com.quizapp.model.dto.user.UserStatisticsDTO;
 import com.quizapp.model.enums.QuestionSortField;
+import com.quizapp.model.enums.UserSortField;
 import com.quizapp.service.interfaces.CategoryStatisticsService;
 import com.quizapp.service.interfaces.QuestionStatisticsService;
 import com.quizapp.service.interfaces.UserStatisticsService;
@@ -36,6 +37,10 @@ public class StatisticsController {
         List<CategoryStatsDTO> categoryStatsDTOs = this.categoryStatisticsService.getAllCategoriesStatsForCharts();
 
         modelAndView.addObject("categoriesStats", categoryStatsDTOs);
+
+        if (categoryStatsDTOs.size() == 0) {
+            modelAndView.addObject("warning", "Няма намерени статистики за въпроси.");
+        }
 
         return modelAndView;
     }
@@ -77,17 +82,31 @@ public class StatisticsController {
 
     @GetMapping("/users")
     public ModelAndView showUsersStats(@RequestParam(defaultValue = "0") int page,
-                                       @RequestParam(defaultValue = "10") int size) {
+                                       @RequestParam(defaultValue = "10") int size,
+                                       @RequestParam(value = "sortBy", required = false) UserSortField sortBy,
+                                       @RequestParam(value = "username", required = false) String username) {
         ModelAndView modelAndView = new ModelAndView("users-dashboard");
 
-        Pageable pageable = PageRequest.of(page, size);
-        Page<UserStatisticsDTO> userStatisticsDTOs = this.userStatisticsService.getUserStatisticsFiltered(pageable);
+        Sort sort = Sort.unsorted();
+        if (sortBy != null) {
+            sort = Sort.by(sortBy.getFieldName()).descending();
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<UserStatisticsDTO> userStatisticsDTOs = this.userStatisticsService.getUserStatisticsFiltered(username, pageable);
 
         modelAndView.addObject("userStats", userStatisticsDTOs.getContent());
         modelAndView.addObject("currentPage", userStatisticsDTOs.getNumber());
         modelAndView.addObject("totalPages", userStatisticsDTOs.getTotalPages());
         modelAndView.addObject("totalElements", userStatisticsDTOs.getTotalElements());
         modelAndView.addObject("size", userStatisticsDTOs.getSize());
+
+        modelAndView.addObject("sortBy", sortBy);
+        modelAndView.addObject("username", username);
+
+        if (userStatisticsDTOs.getTotalElements() == 0) {
+            modelAndView.addObject("warning", "Няма намерени статистики за потребители.");
+        }
 
         return modelAndView;
     }

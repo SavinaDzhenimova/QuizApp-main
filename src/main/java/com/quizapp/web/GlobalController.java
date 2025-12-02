@@ -4,6 +4,7 @@ import com.quizapp.model.dto.category.CategoryDTO;
 import com.quizapp.model.dto.category.CategoryPageDTO;
 import com.quizapp.model.enums.ProblemType;
 import com.quizapp.model.enums.QuestionSortField;
+import com.quizapp.model.enums.UserSortField;
 import com.quizapp.service.interfaces.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -31,5 +32,10 @@ public class GlobalController {
     @ModelAttribute("questionSortFields")
     public QuestionSortField[] getQuestionSortFields() {
         return QuestionSortField.values();
+    }
+
+    @ModelAttribute("userSortFields")
+    public UserSortField[] getUserSortFields() {
+        return UserSortField.values();
     }
 }

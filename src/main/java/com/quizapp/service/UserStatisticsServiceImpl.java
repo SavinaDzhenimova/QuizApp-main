@@ -4,10 +4,13 @@ import com.quizapp.model.dto.user.UserStatisticsDTO;
 import com.quizapp.model.entity.User;
 import com.quizapp.model.entity.UserStatistics;
 import com.quizapp.repository.UserStatisticsRepository;
+import com.quizapp.repository.spec.UserStatisticsSpecifications;
 import com.quizapp.service.interfaces.UserStatisticsService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,8 +23,12 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     private final UserStatisticsRepository userStatisticsRepository;
 
     @Override
-    public Page<UserStatisticsDTO> getUserStatisticsFiltered(Pageable pageable) {
-        return this.userStatisticsRepository.findAll(pageable)
+    @Transactional
+    public Page<UserStatisticsDTO> getUserStatisticsFiltered(String username, Pageable pageable) {
+        Specification<UserStatistics> spec = Specification
+                .allOf(UserStatisticsSpecifications.hasUsername(username));
+
+        return this.userStatisticsRepository.findAll(spec, pageable)
                 .map(this::mapStatisticsToDTO);
     }
 
