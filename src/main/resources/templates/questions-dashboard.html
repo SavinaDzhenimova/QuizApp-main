@@ -14,7 +14,7 @@
     <header th:replace="~{fragments/commons::header}"></header>
 
     <main>
-        <div class="questions-dashboard-container">
+        <div class="dashboard-container">
             <h1>Статистики за въпросите</h1>
 
             <form th:action="@{/statistics/questions}"
@@ -22,9 +22,8 @@
                   class="search-form">
                 <input type="hidden" name="page" value="0"/>
 
-                <label for="sortBy">Сортирай по:</label>
                 <select name="sortBy" id="sortBy" onchange="this.form.submit()">
-                    <option value="" th:selected="${sortBy == null}">-- Без сортиране --</option>
+                    <option value="" th:selected="${sortBy == null}">-- Сортирай по --</option>
                     <option th:each="sortField : ${questionSortFields}"
                             th:value="${sortField}"
                             th:selected="${sortBy == sortField}"

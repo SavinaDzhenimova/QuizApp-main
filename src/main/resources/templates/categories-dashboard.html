@@ -17,134 +17,79 @@
         <div class="dashboard-container">
             <h1>Статистики по категории</h1>
 
-            <div class="chart-container">
-                <canvas id="completedQuizzesChart"></canvas>
+            <form th:action="@{/statistics/categories}"
+                  th:method="GET"
+                  class="search-form">
+                <input type="hidden" name="page" value="0"/>
+
+                <select name="sortBy" id="sortBy" onchange="this.form.submit()">
+                    <option value="" th:selected="${sortBy == null}">-- Сортирай по --</option>
+                    <option th:each="sortField : ${categoriesSortFields}"
+                            th:value="${sortField}"
+                            th:selected="${sortBy == sortField}"
+                            th:text="${sortField.displayName}">
+                    </option>
+                </select>
+
+                <select name="categoryId" id="categoryId" onchange="this.form.submit()">
+                    <option value="">Търси категория</option>
+                    <option th:each="cat : ${categories}"
+                            th:value="${cat.id}"
+                            th:selected="${cat.id == categoryId}"
+                            th:text="${cat.name}">
+                    </option>
+                </select>
+            </form>
+
+            <div th:if="${warning}" class="warning">
+                <p th:text="${warning}"></p>
             </div>
 
-            <div class="chart-container">
-                <canvas id="unfinishedQuizzesChart"></canvas>
-            </div>
+            <table th:unless="${categoriesStats.isEmpty()}">
+                <thead>
+                <tr>
+                    <th class="col-username">Категория</th>
+                    <th class="col-started-quizzes">Започнати куизове</th>
+                    <th class="col-completed-quizzes">Решени куизове</th>
+                    <th class="col-unfinished-quizzes">Незавършени куизове</th>
+                    <th class="col-total-questions">Решени въпроси</th>
+                    <th class="col-correct-answers">Верни отговори</th>
+                    <th class="col-avg-accuracy">Средна точност (%)</th>
+                    <th class="col-completion-rate">Завършеност (%)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="category : ${categoriesStats}">
+                    <td th:text="${category.categoryName}" class="col-username">Потребител</td>
+                    <td th:text="${category.totalStartedQuizzes}" class="col-started-quizzes">Започнати куизове</td>
+                    <td th:text="${category.totalCompletedQuizzes}" class="col-completed-quizzes">Решени куизове</td>
+                    <td th:text="${category.totalUnfinishedQuizzes}" class="col-unfinished-quizzes">Незавършени куизове</td>
+                    <td th:text="${category.totalQuestions}" class="col-total-questions">Решени въпроси</td>
+                    <td th:text="${category.totalCorrectAnswers}" class="col-correct-answers">Верни отговори</td>
+                    <td th:text="${#numbers.formatDecimal(category.averageAccuracy, 1, 2)}" class="col-avg-accuracy">Средна точност (%)</td>
+                    <td th:text="${#numbers.formatDecimal(category.completionRate, 1, 2)}" class="col-completion-rate">Завършеност (%)</td>
+                </tr>
+                </tbody>
+            </table>
 
-            <div class="chart-container">
-                <canvas id="totalCorrectAnswersChart"></canvas>
-            </div>
-
-            <div class="chart-container">
-                <canvas id="averageAccuracyChart"></canvas>
+            <div class="pagination" th:if="${totalPages > 1}">
+                <a th:if="${currentPage > 0}"
+                   th:href="@{/statistics/categories(
+                               page=${currentPage - 1},
+                               size=${size},
+                               sortBy=${sortBy},
+                               categoryId=${categoryId})}" class="btn-start"><i class="fa-solid fa-angle-left"></i></a>
+                <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
+                <a th:if="${currentPage + 1 < totalPages}"
+                   th:href="@{/statistics/categories(
+                               page=${currentPage + 1},
+                               size=${size},
+                               sortBy=${sortBy},
+                               categoryId=${categoryId})}" class="btn-start"><i class="fa-solid fa-angle-right"></i></a>
             </div>
         </div>
     </main>
 
     <footer th:replace="~{fragments/commons::footer}"></footer>
-
-    <script th:inline="javascript">
-      const categoriesStats = [[${categoriesStats}]];
-
-      const labels = categoriesStats.map(c => c.categoryName);
-      const totalCompleted = categoriesStats.map(c => c.totalCompletedQuizzes);
-      const totalUnfinished = categoriesStats.map(c => c.totalUnfinishedQuizzes);
-      const totalCorrectAnswers = categoriesStats.map(c => c.totalCorrectAnswers);
-      const avgAccuracy = categoriesStats.map(c => c.averageAccuracy);
-
-      // Най-често решавани категории
-      new Chart(document.getElementById('completedQuizzesChart'), {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Завършени куизове',
-            data: totalCompleted,
-            backgroundColor: 'rgba(128, 0, 128, 0.6)'
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false },
-            title: { display: true,
-                     text: 'Най-често решавани категории',
-                     color: 'rgba(128, 0, 128, 0.6)',
-                     font: { size: 20, weight: '600' },
-                     padding: { bottom: 20 }
-            }
-          }
-        }
-      });
-
-      // Най-много недовършени куизове
-      new Chart(document.getElementById('unfinishedQuizzesChart'), {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Недовършени куизове',
-            data: totalUnfinished,
-            backgroundColor: 'rgba(128, 0, 128, 0.6)'
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false },
-            title: { display: true,
-                     text: 'Най-много недовършени куизове',
-                     color: 'rgba(128, 0, 128, 0.6)',
-                     font: { size: 20, weight: '600' },
-                     padding: { bottom: 20 }
-            }
-          }
-        }
-      });
-
-      // Най-много правилни отговори по категории
-      new Chart(document.getElementById('totalCorrectAnswersChart'), {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Правилни отговори',
-            data: totalCorrectAnswers,
-            backgroundColor: 'rgba(128, 0, 128, 0.6)'
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false },
-            title: { display: true,
-                     text: 'Най-много правилни отговори по категории',
-                     color: 'rgba(128, 0, 128, 0.6)',
-                     font: { size: 20, weight: '600' },
-                     padding: { bottom: 20 }
-            }
-          }
-        }
-      });
-
-      // Средна точност по категории
-      new Chart(document.getElementById('averageAccuracyChart'), {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Средна точност (%)',
-            data: avgAccuracy,
-            backgroundColor: 'rgba(128, 0, 128, 0.6)'
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false },
-            title: { display: true,
-                     text: 'Средна точност на отговорите по категории',
-                     color: 'rgba(128, 0, 128, 0.6)',
-                     font: { size: 20, weight: '600' },
-                     padding: { bottom: 20 }
-            }
-          }
-        }
-      });
-    </script>
 </body>
 </html>

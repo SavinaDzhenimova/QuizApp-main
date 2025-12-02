@@ -1,12 +1,12 @@
 package com.quizapp.service.interfaces;
 
 import com.quizapp.model.dto.category.CategoryStatsDTO;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface CategoryStatisticsService {
 
-    List<CategoryStatsDTO> getAllCategoriesStatsForCharts();
+    Page<CategoryStatsDTO> getAllCategoriesFiltered(Long categoryId, Pageable pageable);
 
     void increaseStartedQuizzes(Long categoryId);
 

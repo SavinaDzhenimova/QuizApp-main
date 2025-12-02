@@ -4,12 +4,14 @@ import com.quizapp.exception.CategoryStatisticsNotFound;
 import com.quizapp.model.dto.category.CategoryStatsDTO;
 import com.quizapp.model.entity.CategoryStatistics;
 import com.quizapp.repository.CategoryStatisticsRepository;
+import com.quizapp.repository.spec.CategoryStatisticsSpecifications;
 import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.CategoryStatisticsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,10 +21,12 @@ public class CategoryStatisticsServiceImpl implements CategoryStatisticsService 
     private final CategoryService categoryService;
 
     @Override
-    public List<CategoryStatsDTO> getAllCategoriesStatsForCharts() {
-        return this.categoryStatisticsRepository.findAll().stream()
-                .map(this::mapStatsToDTO)
-                .toList();
+    public Page<CategoryStatsDTO> getAllCategoriesFiltered(Long categoryId, Pageable pageable) {
+        Specification<CategoryStatistics> spec = Specification
+                .allOf(CategoryStatisticsSpecifications.hasCategory(categoryId));
+
+        return this.categoryStatisticsRepository.findAll(spec, pageable)
+                .map(this::mapStatsToDTO);
     }
 
     private CategoryStatsDTO mapStatsToDTO(CategoryStatistics categoryStatistics) {

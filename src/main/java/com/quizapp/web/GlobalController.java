@@ -2,6 +2,7 @@ package com.quizapp.web;
 
 import com.quizapp.model.dto.category.CategoryDTO;
 import com.quizapp.model.dto.category.CategoryPageDTO;
+import com.quizapp.model.enums.CategorySortField;
 import com.quizapp.model.enums.ProblemType;
 import com.quizapp.model.enums.QuestionSortField;
 import com.quizapp.model.enums.UserSortField;
@@ -37,5 +38,10 @@ public class GlobalController {
     @ModelAttribute("userSortFields")
     public UserSortField[] getUserSortFields() {
         return UserSortField.values();
+    }
+
+    @ModelAttribute("categoriesSortFields")
+    public CategorySortField[] getCategorySortFields() {
+        return CategorySortField.values();
     }
 }

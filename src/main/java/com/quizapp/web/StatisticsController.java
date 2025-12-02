@@ -3,6 +3,7 @@ package com.quizapp.web;
 import com.quizapp.model.dto.category.CategoryStatsDTO;
 import com.quizapp.model.dto.question.QuestionStatsDTO;
 import com.quizapp.model.dto.user.UserStatisticsDTO;
+import com.quizapp.model.enums.CategorySortField;
 import com.quizapp.model.enums.QuestionSortField;
 import com.quizapp.model.enums.UserSortField;
 import com.quizapp.service.interfaces.CategoryStatisticsService;
@@ -31,15 +32,32 @@ public class StatisticsController {
     private final UserStatisticsService userStatisticsService;
 
     @GetMapping("/categories")
-    public ModelAndView showCategoriesStats() {
+    public ModelAndView showCategoriesStats(@RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size,
+                                            @RequestParam(value = "sortBy", required = false) CategorySortField sortBy,
+                                            @RequestParam(value = "categoryId", required = false) Long categoryId) {
+
         ModelAndView modelAndView = new ModelAndView("categories-dashboard");
 
-        List<CategoryStatsDTO> categoryStatsDTOs = this.categoryStatisticsService.getAllCategoriesStatsForCharts();
+        Sort sort = Sort.unsorted();
+        if (sortBy != null) {
+            sort = Sort.by(sortBy.getFieldName()).descending();
+        }
 
-        modelAndView.addObject("categoriesStats", categoryStatsDTOs);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<CategoryStatsDTO> categoryStatsDTOs = this.categoryStatisticsService.getAllCategoriesFiltered(categoryId, pageable);
 
-        if (categoryStatsDTOs.size() == 0) {
-            modelAndView.addObject("warning", "Няма намерени статистики за въпроси.");
+        modelAndView.addObject("categoriesStats", categoryStatsDTOs.getContent());
+        modelAndView.addObject("currentPage", categoryStatsDTOs.getNumber());
+        modelAndView.addObject("totalPages", categoryStatsDTOs.getTotalPages());
+        modelAndView.addObject("totalElements", categoryStatsDTOs.getTotalElements());
+        modelAndView.addObject("size", categoryStatsDTOs.getSize());
+
+        modelAndView.addObject("categoryId", categoryId);
+        modelAndView.addObject("sortBy", sortBy);
+
+        if (categoryStatsDTOs.getTotalElements() == 0) {
+            modelAndView.addObject("warning", "Няма намерени статистики за категории.");
         }
 
         return modelAndView;
