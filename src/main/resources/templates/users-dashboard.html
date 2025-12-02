@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/css/dashboards-styles.css">
+    <title>Статистика за потребители</title>
+</head>
+
+<body>
+
+    <header th:replace="~{fragments/commons::header}"></header>
+
+    <main>
+        <div class="questions-dashboard-container">
+            <h1>Статистики за потребители</h1>
+
+            <form th:action="@{/statistics/users}"
+                  th:method="GET"
+                  class="search-form">
+                <input type="hidden" name="page" value="0"/>
+
+                <label for="sortBy">Сортирай по:</label>
+                <select name="sortBy" id="sortBy" onchange="this.form.submit()">
+                    <option value="" th:selected="${sortBy == null}">-- Без сортиране --</option>
+                    <option th:each="sortField : ${userSortFields}"
+                            th:value="${sortField}"
+                            th:selected="${sortBy == sortField}"
+                            th:text="${sortField.displayName}">
+                    </option>
+                </select>
+
+                <input type="text"
+                       name="username"
+                       th:value="${username}"
+                       placeholder="Търси по потребителско име...">
+
+                <button type="submit" class="search-btn">Търсене</button>
+            </form>
+
+            <div th:if="${warning}" class="warning">
+                <p th:text="${warning}"></p>
+            </div>
+
+            <table th:unless="${userStats.isEmpty()}">
+                <thead>
+                <tr>
+                    <th class="col-username">Потребител</th>
+                    <th class="col-quizzes">Решени куизове</th>
+                    <th class="col-correct-answers">Верни отговори</th>
+                    <th class="col-max-score">Решени въпроси</th>
+                    <th class="col-avg-score">Среден резултат (%)</th>
+                    <th class="col-last-solved">Последно решавал</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user : ${userStats}">
+                    <td th:text="${user.username}" class="col-username">Потребител</td>
+                    <td th:text="${user.totalSolvedQuizzes}" class="col-quizzes">Решени куизове</td>
+                    <td th:text="${user.totalCorrectAnswers}" class="col-correct-answers">Верни отговори</td>
+                    <td th:text="${user.maxScore}" class="col-max-score">Решени въпроси</td>
+                    <td th:text="${user.averageScore}" class="col-avg-score">Среден резултат (%)</td>
+                    <td th:text="${#temporals.format(user.lastSolvedAt, 'dd.MM.yyyy г. HH:mm')}" class="col-last-solved">Последно решавал</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="pagination" th:if="${totalPages > 1}">
+                <a th:if="${currentPage > 0}"
+                   th:href="@{/statistics/users(
+                               page=${currentPage - 1},
+                               size=${size})}" class="btn-start"><i class="fa-solid fa-angle-left"></i></a>
+                <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
+                <a th:if="${currentPage + 1 < totalPages}"
+                   th:href="@{/statistics/users(
+                               page=${currentPage + 1},
+                               size=${size})}" class="btn-start"><i class="fa-solid fa-angle-right"></i></a>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/commons::footer}"></footer>
+
+</body>
+</html>

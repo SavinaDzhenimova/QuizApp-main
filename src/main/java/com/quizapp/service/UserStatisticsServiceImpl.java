@@ -1,20 +1,41 @@
 package com.quizapp.service;
 
+import com.quizapp.model.dto.user.UserStatisticsDTO;
 import com.quizapp.model.entity.User;
 import com.quizapp.model.entity.UserStatistics;
 import com.quizapp.repository.UserStatisticsRepository;
 import com.quizapp.service.interfaces.UserStatisticsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserStatisticsServiceImpl implements UserStatisticsService {
 
     private final UserStatisticsRepository userStatisticsRepository;
+
+    public Page<UserStatisticsDTO> getUserStatisticsFiltered(Pageable pageable) {
+        return this.userStatisticsRepository.findAll(pageable)
+                .map(this::mapStatisticsToDTO);
+    }
+
+    private UserStatisticsDTO mapStatisticsToDTO(UserStatistics userStatistics) {
+        return UserStatisticsDTO.builder()
+                .userId(userStatistics.getUser().getId())
+                .username(userStatistics.getUser().getUsername())
+                .totalQuizzes(userStatistics.getTotalQuizzes())
+                .totalCorrectAnswers(userStatistics.getTotalCorrectAnswers())
+                .maxScore(userStatistics.getMaxScore())
+                .averageScore(userStatistics.getAverageScore())
+                .lastSolvedAt(userStatistics.getLastSolvedAt())
+                .build();
+    }
 
     @Override
     public UserStatistics createInitialStatistics(User user) {
