@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +19,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 
     private final UserStatisticsRepository userStatisticsRepository;
 
+    @Override
     public Page<UserStatisticsDTO> getUserStatisticsFiltered(Pageable pageable) {
         return this.userStatisticsRepository.findAll(pageable)
                 .map(this::mapStatisticsToDTO);
