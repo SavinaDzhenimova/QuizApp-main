@@ -17,6 +17,19 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     private final UserStatisticsRepository userStatisticsRepository;
 
     @Override
+    public UserStatistics createInitialStatistics(User user) {
+        UserStatistics userStatistics = UserStatistics.builder()
+                .user(user)
+                .totalQuizzes(user.getSolvedQuizzes().size())
+                .totalCorrectAnswers(0)
+                .maxScore(0)
+                .averageScore(0)
+                .build();
+
+        return this.userStatisticsRepository.saveAndFlush(userStatistics);
+    }
+
+    @Override
     public UserStatistics updateUserStatistics(UserStatistics userStatistics, long correctAnswers,
                                                int totalQuestions, LocalDateTime solvedAt) {
         userStatistics.setTotalQuizzes(userStatistics.getTotalQuizzes() + 1);

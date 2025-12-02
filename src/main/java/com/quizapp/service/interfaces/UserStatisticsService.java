@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface UserStatisticsService {
 
+    UserStatistics createInitialStatistics(User user);
+
     UserStatistics updateUserStatistics(UserStatistics userStatistics, long correctAnswers, int totalQuestions, LocalDateTime solvedAt);
 
     List<User> findInactiveUsers(LocalDateTime dateTime);

@@ -10,6 +10,7 @@ import com.quizapp.service.events.UserRegisterEvent;
 import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.RoleService;
 import com.quizapp.service.interfaces.UserService;
+import com.quizapp.service.interfaces.UserStatisticsService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -28,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final UserStatisticsService userStatisticsService;
 
     @Override
     @Transactional
@@ -97,13 +99,7 @@ public class UserServiceImpl implements UserService {
                 .solvedQuizzes(new ArrayList<>())
                 .build();
 
-        UserStatistics userStatistics = UserStatistics.builder()
-                .user(user)
-                .totalQuizzes(user.getSolvedQuizzes().size())
-                .totalCorrectAnswers(0)
-                .maxScore(0)
-                .averageScore(0)
-                .build();
+        UserStatistics userStatistics = this.userStatisticsService.createInitialStatistics(user);
 
         user.setUserStatistics(userStatistics);
 
