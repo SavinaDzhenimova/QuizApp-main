@@ -28,6 +28,14 @@
     gap: 1em;
 }
 
+.search-form {
+    width: 100%;
+}
+
+.search-form label[for="sortBy"] {
+    width: 20%;
+}
+
 .col-wrong-answers,
 .col-correct-answers,
 .col-attempts,

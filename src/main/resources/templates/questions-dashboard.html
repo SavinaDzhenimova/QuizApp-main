@@ -17,6 +17,38 @@
         <div class="questions-dashboard-container">
             <h1>Статистики за въпросите</h1>
 
+            <form th:action="@{/statistics/questions}"
+                  th:method="GET"
+                  class="search-form">
+                <input type="hidden" name="page" value="0"/>
+
+                <label for="sortBy">Сортирай по:</label>
+                <select name="sortBy" id="sortBy" onchange="this.form.submit()">
+                    <option value="" th:selected="${sortBy == null}">-- Без сортиране --</option>
+                    <option th:each="sortField : ${questionSortFields}"
+                            th:value="${sortField}"
+                            th:selected="${sortBy == sortField}"
+                            th:text="${sortField.displayName}">
+                    </option>
+                </select>
+
+                <select name="categoryId">
+                    <option value="">Търси категория</option>
+                    <option th:each="cat : ${categories}"
+                            th:value="${cat.id}"
+                            th:selected="${cat.id == categoryId}"
+                            th:text="${cat.name}">
+                    </option>
+                </select>
+
+                <input type="text"
+                       name="questionText"
+                       th:value="${questionText}"
+                       placeholder="Търси по съдържанието на въпроса...">
+
+                <button type="submit" class="search-btn">Търсене</button>
+            </form>
+
             <div th:if="${warning}" class="warning">
                 <p th:text="${warning}"></p>
             </div>
