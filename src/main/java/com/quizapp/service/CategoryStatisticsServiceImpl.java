@@ -21,18 +21,22 @@ public class CategoryStatisticsServiceImpl implements CategoryStatisticsService 
     @Override
     public List<CategoryStatsDTO> getAllCategoriesStatsForCharts() {
         return this.categoryStatisticsRepository.findAll().stream()
-                .map(cat -> CategoryStatsDTO.builder()
-                        .categoryId(cat.getCategoryId())
-                        .categoryName(cat.getCategoryName())
-                        .totalStartedQuizzes(cat.getTotalStartedQuizzes())
-                        .totalCompletedQuizzes(cat.getTotalCompletedQuizzes())
-                        .totalUnfinishedQuizzes(cat.getTotalStartedQuizzes() - cat.getTotalCompletedQuizzes())
-                        .totalCorrectAnswers(cat.getTotalCorrectAnswers())
-                        .totalQuestions(cat.getTotalQuestions())
-                        .averageAccuracy(cat.getAverageAccuracy())
-                        .completionRate(cat.getCompletionRate())
-                        .build())
+                .map(this::mapStatsToDTO)
                 .toList();
+    }
+
+    private CategoryStatsDTO mapStatsToDTO(CategoryStatistics categoryStatistics) {
+        return CategoryStatsDTO.builder()
+                .categoryId(categoryStatistics.getCategoryId())
+                .categoryName(categoryStatistics.getCategoryName())
+                .totalStartedQuizzes(categoryStatistics.getTotalStartedQuizzes())
+                .totalCompletedQuizzes(categoryStatistics.getTotalCompletedQuizzes())
+                .totalUnfinishedQuizzes(categoryStatistics.getTotalStartedQuizzes() - categoryStatistics.getTotalCompletedQuizzes())
+                .totalCorrectAnswers(categoryStatistics.getTotalCorrectAnswers())
+                .totalQuestions(categoryStatistics.getTotalQuestions())
+                .averageAccuracy(categoryStatistics.getAverageAccuracy())
+                .completionRate(categoryStatistics.getCompletionRate())
+                .build();
     }
 
     @Override
