@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/css/dashboards-styles.css">
+    <title>Статистика за въпросите</title>
+</head>
+
+<body>
+
+    <header th:replace="~{fragments/commons::header}"></header>
+
+    <main>
+        <div class="dashboard-container">
+            <h1>Статистики за въпросите</h1>
+
+            <table th:unless="${questionsStats.isEmpty()}">
+                <thead>
+                <tr>
+                    <th class="col-question-text">Въпрос</th>
+                    <th class="col-category">Категория</th>
+                    <th class="col-attempts">Брой опити</th>
+                    <th class="col-correct-answers">Верни отговори</th>
+                    <th class="col-wrong-answers">Грешни отговори</th>
+                    <th class="col-accuracy">Точност (%)</th>
+                    <th class="col-difficulty">Трудност (%)</th>
+                    <th class="col-completion-rate">Завършеност (%)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="question : ${questionsStats}">
+                    <td th:text="${question.questionText}" class="col-question-text">Въпрос</td>
+                    <td th:text="${question.categoryName}" class="col-category">Категория</td>
+                    <td th:text="${question.attempts}" class="col-category">Брой опити</td>
+                    <td th:text="${question.correctAnswers}" class="col-correct-answers">Верни отговори</td>
+                    <td th:text="${question.wrongAnswers}" class="col-wrong-answers">Верни отговори</td>
+                    <td th:text="${question.accuracy}" class="col-accuracy">Точност (%)</td>
+                    <td th:text="${question.difficulty}" class="col-accuracy">Трудност (%)</td>
+                    <td th:text="${question.completionRate}" class="col-accuracy">Завършеност (%)</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="pagination" th:if="${totalPages > 1}">
+                <a th:if="${currentPage > 0}"
+                   th:href="@{/questions(
+                       page=${currentPage - 1},
+                       size=${size})}" class="btn-start"><i class="fa-solid fa-angle-left"></i></a>
+                <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
+                <a th:if="${currentPage + 1 < totalPages}"
+                   th:href="@{/questions(
+                        page=${currentPage + 1},
+                        size=${size})}" class="btn-start"><i class="fa-solid fa-angle-right"></i></a>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/commons::footer}"></footer>
+
+</body>
+</html>

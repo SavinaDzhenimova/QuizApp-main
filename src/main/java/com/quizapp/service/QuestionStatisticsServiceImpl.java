@@ -5,7 +5,7 @@ import com.quizapp.model.dto.question.QuestionStatsDTO;
 import com.quizapp.model.entity.QuestionStatistics;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.repository.QuestionStatisticsRepository;
-import com.quizapp.service.interfaces.QuestionService;
+import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.QuestionStatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,13 +19,14 @@ import java.util.Map;
 public class QuestionStatisticsServiceImpl implements QuestionStatisticsService {
 
     private final QuestionStatisticsRepository questionStatisticsRepository;
-    private final QuestionService questionService;
+    private final CategoryService categoryService;
 
     @Override
-    public Page<QuestionStatsDTO> getAllQuestionStatsForChartsByCategoryId(Long categoryId, Pageable pageable) {
-        return this.questionStatisticsRepository.findAllByCategoryId(categoryId, pageable)
+    public Page<QuestionStatsDTO> getAllQuestionStatsForChartsByCategoryId(Pageable pageable) {
+        return this.questionStatisticsRepository.findAll(pageable)
                 .map(questionStats -> QuestionStatsDTO.builder()
                         .categoryId(questionStats.getCategoryId())
+                        .categoryName(this.categoryService.getCategoryNameById(questionStats.getCategoryId()))
                         .questionId(questionStats.getQuestionId())
                         .questionText(questionStats.getQuestionText())
                         .attempts(questionStats.getAttempts())

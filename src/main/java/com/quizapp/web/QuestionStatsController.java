@@ -22,20 +22,18 @@ public class QuestionStatsController {
 
     @GetMapping
     public ModelAndView showQuestionsStats(@RequestParam(defaultValue = "0") int page,
-                                           @RequestParam(defaultValue = "10") int size,
-                                           @RequestParam(value = "categoryId", required = false) Long categoryId) {
+                                           @RequestParam(defaultValue = "10") int size) {
         ModelAndView modelAndView = new ModelAndView("questions-dashboard");
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("questionId"));
         Page<QuestionStatsDTO> questionStatsDTOs = this.questionStatisticsService
-                .getAllQuestionStatsForChartsByCategoryId(categoryId, pageable);
+                .getAllQuestionStatsForChartsByCategoryId(pageable);
 
         modelAndView.addObject("questionStats", questionStatsDTOs.getContent());
         modelAndView.addObject("currentPage", questionStatsDTOs.getNumber());
         modelAndView.addObject("totalPages", questionStatsDTOs.getTotalPages());
         modelAndView.addObject("totalElements", questionStatsDTOs.getTotalElements());
         modelAndView.addObject("size", questionStatsDTOs.getSize());
-        modelAndView.addObject("categoryId", categoryId);
 
         return modelAndView;
     }

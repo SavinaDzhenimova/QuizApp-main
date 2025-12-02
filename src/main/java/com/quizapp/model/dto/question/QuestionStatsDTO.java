@@ -17,6 +17,8 @@ public class QuestionStatsDTO {
 
     private Long categoryId;
 
+    private String categoryName;
+
     private int attempts;
 
     private int correctAnswers;
