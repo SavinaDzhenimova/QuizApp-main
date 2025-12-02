@@ -1,6 +1,7 @@
 package com.quizapp.web;
 
 import com.quizapp.model.dto.question.QuestionStatsDTO;
+import com.quizapp.model.enums.QuestionSortField;
 import com.quizapp.service.interfaces.QuestionStatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,18 +23,31 @@ public class QuestionStatsController {
 
     @GetMapping
     public ModelAndView showQuestionsStats(@RequestParam(defaultValue = "0") int page,
-                                           @RequestParam(defaultValue = "10") int size) {
+                                           @RequestParam(defaultValue = "10") int size,
+                                           @RequestParam(value = "categoryId", required = false) Long categoryId,
+                                           @RequestParam(value = "sortBy", required = false) QuestionSortField sortBy,
+                                           @RequestParam(value = "questionText", required = false) String questionText) {
+
         ModelAndView modelAndView = new ModelAndView("questions-dashboard");
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("questionId"));
+        Sort sort = Sort.unsorted();
+        if (sortBy != null) {
+            sort = Sort.by(sortBy.getFieldName()).descending();
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sort);
         Page<QuestionStatsDTO> questionStatsDTOs = this.questionStatisticsService
-                .getAllQuestionStatsForChartsByCategoryId(pageable);
+                .getFilteredQuestionStatistics(categoryId, questionText, pageable);
 
         modelAndView.addObject("questionStats", questionStatsDTOs.getContent());
         modelAndView.addObject("currentPage", questionStatsDTOs.getNumber());
         modelAndView.addObject("totalPages", questionStatsDTOs.getTotalPages());
         modelAndView.addObject("totalElements", questionStatsDTOs.getTotalElements());
         modelAndView.addObject("size", questionStatsDTOs.getSize());
+
+        modelAndView.addObject("categoryId", categoryId);
+        modelAndView.addObject("sortBy", sortBy);
+        modelAndView.addObject("questionText", questionText);
 
         if (questionStatsDTOs.getTotalElements() == 0) {
             modelAndView.addObject("warning", "Няма намерени статистики за въпроси.");

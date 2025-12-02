@@ -32,7 +32,7 @@
                     </option>
                 </select>
 
-                <select name="categoryId">
+                <select name="categoryId" id="categoryId">
                     <option value="">Търси категория</option>
                     <option th:each="cat : ${categories}"
                             th:value="${cat.id}"
@@ -84,12 +84,18 @@
                 <a th:if="${currentPage > 0}"
                    th:href="@{/statistics/questions(
                        page=${currentPage - 1},
-                       size=${size})}" class="btn-start"><i class="fa-solid fa-angle-left"></i></a>
+                       size=${size},
+                       categoryId=${categoryId},
+                       sortBy=${sortBy},
+                       questionText=${questionText})}" class="btn-start"><i class="fa-solid fa-angle-left"></i></a>
                 <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
                 <a th:if="${currentPage + 1 < totalPages}"
                    th:href="@{/statistics/questions(
                         page=${currentPage + 1},
-                        size=${size})}" class="btn-start"><i class="fa-solid fa-angle-right"></i></a>
+                        size=${size},
+                        categoryId=${categoryId},
+                        sortBy=${sortBy},
+                        questionText=${questionText})}" class="btn-start"><i class="fa-solid fa-angle-right"></i></a>
             </div>
         </div>
     </main>

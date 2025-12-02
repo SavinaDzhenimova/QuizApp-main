@@ -5,11 +5,13 @@ import com.quizapp.model.dto.question.QuestionStatsDTO;
 import com.quizapp.model.entity.QuestionStatistics;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.repository.QuestionStatisticsRepository;
+import com.quizapp.repository.spec.QuestionStatisticsSpecifications;
 import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.QuestionStatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -22,20 +24,28 @@ public class QuestionStatisticsServiceImpl implements QuestionStatisticsService 
     private final CategoryService categoryService;
 
     @Override
-    public Page<QuestionStatsDTO> getAllQuestionStatsForChartsByCategoryId(Pageable pageable) {
-        return this.questionStatisticsRepository.findAll(pageable)
-                .map(questionStats -> QuestionStatsDTO.builder()
-                        .categoryId(questionStats.getCategoryId())
-                        .categoryName(this.categoryService.getCategoryNameById(questionStats.getCategoryId()))
-                        .questionId(questionStats.getQuestionId())
-                        .questionText(questionStats.getQuestionText())
-                        .attempts(questionStats.getAttempts())
-                        .correctAnswers(questionStats.getCorrectAnswers())
-                        .wrongAnswers(questionStats.getWrongAnswers())
-                        .accuracy(questionStats.getAccuracy())
-                        .difficulty(questionStats.getDifficulty())
-                        .completionRate(questionStats.getCompletionRate())
-                        .build());
+    public Page<QuestionStatsDTO> getFilteredQuestionStatistics(Long categoryId, String questionText, Pageable pageable) {
+        Specification<QuestionStatistics> spec = Specification
+                .allOf(QuestionStatisticsSpecifications.hasQuestionText(questionText))
+                .and(QuestionStatisticsSpecifications.hasCategory(categoryId));
+
+        return this.questionStatisticsRepository.findAll(spec, pageable)
+                .map(this::mapStatsToDTO);
+    }
+
+    private QuestionStatsDTO mapStatsToDTO(QuestionStatistics questionStats) {
+        return QuestionStatsDTO.builder()
+                .categoryId(questionStats.getCategoryId())
+                .categoryName(this.categoryService.getCategoryNameById(questionStats.getCategoryId()))
+                .questionId(questionStats.getQuestionId())
+                .questionText(questionStats.getQuestionText())
+                .attempts(questionStats.getAttempts())
+                .correctAnswers(questionStats.getCorrectAnswers())
+                .wrongAnswers(questionStats.getWrongAnswers())
+                .accuracy(questionStats.getAccuracy())
+                .difficulty(questionStats.getDifficulty())
+                .completionRate(questionStats.getCompletionRate())
+                .build();
     }
 
     @Override

@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface QuestionStatisticsService {
 
-    Page<QuestionStatsDTO> getAllQuestionStatsForChartsByCategoryId(Pageable pageable);
+    Page<QuestionStatsDTO> getFilteredQuestionStatistics(Long categoryId, String questionText, Pageable pageable);
 
     void increaseUsedQuestion(Long questionId, String questionText, Long categoryId);
 
