@@ -54,21 +54,15 @@ public class CronScheduler {
     @Scheduled(cron = "0 0 3 * * ?")
     @Transactional
     public void runCleanup() {
-        LocalDateTime dateTime = LocalDateTime.now().minusYears(1);
+        Integer removedProfiles = this.userService.removeInactiveUsersProfiles();
 
-        List<User> inactiveUsers = this.userStatisticsService.findInactiveUsers(dateTime);
-
-        if (inactiveUsers.isEmpty()) {
-            return;
-        }
-
-        inactiveUsers.stream()
-                .map(User::getId)
-                .forEach(this.userService::deleteById);
+        this.LOGGER.info("Изтрити са профили на {} неактивни потребители.", removedProfiles);
     }
 
     @Scheduled(cron = "0 0 5 * * *")
     public void sendInactiveUsersReminderEmails() {
-        this.userService.sendInactiveUsersEmails();
+        Integer sentEmailsCount = this.userService.sendInactiveUsersEmails();
+
+        this.LOGGER.info("Изпратени са имейли на {} неактивни потребители.", sentEmailsCount);
     }
 }

@@ -6,7 +6,6 @@ import com.quizapp.model.entity.Result;
 import com.quizapp.model.entity.User;
 import jakarta.transaction.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
@@ -16,7 +15,9 @@ public interface UserService {
 
     Result registerUser(UserRegisterDTO registerUserDTO);
 
-    void sendInactiveUsersEmails();
+    Integer sendInactiveUsersEmails();
+
+    Integer removeInactiveUsersProfiles();
 
     void resetUserPassword(User user, String password);
 

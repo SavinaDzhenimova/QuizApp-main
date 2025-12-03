@@ -116,13 +116,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void sendInactiveUsersEmails() {
+    public Integer sendInactiveUsersEmails() {
         LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
 
-        this.userStatisticsService.findInactiveUsers(oneMonthAgo)
-                .forEach(user -> this.applicationEventPublisher.publishEvent(
-                        new InactiveUserEvent(this, user.getUsername(), user.getEmail())
-                ));
+        List<User> inactiveUsers = this.userStatisticsService.findInactiveUsers(oneMonthAgo);
+
+        inactiveUsers.forEach(user -> this.applicationEventPublisher.publishEvent(
+                new InactiveUserEvent(this, user.getUsername(), user.getEmail())
+        ));
+
+        return inactiveUsers.size();
+    }
+
+    @Override
+    public Integer removeInactiveUsersProfiles() {
+        LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
+
+        List<User> inactiveUsers = this.userStatisticsService.findInactiveUsers(oneYearAgo);
+
+        if (inactiveUsers.isEmpty()) {
+            return 0;
+        }
+
+        inactiveUsers.forEach(user -> this.deleteById(user.getId()));
+
+        return inactiveUsers.size();
     }
 
     @Override
