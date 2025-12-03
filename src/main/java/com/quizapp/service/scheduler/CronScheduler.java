@@ -1,6 +1,7 @@
 package com.quizapp.service.scheduler;
 
 import com.quizapp.model.entity.User;
+import com.quizapp.model.entity.UserStatistics;
 import com.quizapp.service.interfaces.GuestQuizService;
 import com.quizapp.service.interfaces.PasswordResetService;
 import com.quizapp.service.interfaces.UserService;
@@ -64,5 +65,10 @@ public class CronScheduler {
         inactiveUsers.stream()
                 .map(User::getId)
                 .forEach(this.userService::deleteById);
+    }
+
+    @Scheduled(cron = "0 0 5 * * *")
+    public void sendInactiveUsersReminderEmails() {
+        this.userService.sendInactiveUsersEmails();
     }
 }

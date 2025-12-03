@@ -15,4 +15,6 @@ public interface EmailService {
     void sendProblemReceivedEmail(String fullName, String email, String problemType);
 
     void sendSubscribeEmail(String email);
+
+    void sendInactiveUserEmail(String username, String email);
 }

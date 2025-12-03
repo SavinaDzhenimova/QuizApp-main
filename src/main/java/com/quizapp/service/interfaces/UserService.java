@@ -16,6 +16,8 @@ public interface UserService {
 
     Result registerUser(UserRegisterDTO registerUserDTO);
 
+    void sendInactiveUsersEmails();
+
     void resetUserPassword(User user, String password);
 
     Optional<User> getUserByUsername(String username);

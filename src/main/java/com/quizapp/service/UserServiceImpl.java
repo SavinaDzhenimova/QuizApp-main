@@ -6,6 +6,7 @@ import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.entity.*;
 import com.quizapp.model.enums.RoleName;
 import com.quizapp.repository.UserRepository;
+import com.quizapp.service.events.InactiveUserEvent;
 import com.quizapp.service.events.UserRegisterEvent;
 import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.RoleService;
@@ -17,6 +18,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -111,6 +113,16 @@ public class UserServiceImpl implements UserService {
                 new UserRegisterEvent(this, user.getUsername(), user.getEmail()));
 
         return new Result(true, "Успешна регистрация!");
+    }
+
+    @Override
+    public void sendInactiveUsersEmails() {
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+
+        this.userStatisticsService.findInactiveUsers(oneMonthAgo)
+                .forEach(user -> this.applicationEventPublisher.publishEvent(
+                        new InactiveUserEvent(this, user.getUsername(), user.getEmail())
+                ));
     }
 
     @Override

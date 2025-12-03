@@ -110,6 +110,17 @@ public class EmailServiceImpl implements EmailService {
         sendEmail(email, "Успешен абонамент", content, this.email);
     }
 
+    @Override
+    public void sendInactiveUserEmail(String username, String email) {
+        Map<String, Object> variables = Map.of(
+                "username", username,
+                "email", email
+        );
+
+        String content = generateEmailContent("/email/inactive-user-email", variables);
+        sendEmail(email, "Хей, липсваш ни!", content, this.email);
+    }
+
     private void sendEmail(String sendTo, String subject, String content, String replyTo) {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
