@@ -27,7 +27,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     @Transactional
     public Page<UserStatisticsDTO> getUserStatisticsFiltered(String username, UserSortField sortBy, Pageable pageable) {
         Specification<UserStatistics> spec = Specification
-                .allOf(UserStatisticsSpecifications.hasUsername(username));
+                .allOf(UserStatisticsSpecifications.hasUsername(username))
+                .and(UserStatisticsSpecifications.onlyRegularUsers());
 
         if (sortBy == UserSortField.LAST_SOLVED_AT) {
             spec = spec.and(UserStatisticsSpecifications.sortByLastSolvedAtNullLast());

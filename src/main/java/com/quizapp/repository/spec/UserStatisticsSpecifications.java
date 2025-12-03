@@ -1,6 +1,10 @@
 package com.quizapp.repository.spec;
 
+import com.quizapp.model.entity.Role;
+import com.quizapp.model.entity.User;
 import com.quizapp.model.entity.UserStatistics;
+import com.quizapp.model.enums.RoleName;
+import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
 
 public class UserStatisticsSpecifications {
@@ -10,6 +14,15 @@ public class UserStatisticsSpecifications {
                 username == null || username.isBlank()
                         ? null
                         : cb.like(cb.lower(root.get("username")), "%" + username.trim().toLowerCase() + "%");
+    }
+
+    public static Specification<UserStatistics> onlyRegularUsers() {
+        return (root, query, cb) -> {
+            Join<UserStatistics, User> userJoin = root.join("user");
+            Join<User, Role> roleJoin = userJoin.join("roles");
+
+            return cb.equal(roleJoin.get("name"), RoleName.USER);
+        };
     }
 
     public static Specification<UserStatistics> sortByLastSolvedAtNullLast() {

@@ -109,9 +109,11 @@ public class StatisticsController {
             pageable = PageRequest.of(page, size);
         } else {
             Sort sort = Sort.unsorted();
+
             if (sortBy != null) {
                 sort = Sort.by(sortBy.getFieldName()).descending();
             }
+
             pageable = PageRequest.of(page, size, sort);
         }
 
