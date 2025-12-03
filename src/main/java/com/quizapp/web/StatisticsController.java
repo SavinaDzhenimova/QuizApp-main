@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.List;
-
 @Controller
 @RequestMapping("/statistics")
 @RequiredArgsConstructor
@@ -103,6 +101,7 @@ public class StatisticsController {
                                        @RequestParam(defaultValue = "10") int size,
                                        @RequestParam(value = "sortBy", required = false) UserSortField sortBy,
                                        @RequestParam(value = "username", required = false) String username) {
+
         ModelAndView modelAndView = new ModelAndView("users-dashboard");
 
         Sort sort = Sort.unsorted();

@@ -4,8 +4,17 @@
 }
 
 .search-form {
-    width: 100%;
-    justify-content: center;
+    width: 80%;
+    align-self: flex-start;
+}
+
+.search-form #sortBy,
+.search-form #categoryId {
+    width: 20%;
+}
+
+.search-form input {
+    width: 50%;
 }
 
 .col-wrong-answers,

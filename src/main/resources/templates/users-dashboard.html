@@ -23,7 +23,7 @@
                 <input type="hidden" name="page" value="0"/>
 
                 <select name="sortBy" id="sortBy" onchange="this.form.submit()">
-                    <option value="" th:selected="${sortBy == null}">-- Сортирай по --</option>
+                    <option value="" th:selected="${sortBy == null}">Сортирай по</option>
                     <option th:each="sortField : ${userSortFields}"
                             th:value="${sortField}"
                             th:selected="${sortBy == sortField}"
