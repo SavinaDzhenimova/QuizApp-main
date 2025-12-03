@@ -11,4 +11,13 @@ public class UserStatisticsSpecifications {
                         ? null
                         : cb.like(cb.lower(root.get("username")), "%" + username.trim().toLowerCase() + "%");
     }
+
+    public static Specification<UserStatistics> sortByLastSolvedAtNullLast() {
+        return (root, query, cb) -> {
+            query.orderBy(cb.asc(cb.isNull(root.get("lastSolvedAt"))),
+                    cb.desc(root.get("lastSolvedAt")));
+
+            return null;
+        };
+    }
 }

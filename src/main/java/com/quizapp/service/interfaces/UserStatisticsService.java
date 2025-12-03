@@ -3,6 +3,7 @@ package com.quizapp.service.interfaces;
 import com.quizapp.model.dto.user.UserStatisticsDTO;
 import com.quizapp.model.entity.User;
 import com.quizapp.model.entity.UserStatistics;
+import com.quizapp.model.enums.UserSortField;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -11,7 +12,7 @@ import java.util.List;
 
 public interface UserStatisticsService {
 
-    Page<UserStatisticsDTO> getUserStatisticsFiltered(String username, Pageable pageable);
+    Page<UserStatisticsDTO> getUserStatisticsFiltered(String username, UserSortField sortBy, Pageable pageable);
 
     UserStatistics createInitialStatistics(User user);
 

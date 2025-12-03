@@ -99,6 +99,8 @@ public class UserServiceImpl implements UserService {
                 .solvedQuizzes(new ArrayList<>())
                 .build();
 
+        this.userRepository.saveAndFlush(user);
+
         UserStatistics userStatistics = this.userStatisticsService.createInitialStatistics(user);
 
         user.setUserStatistics(userStatistics);

@@ -3,6 +3,7 @@ package com.quizapp.service;
 import com.quizapp.model.dto.user.UserStatisticsDTO;
 import com.quizapp.model.entity.User;
 import com.quizapp.model.entity.UserStatistics;
+import com.quizapp.model.enums.UserSortField;
 import com.quizapp.repository.UserStatisticsRepository;
 import com.quizapp.repository.spec.UserStatisticsSpecifications;
 import com.quizapp.service.interfaces.UserStatisticsService;
@@ -24,9 +25,13 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 
     @Override
     @Transactional
-    public Page<UserStatisticsDTO> getUserStatisticsFiltered(String username, Pageable pageable) {
+    public Page<UserStatisticsDTO> getUserStatisticsFiltered(String username, UserSortField sortBy, Pageable pageable) {
         Specification<UserStatistics> spec = Specification
                 .allOf(UserStatisticsSpecifications.hasUsername(username));
+
+        if (sortBy == UserSortField.LAST_SOLVED_AT) {
+            spec = spec.and(UserStatisticsSpecifications.sortByLastSolvedAtNullLast());
+        }
 
         return this.userStatisticsRepository.findAll(spec, pageable)
                 .map(this::mapStatisticsToDTO);

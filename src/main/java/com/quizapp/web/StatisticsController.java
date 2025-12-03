@@ -104,13 +104,19 @@ public class StatisticsController {
 
         ModelAndView modelAndView = new ModelAndView("users-dashboard");
 
-        Sort sort = Sort.unsorted();
-        if (sortBy != null) {
-            sort = Sort.by(sortBy.getFieldName()).descending();
+        Pageable pageable;
+        if (sortBy == UserSortField.LAST_SOLVED_AT) {
+            pageable = PageRequest.of(page, size);
+        } else {
+            Sort sort = Sort.unsorted();
+            if (sortBy != null) {
+                sort = Sort.by(sortBy.getFieldName()).descending();
+            }
+            pageable = PageRequest.of(page, size, sort);
         }
 
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<UserStatisticsDTO> userStatisticsDTOs = this.userStatisticsService.getUserStatisticsFiltered(username, pageable);
+        Page<UserStatisticsDTO> userStatisticsDTOs = this.userStatisticsService
+                .getUserStatisticsFiltered(username, sortBy, pageable);
 
         modelAndView.addObject("userStats", userStatisticsDTOs.getContent());
         modelAndView.addObject("currentPage", userStatisticsDTOs.getNumber());
