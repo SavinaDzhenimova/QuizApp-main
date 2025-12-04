@@ -1,5 +1,6 @@
 package com.quizapp.service;
 
+import com.quizapp.exception.UserNotFoundException;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.user.UserDTO;
 import com.quizapp.model.dto.user.UserRegisterDTO;
@@ -146,6 +147,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public void resetUserPassword(User user, String password) {
         user.setPassword(this.passwordEncoder.encode(password));
+        this.userRepository.saveAndFlush(user);
+    }
+
+    @Override
+    @Transactional
+    public void updateLastLoginTime(String username) {
+        User user = this.userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("Не е намерен потребител " + username + "."));
+
+        if (user.getUserStatistics() != null) {
+            user.getUserStatistics().setLastLoginAt(LocalDateTime.now());
+        }
+
         this.userRepository.saveAndFlush(user);
     }
 

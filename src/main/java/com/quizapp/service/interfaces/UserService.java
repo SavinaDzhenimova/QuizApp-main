@@ -21,6 +21,8 @@ public interface UserService {
 
     void resetUserPassword(User user, String password);
 
+    void updateLastLoginTime(String username);
+
     Optional<User> getUserByUsername(String username);
 
     Optional<User> getUserByEmail(String email);
