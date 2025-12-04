@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -102,7 +103,12 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     @Override
-    public void deleteInvalidPasswordResetTokens(LocalDateTime now) {
+    public String deleteInvalidPasswordResetTokens() {
+        LocalDateTime now = LocalDateTime.now();
+
         this.tokenRepository.deleteExpiredOrUsedTokens(now);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+        return now.format(formatter);
     }
 }
