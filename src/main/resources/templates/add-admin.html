@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <th:block th:replace="~{fragments/commons::head}"></th:block>
+  <link rel="stylesheet" href="/css/add-admin-styles.css">
+  <title>Добави админ</title>
+</head>
+
+<body>
+
+    <header th:replace="~{fragments/commons::header}"></header>
+
+    <main>
+        <section class="form-section">
+            <form th:action="@{/admin/add-admin}"
+                  th:method="POST"
+                  th:object="${addAdminDTO}">
+                <h2>Добави админ</h2>
+
+                <div th:if="${error}" class="error">
+                    <p th:text="${error}"></p>
+                </div>
+
+                <div class="field">
+                    <label th:for="username">Потребителско име</label>
+                    <input type="text" name="username" id="username"
+                           th:field="*{username}"
+                           th:errorclass="is-invalid">
+                    <small th:if="${#fields.hasErrors('username')}"
+                           th:errors="*{username}"
+                           class="text-danger">Username error message</small>
+                </div>
+
+                <div class="field">
+                    <label th:for="email">Имейл</label>
+                    <input type="email" name="email" id="email"
+                           th:field="*{email}"
+                           th:errorclass="is-invalid">
+                    <small th:if="${#fields.hasErrors('email')}"
+                           th:errors="*{email}"
+                           class="text-danger">Email error message</small>
+                </div>
+
+                <div class="field">
+                    <label th:for="tempPassword">Временна парола</label>
+                    <input type="password" name="tempPassword" id="tempPassword"
+                           th:field="*{tempPassword}"
+                           th:errorclass="is-invalid">
+                    <small th:if="${#fields.hasErrors('tempPassword')}"
+                           th:errors="*{tempPassword}"
+                           class="text-danger">Password error message</small>
+                </div>
+
+                <button type="submit" class="btn-submit">Добави админ</button>
+            </form>
+        </section>
+    </main>
+
+    <footer th:replace="~{fragments/commons::footer}"></footer>
+
+</body>
+</html>

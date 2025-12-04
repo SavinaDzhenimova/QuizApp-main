@@ -74,6 +74,18 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    public void sendAddedAdminEmail(String username, String email, String tempPassword) {
+        Map<String, Object> variables = Map.of(
+                "username", username,
+                "email", email,
+                "tempPassword", tempPassword
+        );
+
+        String content = generateEmailContent("/email/admin-added-email", variables);
+        sendEmail(email, "Създаден админ профил в QuizApp", content, this.email);
+    }
+
+    @Override
     public void sendReportProblemEmail(String fullName, String email, String problemType, String questionIdentifier,
                                        String description) {
         Map<String, Object> variables = Map.of(

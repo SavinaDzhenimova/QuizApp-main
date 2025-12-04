@@ -35,7 +35,7 @@ public class CronScheduler {
         this.LOGGER.info("Изтеклите куизове са премахнати в " + formattedTime);
     }
 
-    @Scheduled(cron = "0 0 5 * * *")
+    @Scheduled(cron = "0 0 4 * * *")
     public void sendDeletionWarningEmails() {
         Integer inactiveUsersWarnEmail = this.userService.sendInactiveUsersWarnEmail();
 

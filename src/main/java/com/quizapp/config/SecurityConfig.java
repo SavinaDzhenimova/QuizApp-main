@@ -30,7 +30,7 @@ public class SecurityConfig {
                                 "/guest/quizzes/**").anonymous()
                         .requestMatchers("/users/logout", "/users/home",
                                 "/users/quizzes/**").authenticated()
-                        .requestMatchers("/admin",
+                        .requestMatchers("/admin", "/admin/add-admin",
                                 "/categories", "/categories/add-category",
                                 "/questions", "/questions/add-question", "/statistics/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

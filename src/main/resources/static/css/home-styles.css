@@ -4,7 +4,8 @@
 
 .profile-info,
 .profile-stats,
-.solved-quizzes {
+.solved-quizzes,
+.admin-section {
     width: 60%;
     display: flex;
     flex-direction: column;

@@ -13,27 +13,7 @@
     <header th:replace="~{fragments/commons::header}"></header>
 
     <main>
-        <div class="admin-container">
-            <h1>Админ панел</h1>
 
-            <div class="admin-authorities">
-                <section class="authority">
-                    <a th:href="@{/categories/add-category}" class="btn-start">Добави категория</a>
-                </section>
-
-                <section class="authority">
-                    <a th:href="@{/categories}" class="btn-start">Всички категории</a>
-                </section>
-
-                <section class="authority">
-                    <a th:href="@{/questions/add-question}" class="btn-start">Добави въпрос</a>
-                </section>
-
-                <section class="authority">
-                    <a th:href="@{/questions}" class="btn-start">Всички въпроси</a>
-                </section>
-            </div>
-        </div>
     </main>
 
     <footer th:replace="~{fragments/commons::footer}"></footer>

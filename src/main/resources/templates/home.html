@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec='http://www.thymeleaf.org/extras/spring-security'>
 
 <head>
     <th:block th:replace="~{fragments/commons::head}"></th:block>
@@ -19,7 +20,7 @@
                 <p>Email: <span th:text="${user.email}">user@example.com</span></p>
             </section>
 
-            <section class="profile-stats">
+            <section class="profile-stats" sec:authorize="hasRole('USER')">
                 <h3>Статистика</h3>
                 <ul>
                     <li>Общо решени куизове: <span th:text="${user.totalQuizzes}">0</span></li>
@@ -34,7 +35,7 @@
                 </ul>
             </section>
 
-            <section class="solved-quizzes">
+            <section class="solved-quizzes" sec:authorize="hasRole('USER')">
                 <h3>История на куизовете</h3>
                 <p th:if="${warning}" th:text="${warning}"></p>
                 <table th:unless="${user.solvedQuizzes.isEmpty()}">
@@ -58,6 +59,32 @@
 
                 <a th:href="@{/users/quizzes}" class="btn-start">Виж всички</a>
             </section>
+
+            <div class="admin-section">
+                <h1>Админ панел</h1>
+
+                <div class="admin-authorities">
+                    <section class="authority">
+                        <a th:href="@{/admin/add-admin}" class="btn-start">Добави админ</a>
+                    </section>
+
+                    <section class="authority">
+                        <a th:href="@{/categories/add-category}" class="btn-start">Добави категория</a>
+                    </section>
+
+                    <section class="authority">
+                        <a th:href="@{/categories}" class="btn-start">Всички категории</a>
+                    </section>
+
+                    <section class="authority">
+                        <a th:href="@{/questions/add-question}" class="btn-start">Добави въпрос</a>
+                    </section>
+
+                    <section class="authority">
+                        <a th:href="@{/questions}" class="btn-start">Всички въпроси</a>
+                    </section>
+                </div>
+            </div>
         </div>
     </main>
 
