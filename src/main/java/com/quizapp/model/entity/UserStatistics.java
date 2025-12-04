@@ -39,6 +39,12 @@ public class UserStatistics {
     @Column(name = "last_solved_at")
     private LocalDateTime lastSolvedAt;
 
+    @Column(name = "last_solving_warning_sent_at")
+    private LocalDateTime lastSolvingWarningSentAt;
+
+    @Column(name = "is_last_solving_warning_sent")
+    private boolean lastSolvingWarningSent;
+
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
 

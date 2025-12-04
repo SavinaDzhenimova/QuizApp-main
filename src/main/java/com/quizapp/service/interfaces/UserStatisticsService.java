@@ -18,9 +18,11 @@ public interface UserStatisticsService {
 
     UserStatistics updateUserStatistics(UserStatistics userStatistics, long correctAnswers, int totalQuestions, LocalDateTime solvedAt);
 
-    List<User> findInactiveSolvingQuizzesUsers(LocalDateTime dateTime);
+    List<UserStatistics> findInactiveSolvingQuizzesUsersNotWarned(LocalDateTime dateTime);
 
-    List<User> findInactiveLoginUsers(LocalDateTime dateTime);
+    List<UserStatistics> findWarnedUsersToResendSolvingWarning(LocalDateTime dateTime);
+
+    List<User> findInactiveLoginUsersWarned(LocalDateTime dateTime);
 
     List<UserStatistics> findInactiveNotWarned(LocalDateTime oneYearAgo);
 

@@ -17,9 +17,12 @@ public interface UserService {
 
     Integer sendInactiveSolvingQuizzesUsersEmails();
 
-    void sendInactiveUsersWarnEmail();
+    @Transactional
+    Integer resendWarnedInactiveSolvingQuizzesUsersEmails();
 
-    Integer removeInactiveLoginUsersProfiles();
+    Integer sendInactiveUsersWarnEmail();
+
+    Integer removeWarnedInactiveLoginUsersAccounts();
 
     void resetUserPassword(User user, String password);
 

@@ -15,14 +15,17 @@ import java.util.List;
 @Repository
 public interface UserStatisticsRepository extends JpaRepository<UserStatistics, Long> {
 
-    @Query("SELECT us.user FROM UserStatistics us WHERE us.lastSolvedAt < :dateTime")
-    List<User> findUsersByLastSolvedAtBefore(LocalDateTime dateTime);
+    @Query("SELECT us FROM UserStatistics us WHERE (us.lastSolvedAt < :dateTime OR us.lastSolvedAt IS NULL) AND us.lastSolvingWarningSent = false")
+    List<UserStatistics> findInactiveSolvingQuizzesUsersNotWarned(LocalDateTime dateTime);
 
-    @Query("SELECT us.user FROM UserStatistics us WHERE us.lastLoginAt < :dateTime")
-    List<User> findUsersByLastLoginAtBefore(LocalDateTime dateTime);
-
-    Page<UserStatistics> findAll(Specification<UserStatistics> spec, Pageable pageable);
+    @Query("SELECT us FROM UserStatistics us WHERE us.lastSolvingWarningSent = true AND us.lastSolvingWarningSentAt < :dateTime AND (us.lastSolvedAt IS NULL OR us.lastSolvedAt < us.lastSolvingWarningSentAt)")
+    List<UserStatistics> findWarnedUsersToResendSolvingWarning(LocalDateTime dateTime);
 
     @Query("SELECT us FROM UserStatistics us WHERE (us.lastLoginAt < :dateTime OR us.lastLoginAt IS NULL) AND us.deletionWarningSent = false")
     List<UserStatistics> findInactiveNotWarned(LocalDateTime dateTime);
+
+    @Query("SELECT us.user FROM UserStatistics us WHERE us.deletionWarningSent = true AND us.deletionWarningSentAt < :dateTime AND (us.lastLoginAt IS NULL OR us.lastLoginAt < us.deletionWarningSentAt)")
+    List<User> findInactiveLoginUsersWarned(LocalDateTime dateTime);
+
+    Page<UserStatistics> findAll(Specification<UserStatistics> spec, Pageable pageable);
 }

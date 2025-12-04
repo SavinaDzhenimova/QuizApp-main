@@ -121,18 +121,45 @@ public class UserServiceImpl implements UserService {
     public Integer sendInactiveSolvingQuizzesUsersEmails() {
         LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
 
-        List<User> inactiveUsers = this.userStatisticsService.findInactiveSolvingQuizzesUsers(oneMonthAgo);
+        List<UserStatistics> inactiveUsers = this.userStatisticsService.findInactiveSolvingQuizzesUsersNotWarned(oneMonthAgo);
 
-        inactiveUsers.forEach(user -> this.applicationEventPublisher.publishEvent(
-                new InactiveSolvingQuizzesEvent(this, user.getUsername(), user.getEmail())
-        ));
+        inactiveUsers.forEach(userStatistics -> {
+            this.applicationEventPublisher.publishEvent(
+                    new InactiveSolvingQuizzesEvent(this, userStatistics.getUser().getUsername(),
+                            userStatistics.getUser().getEmail()));
+
+            userStatistics.setLastSolvingWarningSent(true);
+            userStatistics.setLastSolvingWarningSentAt(LocalDateTime.now());
+
+            this.userStatisticsService.saveAndFlushUserStatistics(userStatistics);
+        });
 
         return inactiveUsers.size();
     }
 
     @Override
     @Transactional
-    public void sendInactiveUsersWarnEmail() {
+    public Integer resendWarnedInactiveSolvingQuizzesUsersEmails() {
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+
+        List<UserStatistics> warnedInactiveUsers = this.userStatisticsService.findWarnedUsersToResendSolvingWarning(oneWeekAgo);
+
+        warnedInactiveUsers.forEach(userStatistics -> {
+            this.applicationEventPublisher.publishEvent(
+                    new InactiveSolvingQuizzesEvent(this,userStatistics.getUser().getUsername(),
+                            userStatistics.getUser().getEmail()));
+
+            userStatistics.setLastSolvingWarningSentAt(LocalDateTime.now());
+
+            this.userStatisticsService.saveAndFlushUserStatistics(userStatistics);
+        });
+
+        return warnedInactiveUsers.size();
+    }
+
+    @Override
+    @Transactional
+    public Integer sendInactiveUsersWarnEmail() {
         LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
 
         List<UserStatistics> inactiveUsers = this.userStatisticsService.findInactiveNotWarned(oneYearAgo);
@@ -147,13 +174,15 @@ public class UserServiceImpl implements UserService {
 
             this.userStatisticsService.saveAndFlushUserStatistics(userStatistics);
         });
+
+        return inactiveUsers.size();
     }
 
     @Override
-    public Integer removeInactiveLoginUsersProfiles() {
-        LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
+    public Integer removeWarnedInactiveLoginUsersAccounts() {
+        LocalDateTime oneYearAgo = LocalDateTime.now().minusWeeks(1);
 
-        List<User> inactiveUsers = this.userStatisticsService.findInactiveLoginUsers(oneYearAgo);
+        List<User> inactiveUsers = this.userStatisticsService.findInactiveLoginUsersWarned(oneYearAgo);
 
         if (inactiveUsers.isEmpty()) {
             return 0;

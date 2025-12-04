@@ -37,13 +37,16 @@ public class CronScheduler {
 
     @Scheduled(cron = "0 0 5 * * *")
     public void sendDeletionWarningEmails() {
-        this.userService.sendInactiveUsersWarnEmail();
+        Integer inactiveUsersWarnEmail = this.userService.sendInactiveUsersWarnEmail();
+
+        this.LOGGER.info("Изпратени са предупредителни имейли за изтриване на акаунтите на {} неактивни потребители.",
+                inactiveUsersWarnEmail);
     }
 
     @Scheduled(cron = "0 0 3 * * ?")
     @Transactional
-    public void runCleanup() {
-        Integer removedProfiles = this.userService.removeInactiveLoginUsersProfiles();
+    public void cleanupInactiveUsersWarned() {
+        Integer removedProfiles = this.userService.removeWarnedInactiveLoginUsersAccounts();
 
         this.LOGGER.info("Изтрити са профили на {} неактивни потребители.", removedProfiles);
     }
@@ -53,5 +56,12 @@ public class CronScheduler {
         Integer sentEmailsCount = this.userService.sendInactiveSolvingQuizzesUsersEmails();
 
         this.LOGGER.info("Изпратени са имейли на {} неактивни потребители.", sentEmailsCount);
+    }
+
+    @Scheduled(cron = "0 30 5 * * *")
+    public void resendWarnedInactiveUsersReminderEmails() {
+        Integer resendReminderEmails = this.userService.resendWarnedInactiveSolvingQuizzesUsersEmails();
+
+        this.LOGGER.info("Повторно са изпратени имейли на {} неактивни потребители.", resendReminderEmails);
     }
 }
