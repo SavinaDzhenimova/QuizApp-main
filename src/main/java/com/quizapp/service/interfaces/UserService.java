@@ -15,9 +15,11 @@ public interface UserService {
 
     Result registerUser(UserRegisterDTO registerUserDTO);
 
-    Integer sendInactiveUsersEmails();
+    Integer sendInactiveSolvingQuizzesUsersEmails();
 
-    Integer removeInactiveUsersProfiles();
+    void sendInactiveUsersWarnEmail();
+
+    Integer removeInactiveLoginUsersProfiles();
 
     void resetUserPassword(User user, String password);
 

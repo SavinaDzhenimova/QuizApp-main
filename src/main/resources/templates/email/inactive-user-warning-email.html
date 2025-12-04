@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+    <div style="padding: 1em 2em; border-radius: 0.5em; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+        <h1 style="text-align: center;">Предстои изтриване на акаунта в QuizApp!</h1>
+
+        <div style="font-size: 16px;">
+          <p style="padding-bottom: 0.5em;">Здравей, <span th:text="${username}">[име]</span>,</p>
+
+          <p style="padding-bottom: 1em;">От повече от година не си влизал в профила си в QuizApp.</p>
+
+          <p style="padding-bottom: 1em;">Ако си забарвил паролата си промени я
+            <a href="@{'http://localhost:8090/users/forgot-password">тук</a>.</p>
+
+          <p style="padding-bottom: 1em;">Ако до една седмица не установим влизане в профила ти ще изтрием акаунта.</p>
+
+          <p style="padding-bottom: 1em;">Очакваме те да се забавляваме заедно отново!</p>
+
+          <p style="margin-top: 1em;">С най-добри пожелания,<br>
+            <strong>Екипът на QuizApp</strong></p>
+        </div>
+    </div>
+
+</body>
+</html>

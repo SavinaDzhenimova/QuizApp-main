@@ -16,5 +16,7 @@ public interface EmailService {
 
     void sendSubscribeEmail(String email);
 
-    void sendInactiveUserEmail(String username, String email);
+    void sendInactiveSolvingQuizzesEmail(String username, String email);
+
+    void sendInactiveUserNotWarnedEmail(String username, String email);
 }

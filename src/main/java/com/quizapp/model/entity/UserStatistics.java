@@ -41,4 +41,10 @@ public class UserStatistics {
 
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
+
+    @Column(name = "deletion_warning_sent_at")
+    private LocalDateTime deletionWarningSentAt;
+
+    @Column(name = "is_deletion_warning_sent")
+    private boolean deletionWarningSent;
 }

@@ -19,4 +19,10 @@ public interface UserStatisticsService {
     UserStatistics updateUserStatistics(UserStatistics userStatistics, long correctAnswers, int totalQuestions, LocalDateTime solvedAt);
 
     List<User> findInactiveSolvingQuizzesUsers(LocalDateTime dateTime);
+
+    List<User> findInactiveLoginUsers(LocalDateTime dateTime);
+
+    List<UserStatistics> findInactiveNotWarned(LocalDateTime oneYearAgo);
+
+    void saveAndFlushUserStatistics(UserStatistics userStatistics);
 }

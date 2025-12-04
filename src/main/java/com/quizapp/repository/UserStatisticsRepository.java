@@ -22,4 +22,7 @@ public interface UserStatisticsRepository extends JpaRepository<UserStatistics, 
     List<User> findUsersByLastLoginAtBefore(LocalDateTime dateTime);
 
     Page<UserStatistics> findAll(Specification<UserStatistics> spec, Pageable pageable);
+
+    @Query("SELECT us FROM UserStatistics us WHERE (us.lastLoginAt < :dateTime OR us.lastLoginAt IS NULL) AND us.deletionWarningSent = false")
+    List<UserStatistics> findInactiveNotWarned(LocalDateTime dateTime);
 }

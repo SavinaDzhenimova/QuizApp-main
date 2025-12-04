@@ -7,6 +7,7 @@ import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.entity.*;
 import com.quizapp.model.enums.RoleName;
 import com.quizapp.repository.UserRepository;
+import com.quizapp.service.events.DeletionWarningEvent;
 import com.quizapp.service.events.InactiveSolvingQuizzesEvent;
 import com.quizapp.service.events.UserRegisterEvent;
 import com.quizapp.service.interfaces.CategoryService;
@@ -117,7 +118,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Integer sendInactiveUsersEmails() {
+    public Integer sendInactiveSolvingQuizzesUsersEmails() {
         LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
 
         List<User> inactiveUsers = this.userStatisticsService.findInactiveSolvingQuizzesUsers(oneMonthAgo);
@@ -130,10 +131,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Integer removeInactiveUsersProfiles() {
+    @Transactional
+    public void sendInactiveUsersWarnEmail() {
         LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
 
-        List<User> inactiveUsers = this.userStatisticsService.findInactiveSolvingQuizzesUsers(oneYearAgo);
+        List<UserStatistics> inactiveUsers = this.userStatisticsService.findInactiveNotWarned(oneYearAgo);
+
+        inactiveUsers.forEach(userStatistics -> {
+            this.applicationEventPublisher.publishEvent(
+                    new DeletionWarningEvent(this, userStatistics.getUser().getUsername(),
+                            userStatistics.getUser().getEmail()));
+
+            userStatistics.setDeletionWarningSent(true);
+            userStatistics.setDeletionWarningSentAt(LocalDateTime.now());
+
+            this.userStatisticsService.saveAndFlushUserStatistics(userStatistics);
+        });
+    }
+
+    @Override
+    public Integer removeInactiveLoginUsersProfiles() {
+        LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
+
+        List<User> inactiveUsers = this.userStatisticsService.findInactiveLoginUsers(oneYearAgo);
 
         if (inactiveUsers.isEmpty()) {
             return 0;

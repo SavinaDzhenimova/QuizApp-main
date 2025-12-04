@@ -7,13 +7,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class InactiveSolvingQuizzesEventListener {
+public class DeletionWarningEventListener {
 
     private final EmailService emailService;
 
     @EventListener
-    public void handleInactiveUserEvent(InactiveSolvingQuizzesEvent inactiveUserEvent) {
-
-        this.emailService.sendInactiveSolvingQuizzesEmail(inactiveUserEvent.getUsername(), inactiveUserEvent.getEmail());
+    public void sendInactiveUsersNotWarnedEmails(DeletionWarningEvent deletionWarningEvent) {
+        this.emailService.sendInactiveUserNotWarnedEmail(deletionWarningEvent.getUsername(),
+                deletionWarningEvent.getEmail());
     }
 }

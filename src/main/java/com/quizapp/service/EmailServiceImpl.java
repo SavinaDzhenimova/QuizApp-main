@@ -111,7 +111,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendInactiveUserEmail(String username, String email) {
+    public void sendInactiveSolvingQuizzesEmail(String username, String email) {
         Map<String, Object> variables = Map.of(
                 "username", username,
                 "email", email
@@ -119,6 +119,17 @@ public class EmailServiceImpl implements EmailService {
 
         String content = generateEmailContent("/email/inactive-user-email", variables);
         sendEmail(email, "Хей, липсваш ни!", content, this.email);
+    }
+
+    @Override
+    public void sendInactiveUserNotWarnedEmail(String username, String email) {
+        Map<String, Object> variables = Map.of(
+                "username", username,
+                "email", email
+        );
+
+        String content = generateEmailContent("/email/inactive-user-warning-email", variables);
+        sendEmail(email, "Предстои изтриване на акаунта в QuizApp!", content, this.email);
     }
 
     private void sendEmail(String sendTo, String subject, String content, String replyTo) {

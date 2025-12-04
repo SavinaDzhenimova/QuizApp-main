@@ -79,4 +79,19 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     public List<User> findInactiveSolvingQuizzesUsers(LocalDateTime dateTime) {
         return this.userStatisticsRepository.findUsersByLastSolvedAtBefore(dateTime);
     }
+
+    @Override
+    public List<User> findInactiveLoginUsers(LocalDateTime dateTime) {
+        return this.userStatisticsRepository.findUsersByLastLoginAtBefore(dateTime);
+    }
+
+    @Override
+    public List<UserStatistics> findInactiveNotWarned(LocalDateTime oneYearAgo) {
+        return this.userStatisticsRepository.findInactiveNotWarned(oneYearAgo);
+    }
+
+    @Override
+    public void saveAndFlushUserStatistics(UserStatistics userStatistics) {
+        this.userStatisticsRepository.saveAndFlush(userStatistics);
+    }
 }
