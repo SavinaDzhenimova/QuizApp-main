@@ -20,17 +20,17 @@
                 <p>Email: <span th:text="${user.email}">user@example.com</span></p>
             </section>
 
-            <section class="profile-stats" sec:authorize="hasRole('USER')">
+            <section th:unless="userStats == null" class="profile-stats" sec:authorize="hasRole('USER')">
                 <h3>Статистика</h3>
                 <ul>
-                    <li>Общо решени куизове: <span th:text="${user.totalQuizzes}">0</span></li>
-                    <li>Среден резултат: <span th:text="${#numbers.formatDecimal(user.averageScore, 0, 0)} + '%'">0%</span></li>
-                    <li>Общо верни отговори: <span th:text="${user.score}">0</span></li>
-                    <li>Общо решени въпроси: <span th:text="${user.maxScore}">0</span></li>
+                    <li>Общо решени куизове: <span th:text="${userStats.totalQuizzes}">0</span></li>
+                    <li>Среден резултат: <span th:text="${#numbers.formatDecimal(userStats.averageScore, 0, 0)} + '%'">0%</span></li>
+                    <li>Общо верни отговори: <span th:text="${userStats.score}">0</span></li>
+                    <li>Общо решени въпроси: <span th:text="${userStats.maxScore}">0</span></li>
                     <li>Последно решавал на:
-                        <span th:if="${user.lastSolvedAt != null}"
-                              th:text="${#temporals.format(user.lastSolvedAt, 'dd.MM.yyyy г. HH:mm')}"></span>
-                        <span th:if="${user.lastSolvedAt == null}">Все още не сте решавали куизове</span>
+                        <span th:if="${userStats.lastSolvedAt != null}"
+                              th:text="${#temporals.format(userStats.lastSolvedAt, 'dd.MM.yyyy г. HH:mm')}"></span>
+                        <span th:if="${userStats.lastSolvedAt == null}">Все още не сте решавали куизове</span>
                     </li>
                 </ul>
             </section>
@@ -60,8 +60,8 @@
                 <a th:href="@{/users/quizzes}" class="btn-start">Виж всички</a>
             </section>
 
-            <div class="admin-section">
-                <h1>Админ панел</h1>
+            <div class="admin-section" sec:authorize="hasRole('ADMIN')">
+                <h3>Админ панел</h3>
 
                 <div class="admin-authorities">
                     <section class="authority">

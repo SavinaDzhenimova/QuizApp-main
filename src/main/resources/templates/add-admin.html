@@ -23,6 +23,10 @@
                     <p th:text="${error}"></p>
                 </div>
 
+                <div th:if="${success}" class="success">
+                    <p th:text="${success}"></p>
+                </div>
+
                 <div class="field">
                     <label th:for="username">Потребителско име</label>
                     <input type="text" name="username" id="username"

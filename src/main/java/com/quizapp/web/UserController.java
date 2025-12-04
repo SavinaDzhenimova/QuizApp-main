@@ -27,6 +27,7 @@ public class UserController {
         UserDTO userDTO = this.userService.getUserInfo(userDetails.getUsername());
 
         modelAndView.addObject("user", userDTO);
+        modelAndView.addObject("userStats", userDTO.getUserStats());
 
         if (userDTO.getSolvedQuizzes().isEmpty()) {
             modelAndView.addObject("warning", "Все още нямате решени куизове.");

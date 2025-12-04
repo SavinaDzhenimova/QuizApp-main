@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -21,15 +20,7 @@ public class UserDTO {
 
     private String email;
 
+    private UserStatsDTO userStats;
+
     private List<QuizDTO> solvedQuizzes;
-
-    private int totalQuizzes;
-
-    private int score;
-
-    private int maxScore;
-
-    private double averageScore;
-
-    private LocalDateTime lastSolvedAt;
 }

@@ -57,7 +57,7 @@ public class AdminServiceImpl implements AdminService {
         this.userRepository.saveAndFlush(admin);
 
         this.applicationEventPublisher.publishEvent(
-                new AddedAdminEvent(this, admin.getUsername(), admin.getEmail(), admin.getPassword()));
+                new AddedAdminEvent(this, admin.getUsername(), admin.getEmail(), addAdminDTO.getTempPassword()));
 
         return new Result(true, "Успешно добавихте нов админ.");
     }

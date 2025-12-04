@@ -4,6 +4,7 @@ import com.quizapp.exception.UserNotFoundException;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.user.UserDTO;
 import com.quizapp.model.dto.user.UserRegisterDTO;
+import com.quizapp.model.dto.user.UserStatsDTO;
 import com.quizapp.model.entity.*;
 import com.quizapp.model.enums.RoleName;
 import com.quizapp.repository.UserRepository;
@@ -59,17 +60,29 @@ public class UserServiceImpl implements UserService {
                         .build())
                 .collect(Collectors.toList());
 
-        return UserDTO.builder()
+        boolean hasRoleUser = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals(RoleName.USER));
+
+        UserDTO userDTO = UserDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .solvedQuizzes(solvedQuizDTOs)
-                .totalQuizzes(user.getUserStatistics().getTotalQuizzes())
-                .score(user.getUserStatistics().getTotalCorrectAnswers())
-                .maxScore(user.getUserStatistics().getMaxScore())
-                .averageScore(user.getUserStatistics().getAverageScore())
-                .lastSolvedAt(user.getUserStatistics().getLastSolvedAt())
                 .build();
+
+        if (hasRoleUser) {
+            UserStatsDTO userStatsDTO = UserStatsDTO.builder()
+                    .totalQuizzes(user.getUserStatistics().getTotalQuizzes())
+                    .score(user.getUserStatistics().getTotalCorrectAnswers())
+                    .maxScore(user.getUserStatistics().getMaxScore())
+                    .averageScore(user.getUserStatistics().getAverageScore())
+                    .lastSolvedAt(user.getUserStatistics().getLastSolvedAt())
+                    .build();
+
+            userDTO.setUserStats(userStatsDTO);
+        }
+
+        return userDTO;
     }
 
     @Override

@@ -39,3 +39,16 @@ h3 {
     text-align: center;
     align-self: center;
 }
+
+.admin-section .admin-authorities {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2em;
+}
+
+.admin-section .authority a {
+    display: flex;
+    margin-top: 0;
+}
