@@ -7,7 +7,7 @@ import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.entity.*;
 import com.quizapp.model.enums.RoleName;
 import com.quizapp.repository.UserRepository;
-import com.quizapp.service.events.InactiveUserEvent;
+import com.quizapp.service.events.InactiveSolvingQuizzesEvent;
 import com.quizapp.service.events.UserRegisterEvent;
 import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.RoleService;
@@ -120,10 +120,10 @@ public class UserServiceImpl implements UserService {
     public Integer sendInactiveUsersEmails() {
         LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
 
-        List<User> inactiveUsers = this.userStatisticsService.findInactiveUsers(oneMonthAgo);
+        List<User> inactiveUsers = this.userStatisticsService.findInactiveSolvingQuizzesUsers(oneMonthAgo);
 
         inactiveUsers.forEach(user -> this.applicationEventPublisher.publishEvent(
-                new InactiveUserEvent(this, user.getUsername(), user.getEmail())
+                new InactiveSolvingQuizzesEvent(this, user.getUsername(), user.getEmail())
         ));
 
         return inactiveUsers.size();
@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService {
     public Integer removeInactiveUsersProfiles() {
         LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
 
-        List<User> inactiveUsers = this.userStatisticsService.findInactiveUsers(oneYearAgo);
+        List<User> inactiveUsers = this.userStatisticsService.findInactiveSolvingQuizzesUsers(oneYearAgo);
 
         if (inactiveUsers.isEmpty()) {
             return 0;

@@ -7,12 +7,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class InactiveUserEventListener {
+public class InactiveSolvingQuizzesEventListener {
 
     private final EmailService emailService;
 
     @EventListener
-    public void handleInactiveUserEvent(InactiveUserEvent inactiveUserEvent) {
+    public void handleInactiveUserEvent(InactiveSolvingQuizzesEvent inactiveUserEvent) {
 
         this.emailService.sendInactiveUserEmail(inactiveUserEvent.getUsername(), inactiveUserEvent.getEmail());
     }

@@ -16,7 +16,10 @@ import java.util.List;
 public interface UserStatisticsRepository extends JpaRepository<UserStatistics, Long> {
 
     @Query("SELECT us.user FROM UserStatistics us WHERE us.lastSolvedAt < :dateTime")
-    List<User> findUsersInactiveSince(LocalDateTime dateTime);
+    List<User> findUsersByLastSolvedAtBefore(LocalDateTime dateTime);
+
+    @Query("SELECT us.user FROM UserStatistics us WHERE us.lastLoginAt < :dateTime")
+    List<User> findUsersByLastLoginAtBefore(LocalDateTime dateTime);
 
     Page<UserStatistics> findAll(Specification<UserStatistics> spec, Pageable pageable);
 }

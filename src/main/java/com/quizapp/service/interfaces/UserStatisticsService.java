@@ -18,5 +18,5 @@ public interface UserStatisticsService {
 
     UserStatistics updateUserStatistics(UserStatistics userStatistics, long correctAnswers, int totalQuestions, LocalDateTime solvedAt);
 
-    List<User> findInactiveUsers(LocalDateTime dateTime);
+    List<User> findInactiveSolvingQuizzesUsers(LocalDateTime dateTime);
 }
