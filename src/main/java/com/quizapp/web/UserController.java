@@ -1,16 +1,22 @@
 package com.quizapp.web;
 
 import com.quizapp.model.dto.quiz.QuizDTO;
+import com.quizapp.model.dto.user.UpdatePasswordDTO;
 import com.quizapp.model.dto.user.UserDTO;
+import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.UserQuizService;
 import com.quizapp.service.interfaces.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/users")
@@ -55,5 +61,38 @@ public class UserController {
         }
 
         return modelAndView;
+    }
+
+    @GetMapping("/update-password")
+    public ModelAndView showUpdatePasswordPage(Model model) {
+        if (!model.containsAttribute("updatePasswordDTO")) {
+            model.addAttribute("updatePasswordDTO", new UpdatePasswordDTO());
+        }
+
+        return new ModelAndView("update-password");
+    }
+
+    @PostMapping("/update-password")
+    public ModelAndView showUpdatePasswordPage(@Valid @ModelAttribute("updatePasswordDTO") UpdatePasswordDTO updatePasswordDTO,
+                                               BindingResult bindingResult, RedirectAttributes redirectAttributes,
+                                               @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("updatePasswordDTO", updatePasswordDTO)
+                    .addFlashAttribute("org.springframework.validation.BindingResult.updatePasswordDTO",
+                            bindingResult);
+
+            return new ModelAndView("update-password");
+        }
+
+        Result result = this.userService.updatePassword(userDetails.getUsername(), updatePasswordDTO);
+
+        if (result.isSuccess()) {
+            redirectAttributes.addFlashAttribute("success", result.getMessage());
+        } else {
+            redirectAttributes.addFlashAttribute("error", result.getMessage());
+        }
+
+        return new ModelAndView("redirect:/users/update-password");
     }
 }

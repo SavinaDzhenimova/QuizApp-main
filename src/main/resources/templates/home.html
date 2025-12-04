@@ -17,7 +17,11 @@
         <div class="profile-container">
             <section class="profile-info">
                 <h2 th:text="${user.username}">Username</h2>
-                <p>Email: <span th:text="${user.email}">user@example.com</span></p>
+
+                <div class="user-info">
+                    <p>Email: <span th:text="${user.email}">user@example.com</span></p>
+                    <p><a th:href="@{/users/update-password}">Промяна на парола</a></p>
+                </div>
             </section>
 
             <section th:unless="userStats == null" class="profile-stats" sec:authorize="hasRole('USER')">

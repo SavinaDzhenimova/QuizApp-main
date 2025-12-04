@@ -58,6 +58,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
                 .totalCorrectAnswers(0)
                 .maxScore(0)
                 .averageScore(0)
+                .deletionWarningSent(false)
+                .lastSolvingWarningSent(false)
                 .build();
 
         return this.userStatisticsRepository.saveAndFlush(userStatistics);

@@ -1,5 +1,6 @@
 package com.quizapp.service.interfaces;
 
+import com.quizapp.model.dto.user.UpdatePasswordDTO;
 import com.quizapp.model.dto.user.UserDTO;
 import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.entity.Result;
@@ -23,6 +24,8 @@ public interface UserService {
     Integer sendInactiveUsersWarnEmail();
 
     Integer removeWarnedInactiveLoginUsersAccounts();
+
+    Result updatePassword(String username, UpdatePasswordDTO updatePasswordDTO);
 
     void resetUserPassword(User user, String password);
 

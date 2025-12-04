@@ -2,6 +2,7 @@ package com.quizapp.service;
 
 import com.quizapp.exception.UserNotFoundException;
 import com.quizapp.model.dto.quiz.QuizDTO;
+import com.quizapp.model.dto.user.UpdatePasswordDTO;
 import com.quizapp.model.dto.user.UserDTO;
 import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.dto.user.UserStatsDTO;
@@ -204,6 +205,35 @@ public class UserServiceImpl implements UserService {
         inactiveUsers.forEach(user -> this.deleteById(user.getId()));
 
         return inactiveUsers.size();
+    }
+
+    @Override
+    public Result updatePassword(String username, UpdatePasswordDTO updatePasswordDTO) {
+        Optional<User> optionalUser = this.userRepository.findByUsername(username);
+
+        if (optionalUser.isEmpty()) {
+            return new Result(false, "Потребителят не е намерен");
+        }
+
+        User user = optionalUser.get();
+
+        if (!updatePasswordDTO.getNewPassword().equals(updatePasswordDTO.getConfirmPassword())) {
+            return new Result(false, "Паролите не съвпадат!");
+        }
+
+        if (!this.passwordEncoder.matches(updatePasswordDTO.getOldPassword(), user.getPassword())) {
+            return new Result(false, "Старата парола е грешна!");
+        }
+
+        if (this.passwordEncoder.matches(updatePasswordDTO.getNewPassword(), user.getPassword())) {
+            return new Result(false, "Новата парола не може да е като старата парола!");
+        }
+
+        user.setPassword(this.passwordEncoder.encode(updatePasswordDTO.getNewPassword()));
+
+        this.userRepository.saveAndFlush(user);
+
+        return new Result(true, "Успешно променихте паролата си.");
     }
 
     @Override

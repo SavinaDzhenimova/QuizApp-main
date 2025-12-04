@@ -25,6 +25,21 @@ h3 {
     font-size: 26px;
 }
 
+.user-info {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-info a {
+    text-decoration: underline;
+}
+
+.user-info a:hover {
+    text-decoration: none;
+}
+
 .profile-stats ul {
     display: flex;
     flex-direction: column;
