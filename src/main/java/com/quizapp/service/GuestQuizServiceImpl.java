@@ -13,6 +13,7 @@ import com.quizapp.service.utils.TempQuizStorage;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -95,7 +96,13 @@ public class GuestQuizServiceImpl extends AbstractQuizHelper implements GuestQui
     }
 
     @Override
-    public void deleteExpiredGuestQuizzes(LocalDateTime dateTime) {
-        this.guestQuizStorage.deleteExpiredQuizzes(dateTime);
+    public String deleteExpiredGuestQuizzes() {
+        LocalDateTime now = LocalDateTime.now();
+
+        this.guestQuizStorage.deleteExpiredQuizzes(now);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+
+        return now.format(formatter);
     }
 }

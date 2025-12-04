@@ -42,13 +42,9 @@ public class CronScheduler {
     @Scheduled(fixedRate = 900_000)
     @Transactional
     public void cleanUpGuestQuizzes() {
-        LocalDateTime now = LocalDateTime.now();
+        String formattedTime = this.guestQuizService.deleteExpiredGuestQuizzes();
 
-        this.guestQuizService.deleteExpiredGuestQuizzes(now);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
-        String formatted = now.format(formatter);
-        this.LOGGER.info("Изтеклите куизове са премахнати в " + formatted);
+        this.LOGGER.info("Изтеклите куизове са премахнати в " + formattedTime);
     }
 
     @Scheduled(cron = "0 0 3 * * ?")
