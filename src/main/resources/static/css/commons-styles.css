@@ -40,7 +40,8 @@ form h2 {
 .dashboard-container,
 .questions-dashboard-container,
 .categories-section,
-.questions-section {
+.questions-section,
+.admins-section {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -130,6 +131,7 @@ form textarea::placeholder {
 button[type="submit"],
 .btn-start,
 .edit-btn,
+.delete-btn,
 #prevBtn,
 #nextBtn,
 #submitBtn {

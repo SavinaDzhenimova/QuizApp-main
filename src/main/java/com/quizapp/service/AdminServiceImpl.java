@@ -43,7 +43,7 @@ public class AdminServiceImpl implements AdminService {
                 .map(user -> AdminDTO.builder()
                         .id(user.getId())
                         .username(user.getUsername())
-                        .email(user.getUsername())
+                        .email(user.getEmail())
                         .build());
     }
 

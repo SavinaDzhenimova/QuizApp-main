@@ -1,0 +1,16 @@
+.admins-section {
+    gap: 2em;
+}
+
+table {
+    width: 50%;
+}
+
+#delete-form {
+    display: flex;
+    justify-content: center;
+}
+
+table #delete-form .delete-btn {
+    margin-top: 0;
+}

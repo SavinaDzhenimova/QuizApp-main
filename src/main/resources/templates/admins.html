@@ -4,7 +4,7 @@
 
 <head>
     <th:block th:replace="~{fragments/commons::head}"></th:block>
-    <link rel="stylesheet" href="/css/categories-styles.css">
+    <link rel="stylesheet" href="/css/admins-styles.css">
     <title>Категории</title>
 </head>
 
@@ -43,19 +43,19 @@
             <table th:unless="${admins.isEmpty()}">
                 <thead>
                 <tr>
-                    <th class="col-name">Потребителско име</th>
-                    <th class="col-description">Email</th>
+                    <th class="col-username">Потребителско име</th>
+                    <th class="col-email">Email</th>
                     <th class="col-delete">Премахни</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="category : ${categories}">
-                    <td th:text="${admin.username}" class="col-name">Име</td>
-                    <td th:text="${admin.email}" class="col-description">Описание</td>
+                <tr th:each="admin : ${admins}">
+                    <td th:text="${admin.username}" class="col-username">Потребителско име</td>
+                    <td th:text="${admin.email}" class="col-email">Email</td>
                     <td class="col-delete">
                         <form th:action="@{/admin/delete-admin/{id}(id=${admin.id})}"
-                              th:method="DELETE">
-                            <button type="submit" class="edit-btn">Премахни</button>
+                              th:method="DELETE" id="delete-form">
+                            <button type="submit" class="delete-btn">Премахни</button>
                         </form>
                     </td>
                 </tr>
