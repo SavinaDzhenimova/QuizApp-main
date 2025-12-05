@@ -56,14 +56,19 @@ h3 {
 }
 
 .admin-section .admin-authorities {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    column-gap: 3em;
+    row-gap: 2em;
+    justify-content: start;
+}
+
+.admin-section .authority {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 2em;
 }
 
 .admin-section .authority a {
-    display: flex;
+    width: 100%;
+    text-align: center;
     margin-top: 0;
 }
