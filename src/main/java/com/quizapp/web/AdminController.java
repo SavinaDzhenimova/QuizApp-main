@@ -2,6 +2,7 @@ package com.quizapp.web;
 
 import com.quizapp.model.dto.user.AddAdminDTO;
 import com.quizapp.model.dto.user.AdminDTO;
+import com.quizapp.model.dto.user.UserDetailsDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.AdminService;
 import jakarta.validation.Valid;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,21 +28,27 @@ public class AdminController {
     private final AdminService adminService;
 
     @GetMapping
-    public ModelAndView showAdminsPage(@RequestParam(defaultValue = "0") int page,
+    public ModelAndView showAdminsPage(@AuthenticationPrincipal UserDetailsDTO userDetailsDTO,
+                                       @RequestParam(defaultValue = "0") int page,
                                        @RequestParam(defaultValue = "10") int size,
-                                       @RequestParam(required = false) String username) {
+                                       @RequestParam(value = "username", required = false) String username) {
 
         ModelAndView modelAndView = new ModelAndView("admins");
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("username").ascending());
         Page<AdminDTO> adminDTOs = this.adminService.getAllAdmins(username, pageable);
 
+        modelAndView.addObject("loggedUserId", userDetailsDTO.getId());
         modelAndView.addObject("admins", adminDTOs.getContent());
         modelAndView.addObject("currentPage", adminDTOs.getNumber());
         modelAndView.addObject("totalPages", adminDTOs.getTotalPages());
         modelAndView.addObject("totalElements", adminDTOs.getTotalElements());
         modelAndView.addObject("size", adminDTOs.getSize());
         modelAndView.addObject("username", username);
+
+        if (adminDTOs.getTotalElements() == 0) {
+            modelAndView.addObject("warning", "Няма намерени администратори.");
+        }
 
         return modelAndView;
     }
@@ -74,5 +83,21 @@ public class AdminController {
         }
 
         return new ModelAndView("redirect:/admin/add-admin");
+    }
+
+    @DeleteMapping("/delete-admin/{id}")
+    public ModelAndView deleteAdmin(@PathVariable Long id,
+                                    @AuthenticationPrincipal UserDetails userDetails,
+                                    RedirectAttributes redirectAttributes) {
+
+        Result result = this.adminService.deleteAdminById(id);
+
+        if (result.isSuccess()) {
+            redirectAttributes.addFlashAttribute("success", result.getMessage());
+        } else {
+            redirectAttributes.addFlashAttribute("error", result.getMessage());
+        }
+
+        return new ModelAndView("redirect:/admin");
     }
 }

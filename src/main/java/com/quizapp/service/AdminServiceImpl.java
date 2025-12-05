@@ -37,9 +37,11 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Page<AdminDTO> getAllAdmins(String username, Pageable pageable) {
-        Specification<User> spec = Specification.allOf(UserSpecifications.hasUsername(username));
+        Specification<User> spec = Specification
+                .allOf(UserSpecifications.hasUsername(username))
+                .and(UserSpecifications.onlyAdminUsers());
 
-        return this.userRepository.findAllByRoleName(RoleName.ADMIN, spec, pageable)
+        return this.userRepository.findAll(spec, pageable)
                 .map(user -> AdminDTO.builder()
                         .id(user.getId())
                         .username(user.getUsername())
@@ -87,5 +89,21 @@ public class AdminServiceImpl implements AdminService {
 
         this.applicationEventPublisher.publishEvent(
                 new AddedAdminEvent(this, user.getUsername(), user.getEmail(), token));
+    }
+
+    @Override
+    public Result deleteAdminById(Long id) {
+        Optional<User> optionalUser = this.userRepository.findById(id);
+
+        if (optionalUser.isEmpty()) {
+            return new Result(false, "Не е намерен админ.");
+        }
+
+        User user = optionalUser.get();
+        user.getRoles().clear();
+        this.userRepository.saveAndFlush(user);
+
+        this.userRepository.deleteById(id);
+        return new Result(true, "Успешно премахнахте админ " + user.getUsername() + ".");
     }
 }

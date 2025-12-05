@@ -11,4 +11,6 @@ public interface AdminService {
     Result addAdmin(AddAdminDTO addAdminDTO);
 
     Page<AdminDTO> getAllAdmins(String username, Pageable pageable);
+
+    Result deleteAdminById(Long id);
 }

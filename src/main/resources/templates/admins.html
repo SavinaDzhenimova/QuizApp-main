@@ -53,7 +53,8 @@
                     <td th:text="${admin.username}" class="col-username">Потребителско име</td>
                     <td th:text="${admin.email}" class="col-email">Email</td>
                     <td class="col-delete">
-                        <form th:action="@{/admin/delete-admin/{id}(id=${admin.id})}"
+                        <form th:unless="${loggedUserId == admin.id}"
+                              th:action="@{/admin/delete-admin/{id}(id=${admin.id})}"
                               th:method="DELETE" id="delete-form">
                             <button type="submit" class="delete-btn">Премахни</button>
                         </form>
