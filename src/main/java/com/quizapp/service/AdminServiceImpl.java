@@ -1,17 +1,22 @@
 package com.quizapp.service;
 
 import com.quizapp.model.dto.user.AddAdminDTO;
+import com.quizapp.model.dto.user.AdminDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.model.entity.Role;
 import com.quizapp.model.entity.User;
 import com.quizapp.model.enums.RoleName;
 import com.quizapp.repository.UserRepository;
+import com.quizapp.repository.spec.UserSpecifications;
 import com.quizapp.service.events.AddedAdminEvent;
 import com.quizapp.service.interfaces.AdminService;
 import com.quizapp.service.interfaces.PasswordResetService;
 import com.quizapp.service.interfaces.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +34,18 @@ public class AdminServiceImpl implements AdminService {
     private final PasswordResetService passwordResetService;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
+
+    @Override
+    public Page<AdminDTO> getAllAdmins(String username, Pageable pageable) {
+        Specification<User> spec = Specification.allOf(UserSpecifications.hasUsername(username));
+
+        return this.userRepository.findAllByRoleName(RoleName.ADMIN, spec, pageable)
+                .map(user -> AdminDTO.builder()
+                        .id(user.getId())
+                        .username(user.getUsername())
+                        .email(user.getUsername())
+                        .build());
+    }
 
     @Override
     public Result addAdmin(AddAdminDTO addAdminDTO) {

@@ -1,17 +1,19 @@
 package com.quizapp.web;
 
 import com.quizapp.model.dto.user.AddAdminDTO;
+import com.quizapp.model.dto.user.AdminDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.AdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -23,8 +25,23 @@ public class AdminController {
     private final AdminService adminService;
 
     @GetMapping
-    public ModelAndView showAdminPage() {
-        return new ModelAndView("admin");
+    public ModelAndView showAdminsPage(@RequestParam(defaultValue = "0") int page,
+                                       @RequestParam(defaultValue = "10") int size,
+                                       @RequestParam(required = false) String username) {
+
+        ModelAndView modelAndView = new ModelAndView("admins");
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("username").ascending());
+        Page<AdminDTO> adminDTOs = this.adminService.getAllAdmins(username, pageable);
+
+        modelAndView.addObject("admins", adminDTOs.getContent());
+        modelAndView.addObject("currentPage", adminDTOs.getNumber());
+        modelAndView.addObject("totalPages", adminDTOs.getTotalPages());
+        modelAndView.addObject("totalElements", adminDTOs.getTotalElements());
+        modelAndView.addObject("size", adminDTOs.getSize());
+        modelAndView.addObject("username", username);
+
+        return modelAndView;
     }
 
     @GetMapping("/add-admin")
