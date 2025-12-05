@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/commons::head}"></th:block>
+    <link rel="stylesheet" href="/css/categories-styles.css">
+    <title>Категории</title>
+</head>
+
+<body>
+
+    <header th:replace="~{fragments/commons::header}"></header>
+
+    <main>
+        <section class="admins-section">
+            <h1 class="page-title">Администратори</h1>
+
+            <div th:if="${error}" class="error">
+                <p th:text="${error}"></p>
+            </div>
+
+            <div th:if="${success}" class="success">
+                <p th:text="${success}"></p>
+            </div>
+
+            <form th:action="@{/admin}"
+                  th:method="GET"
+                  class="search-form">
+
+                <input type="text"
+                       name="username"
+                       th:value="${username}"
+                       placeholder="Търси по потребителско име...">
+
+                <button type="submit" class="search-btn">Търсене</button>
+            </form>
+
+            <div th:if="${warning}" class="warning">
+                <p th:text="${warning}"></p>
+            </div>
+
+            <table th:unless="${admins.isEmpty()}">
+                <thead>
+                <tr>
+                    <th class="col-name">Потребителско име</th>
+                    <th class="col-description">Email</th>
+                    <th class="col-delete">Премахни</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="category : ${categories}">
+                    <td th:text="${admin.username}" class="col-name">Име</td>
+                    <td th:text="${admin.email}" class="col-description">Описание</td>
+                    <td class="col-delete">
+                        <form th:action="@{/admin/delete-admin/{id}(id=${admin.id})}"
+                              th:method="DELETE">
+                            <button type="submit" class="edit-btn">Премахни</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="pagination" th:if="${totalPages > 1}">
+              <a th:if="${currentPage > 0}"
+                 th:href="@{/categories(
+                               page=${currentPage - 1},
+                               size=${size})}" class="btn-start"><i class="fa-solid fa-angle-left"></i></a>
+              <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
+              <a th:if="${currentPage + 1 < totalPages}"
+                 th:href="@{/categories(
+                                page=${currentPage + 1},
+                                size=${size})}" class="btn-start"><i class="fa-solid fa-angle-right"></i></a>
+            </div>
+        </section>
+    </main>
+
+    <footer th:replace="~{fragments/commons::footer}"></footer>
+
+    <script src="\js\show-categories-update-modal.js"></script>
+</body>
+</html>
