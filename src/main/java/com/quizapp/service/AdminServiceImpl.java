@@ -8,6 +8,7 @@ import com.quizapp.model.enums.RoleName;
 import com.quizapp.repository.UserRepository;
 import com.quizapp.service.events.AddedAdminEvent;
 import com.quizapp.service.interfaces.AdminService;
+import com.quizapp.service.interfaces.PasswordResetService;
 import com.quizapp.service.interfaces.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -25,6 +26,7 @@ public class AdminServiceImpl implements AdminService {
 
     private final UserRepository userRepository;
     private final RoleService roleService;
+    private final PasswordResetService passwordResetService;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -58,9 +60,15 @@ public class AdminServiceImpl implements AdminService {
 
         this.userRepository.saveAndFlush(admin);
 
-        this.applicationEventPublisher.publishEvent(
-                new AddedAdminEvent(this, admin.getUsername(), admin.getEmail()));
+        this.sendAdminEmailToChangePassword(admin);
 
         return new Result(true, "Успешно добавихте нов админ.");
+    }
+
+    private void sendAdminEmailToChangePassword(User user) {
+        String token = this.passwordResetService.createTokenForUser(user);
+
+        this.applicationEventPublisher.publishEvent(
+                new AddedAdminEvent(this, user.getUsername(), user.getEmail(), token));
     }
 }

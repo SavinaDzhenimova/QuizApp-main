@@ -20,5 +20,5 @@ public interface EmailService {
 
     void sendInactiveUserNotWarnedEmail(String username, String email);
 
-    void sendAddedAdminEmail(String username, String email);
+    void sendAddedAdminEmail(String username, String email, String token);
 }

@@ -18,12 +18,14 @@
 
             <p style="padding-bottom: 1em;">Вече имаш достъп до админ панела, статистики и други админ привилегии.</p>
 
-            <p style="padding-bottom: 1em;">Регистриран си със следните имейл и временна парола.</p>
+            <p style="padding-bottom: 1em;">Моля използвай бутона долу за да промениш паролата си и да влезеш в админ профила си.</p>
 
-            <p style="padding-bottom: 0.5em;">Имейл:<strong th:text="${email}">[email]</strong></p>
-            <p style="padding-bottom: 0.5em;">Временна парола:<strong th:text="${tempPassword}">[tampPassword]</strong></p>
+            <a style="text-decoration: none; padding: 0.5em 1.5em; background-color: #fff; color: #000; border: 1px solid #ccc;
+                          text-align: center; font-weight: 600; border-radius: 2em; font-size: 14px;
+                          margin-bottom: 3em;"
+               th:href="@{'http://localhost:8090/users/reset-password?token=' + ${token}}">Промяна на парола</a>
 
-            <p>Добре дошъл при нас,<br>
+            <p style="margin-top: 3em;">Добре дошъл при нас,<br>
               <strong>Екипът на QuizApp</strong></p>
         </div>
     </div>

@@ -12,9 +12,12 @@ public class AddedAdminEvent extends ApplicationEvent {
 
     private String email;
 
-    public AddedAdminEvent(Object source, String username, String email) {
+    private String token;
+
+    public AddedAdminEvent(Object source, String username, String email, String token) {
         super(source);
         this.username = username;
         this.email = email;
+        this.token = token;
     }
 }
