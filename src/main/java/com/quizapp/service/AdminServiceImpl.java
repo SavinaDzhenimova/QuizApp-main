@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -46,10 +47,11 @@ public class AdminServiceImpl implements AdminService {
             return new Result(false, "Ролята Admin не съществува!");
         }
 
+        String tempPassword = UUID.randomUUID().toString();
         User admin = User.builder()
                 .username(addAdminDTO.getUsername())
                 .email(addAdminDTO.getEmail())
-                .password(this.passwordEncoder.encode(addAdminDTO.getTempPassword()))
+                .password(this.passwordEncoder.encode(tempPassword))
                 .roles(Set.of(optionalRole.get()))
                 .solvedQuizzes(new ArrayList<>())
                 .build();
@@ -57,7 +59,7 @@ public class AdminServiceImpl implements AdminService {
         this.userRepository.saveAndFlush(admin);
 
         this.applicationEventPublisher.publishEvent(
-                new AddedAdminEvent(this, admin.getUsername(), admin.getEmail(), addAdminDTO.getTempPassword()));
+                new AddedAdminEvent(this, admin.getUsername(), admin.getEmail()));
 
         return new Result(true, "Успешно добавихте нов админ.");
     }

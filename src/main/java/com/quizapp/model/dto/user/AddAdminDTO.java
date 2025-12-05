@@ -2,7 +2,6 @@ package com.quizapp.model.dto.user;
 
 import com.quizapp.model.annotations.ValidEmail;
 import com.quizapp.model.annotations.ValidUsername;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +18,4 @@ public class AddAdminDTO {
 
     @ValidEmail
     private String email;
-
-    @NotBlank
-    private String tempPassword;
 }

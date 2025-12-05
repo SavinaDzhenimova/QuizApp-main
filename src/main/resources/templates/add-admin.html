@@ -47,16 +47,6 @@
                            class="text-danger">Email error message</small>
                 </div>
 
-                <div class="field">
-                    <label th:for="tempPassword">Временна парола</label>
-                    <input type="password" name="tempPassword" id="tempPassword"
-                           th:field="*{tempPassword}"
-                           th:errorclass="is-invalid">
-                    <small th:if="${#fields.hasErrors('tempPassword')}"
-                           th:errors="*{tempPassword}"
-                           class="text-danger">Password error message</small>
-                </div>
-
                 <button type="submit" class="btn-submit">Добави админ</button>
             </form>
         </section>

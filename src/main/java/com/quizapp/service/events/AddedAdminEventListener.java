@@ -13,7 +13,6 @@ public class AddedAdminEventListener {
 
     @EventListener
     public void handleAddedAdminEvent(AddedAdminEvent addedAdminEvent) {
-        this.emailService.sendAddedAdminEmail(addedAdminEvent.getUsername(), addedAdminEvent.getEmail(),
-                addedAdminEvent.getTempPassword());
+        this.emailService.sendAddedAdminEmail(addedAdminEvent.getUsername(), addedAdminEvent.getEmail());
     }
 }

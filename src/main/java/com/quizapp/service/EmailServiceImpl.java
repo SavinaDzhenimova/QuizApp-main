@@ -74,11 +74,10 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendAddedAdminEmail(String username, String email, String tempPassword) {
+    public void sendAddedAdminEmail(String username, String email) {
         Map<String, Object> variables = Map.of(
                 "username", username,
-                "email", email,
-                "tempPassword", tempPassword
+                "email", email
         );
 
         String content = generateEmailContent("/email/admin-added-email", variables);
