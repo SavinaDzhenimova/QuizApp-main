@@ -59,6 +59,8 @@ public class QuizCommonService extends AbstractQuizHelper {
                 .map(this.questionService::mapQuestionApiToDTO)
                 .toList();
 
+        questionDTOs.forEach(questionDTO -> Collections.shuffle(questionDTO.getOptions()));
+
         questionDTOs.forEach(questionDTO ->
                 this.questionStatisticsService.increaseUsedQuestion(questionDTO.getId(), questionDTO.getQuestionText(),
                         categoryId));
