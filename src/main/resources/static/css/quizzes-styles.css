@@ -33,6 +33,10 @@
     flex: 0 1 calc(100% / 4 - 2em);
 }
 
+.quiz-card ul li.review-quiz {
+    flex: 0 0 150px;
+}
+
 .quiz-card ul li span {
     font-weight: 600;
 }
