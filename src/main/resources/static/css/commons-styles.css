@@ -132,6 +132,7 @@ button[type="submit"],
 .btn-start,
 .edit-btn,
 .delete-btn,
+.back-btn,
 #prevBtn,
 #nextBtn,
 #submitBtn {
@@ -146,6 +147,11 @@ button[type="submit"],
     cursor: pointer;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
     transition: all 0.3s ease;
+}
+
+button[type="submit"],
+button.back-btn {
+    padding: 0.9em 1.5em;
 }
 
 button[type="submit"]:hover,
