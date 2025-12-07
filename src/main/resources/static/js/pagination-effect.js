@@ -37,10 +37,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (prevBtn) prevBtn.style.display = index === 0 ? "none" : "inline-block";
         if (nextBtn) nextBtn.style.display = index === questions.length - 1 ? "none" : "inline-block";
 
-        if (submitBtn) {
-            submitBtn.style.display = index === questions.length - 1 ? "inline-block" : "none";
-        }
-
         generatePageNumbers();
     }
 
