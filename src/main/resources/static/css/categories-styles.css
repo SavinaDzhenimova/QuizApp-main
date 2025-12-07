@@ -27,13 +27,6 @@ table .col-update {
     width: 5%;
 }
 
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: baseline;
-    gap: 1.5em;
-}
-
 .modal {
     display: none;
     position: fixed;

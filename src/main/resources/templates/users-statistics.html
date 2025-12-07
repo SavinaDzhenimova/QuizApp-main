@@ -71,20 +71,23 @@
                 </tbody>
             </table>
 
-            <div class="pagination" th:if="${totalPages > 1}">
-                <a th:if="${currentPage > 0}"
-                   th:href="@{/statistics/users(
+            <div class="nav-buttons">
+                <div class="pagination" th:if="${totalPages > 1}">
+                    <a th:if="${currentPage > 0}"
+                       th:href="@{/statistics/users(
                                page=${currentPage - 1},
                                size=${size},
                                sortBy=${sortBy},
                                username=${username})}" class="btn-start"><i class="fa-solid fa-angle-left"></i></a>
-                <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
-                <a th:if="${currentPage + 1 < totalPages}"
-                   th:href="@{/statistics/users(
+                    <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
+                    <a th:if="${currentPage + 1 < totalPages}"
+                       th:href="@{/statistics/users(
                                page=${currentPage + 1},
                                size=${size},
                                sortBy=${sortBy},
                                username=${username})}" class="btn-start"><i class="fa-solid fa-angle-right"></i></a>
+                </div>
+                <button onclick="history.back()" class="back-btn"><i class="fa-solid fa-rotate-left"></i> Назад</button>
             </div>
         </div>
     </main>

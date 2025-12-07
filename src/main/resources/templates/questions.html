@@ -81,20 +81,22 @@
                 </tbody>
             </table>
 
-            <div class="pagination" th:if="${totalPages > 1}">
-                <a th:if="${currentPage > 0}"
-                   th:href="@{/questions(
+            <div class="nav-buttons">
+                <div class="pagination" th:if="${totalPages > 1}">
+                    <a th:if="${currentPage > 0}"
+                       th:href="@{/questions(
                        page=${currentPage - 1},
                        size=${size},
                        questionText=${questionText},
                        categoryId=${categoryId})}" class="btn-start"><i class="fa-solid fa-angle-left"></i></a>
-                <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
-                <a th:if="${currentPage + 1 < totalPages}"
-                   th:href="@{/questions(
+                    <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
+                    <a th:if="${currentPage + 1 < totalPages}"
+                       th:href="@{/questions(
                         page=${currentPage + 1},
                         size=${size},
                         questionText=${questionText},
                         categoryId=${categoryId})}" class="btn-start"><i class="fa-solid fa-angle-right"></i></a>
+                </div>
                 <button onclick="history.back()" class="back-btn"><i class="fa-solid fa-rotate-left"></i> Назад</button>
             </div>
 

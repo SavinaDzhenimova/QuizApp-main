@@ -30,20 +30,22 @@
                         <li>Решен на: <span th:text="${#temporals.format(quiz.solvedAt, 'dd.MM.yyyy г. HH:mm')}"></span></li>
                         <li>
                             <a th:href="@{/users/quizzes/{id}/review(id=${quiz.id}, from='list')}"
-                               class="show-btn">Разгледай куиза</a>
+                               class="show-btn">Преглед</a>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="pagination" th:if="${totalPages > 1}">
-                <a th:if="${currentPage > 0}"
-                   th:href="@{/users/quizzes(page=${currentPage - 1})}" class="btn-start">
-                    <i class="fa-solid fa-angle-left"></i></a>
-                <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
-                <a th:if="${currentPage + 1 < totalPages}"
-                   th:href="@{/users/quizzes(page=${currentPage + 1})}" class="btn-start">
-                    <i class="fa-solid fa-angle-right"></i></a>
+            <div class="nav-buttons">
+                <div class="pagination" th:if="${totalPages > 1}">
+                    <a th:if="${currentPage > 0}"
+                       th:href="@{/users/quizzes(page=${currentPage - 1})}" class="btn-start">
+                        <i class="fa-solid fa-angle-left"></i></a>
+                    <span th:text="'Страница ' + ${currentPage + 1} + ' от ' + ${totalPages}"></span>
+                    <a th:if="${currentPage + 1 < totalPages}"
+                       th:href="@{/users/quizzes(page=${currentPage + 1})}" class="btn-start">
+                        <i class="fa-solid fa-angle-right"></i></a>
+                </div>
                 <button onclick="history.back()" class="back-btn"><i class="fa-solid fa-rotate-left"></i> Назад</button>
             </div>
         </div>
