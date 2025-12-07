@@ -39,11 +39,11 @@ public class GuestQuizServiceImpl extends AbstractQuizHelper implements GuestQui
 
 //        Map<Long, String> userAnswers = super.mapUserAnswers(quizSubmissionDTO.getFormData());
 
-        this.questionStatisticsService.updateOnQuizCompleted(quiz, quizSubmissionDTO.getFormData());
+        this.questionStatisticsService.updateOnQuizCompleted(quiz, quizSubmissionDTO.getAnswers());
 
         super.removeTempQuiz(quizSubmissionDTO.getViewToken());
 
-        this.saveQuizResult(quiz, quizSubmissionDTO.getFormData());
+        this.saveQuizResult(quiz, quizSubmissionDTO.getAnswers());
     }
 
     @Override

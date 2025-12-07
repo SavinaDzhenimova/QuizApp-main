@@ -100,9 +100,9 @@ public class UserQuizServiceImpl extends AbstractQuizHelper implements UserQuizS
 
 //        Map<Long, String> userAnswers = super.mapUserAnswers(formData);
 
-        this.questionStatisticsService.updateOnQuizCompleted(quiz, quizSubmissionDTO.getFormData());
+        this.questionStatisticsService.updateOnQuizCompleted(quiz, quizSubmissionDTO.getAnswers());
 
-        return this.saveSolvedQuiz(quiz, user, quizSubmissionDTO.getFormData());
+        return this.saveSolvedQuiz(quiz, user, quizSubmissionDTO.getAnswers());
     }
 
     private Long saveSolvedQuiz(Quiz quiz, User user, Map<Long, String> userAnswers) {

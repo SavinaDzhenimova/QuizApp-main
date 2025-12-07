@@ -34,7 +34,7 @@
                     <div class="answers">
                         <label class="answer-option" th:each="option, aIdx : ${question.options}">
                             <input type="radio"
-                                   th:name="'formData[' + ${question.id} + ']'"
+                                   th:name="'answers[' + ${question.id} + ']'"
                                    th:value="${option}">
                             <span th:text="${option}"></span>
                         </label>
