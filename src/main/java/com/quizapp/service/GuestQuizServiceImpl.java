@@ -3,6 +3,7 @@ package com.quizapp.service;
 import com.quizapp.exception.QuizNotFoundException;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
+import com.quizapp.model.dto.quiz.QuizSubmissionDTO;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.service.interfaces.CategoryStatisticsService;
 import com.quizapp.service.interfaces.GuestQuizService;
@@ -33,16 +34,16 @@ public class GuestQuizServiceImpl extends AbstractQuizHelper implements GuestQui
     }
 
     @Override
-    public void evaluateQuiz(String viewToken, Map<String, String> formData) {
-        Quiz quiz = super.loadTempQuiz(viewToken);
+    public void evaluateQuiz(QuizSubmissionDTO quizSubmissionDTO) {
+        Quiz quiz = super.loadTempQuiz(quizSubmissionDTO.getViewToken());
 
-        Map<Long, String> userAnswers = super.mapUserAnswers(formData);
+//        Map<Long, String> userAnswers = super.mapUserAnswers(quizSubmissionDTO.getFormData());
 
-        this.questionStatisticsService.updateOnQuizCompleted(quiz, userAnswers);
+        this.questionStatisticsService.updateOnQuizCompleted(quiz, quizSubmissionDTO.getFormData());
 
-        super.removeTempQuiz(viewToken);
+        super.removeTempQuiz(quizSubmissionDTO.getViewToken());
 
-        this.saveQuizResult(quiz, userAnswers);
+        this.saveQuizResult(quiz, quizSubmissionDTO.getFormData());
     }
 
     @Override

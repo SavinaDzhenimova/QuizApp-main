@@ -1,11 +1,13 @@
 package com.quizapp.web;
 
+import com.quizapp.model.dto.quiz.QuizSubmissionDTO;
+import com.quizapp.model.dto.user.UserDetailsDTO;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.service.QuizCommonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -31,13 +33,20 @@ public class QuizCommonController {
 
     @GetMapping("/quiz/{viewToken}")
     public ModelAndView showQuiz(@PathVariable String viewToken,
-                                 @AuthenticationPrincipal UserDetails userDetails) {
+                                 @AuthenticationPrincipal UserDetailsDTO userDetailsDTO,
+                                 Model model) {
+
+        if (!model.containsAttribute("quizSubmissionDTO")) {
+            QuizSubmissionDTO quizSubmissionDTO = new QuizSubmissionDTO();
+            quizSubmissionDTO.setViewToken(viewToken);
+            model.addAttribute("quizSubmissionDTO", quizSubmissionDTO);
+        }
 
         ModelAndView modelAndView = new ModelAndView("quiz");
 
         Quiz quiz = this.quizCommonService.getQuizFromTemp(viewToken);
         modelAndView.addObject("quiz", quiz);
-        modelAndView.addObject("isLogged", userDetails != null);
+        modelAndView.addObject("isLogged", userDetailsDTO != null);
 
         return modelAndView;
     }

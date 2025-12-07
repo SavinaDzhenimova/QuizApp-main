@@ -4,6 +4,7 @@ import com.quizapp.exception.*;
 import com.quizapp.model.dto.question.QuestionDTO;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
+import com.quizapp.model.dto.quiz.QuizSubmissionDTO;
 import com.quizapp.model.entity.Quiz;
 import com.quizapp.model.entity.SolvedQuiz;
 import com.quizapp.model.entity.User;
@@ -91,17 +92,17 @@ public class UserQuizServiceImpl extends AbstractQuizHelper implements UserQuizS
 
     @Override
     @Transactional
-    public Long evaluateQuiz(String viewToken, Map<String, String> formData, String username) {
-        Quiz quiz = super.loadTempQuiz(viewToken);
+    public Long evaluateQuiz(QuizSubmissionDTO quizSubmissionDTO, String username) {
+        Quiz quiz = super.loadTempQuiz(quizSubmissionDTO.getViewToken());
 
         User user = this.userService.getUserByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("Потребителят не е намерен."));
 
-        Map<Long, String> userAnswers = super.mapUserAnswers(formData);
+//        Map<Long, String> userAnswers = super.mapUserAnswers(formData);
 
-        this.questionStatisticsService.updateOnQuizCompleted(quiz, userAnswers);
+        this.questionStatisticsService.updateOnQuizCompleted(quiz, quizSubmissionDTO.getFormData());
 
-        return this.saveSolvedQuiz(quiz, user, userAnswers);
+        return this.saveSolvedQuiz(quiz, user, quizSubmissionDTO.getFormData());
     }
 
     private Long saveSolvedQuiz(Quiz quiz, User user, Map<Long, String> userAnswers) {

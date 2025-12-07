@@ -4,7 +4,6 @@ import com.quizapp.exception.QuizNotFoundException;
 import com.quizapp.model.entity.Quiz;
 import lombok.RequiredArgsConstructor;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -34,18 +33,5 @@ public abstract class AbstractQuizHelper {
         return quiz.getQuestions().stream()
                 .filter(q -> q.getCorrectAnswer().equals(userAnswers.get(q.getId())))
                 .count();
-    }
-
-    protected Map<Long, String> mapUserAnswers(Map<String, String> formData) {
-        Map<Long, String> userAnswers = new HashMap<>();
-
-        formData.forEach((key, value) -> {
-            if (key.startsWith("answers[")) {
-                Long questionId = Long.valueOf(key.replaceAll("[^0-9]", ""));
-                userAnswers.put(questionId, value);
-            }
-        });
-
-        return userAnswers;
     }
 }

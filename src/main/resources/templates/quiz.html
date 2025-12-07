@@ -16,16 +16,12 @@
         <form th:action="${isLogged == false} ? @{/guest/quizzes/{viewToken}/submit(viewToken=${quiz.viewToken})}
                                               : @{/users/quizzes/{viewToken}/submit(viewToken=${quiz.viewToken})}"
               th:method="POST"
+              th:object="${quizSubmissionDTO}"
               id="quizForm">
             <h2 th:text="'Куиз в категория ' + ${quiz.categoryName}"></h2>
 
-            <!-- Ако е guest quiz -->
-            <input type="hidden" name="viewToken" th:value="${quiz.viewToken}"
+            <input type="hidden" name="viewToken" th:field="*{viewToken}"
                    th:if="${quiz.viewToken != null}" />
-
-            <!-- Ако е записан quiz в базата -->
-            <input type="hidden" name="id" th:value="${quiz.id}"
-                   th:if="${quiz.id != null}" />
 
             <div class="question-pages">
                 <div th:each="question, iter : ${quiz.questions}"
@@ -38,9 +34,8 @@
                     <div class="answers">
                         <label class="answer-option" th:each="option, aIdx : ${question.options}">
                             <input type="radio"
-                                   th:name="'answers[' + ${question.id} + ']'"
-                                   th:value="${option}"
-                                   required>
+                                   th:name="'formData[' + ${question.id} + ']'"
+                                   th:value="${option}">
                             <span th:text="${option}"></span>
                         </label>
                     </div>
