@@ -131,6 +131,7 @@ form textarea::placeholder {
 button[type="submit"],
 .btn-start,
 .edit-btn,
+.show-btn,
 .delete-btn,
 .back-btn,
 #prevBtn,
@@ -147,6 +148,11 @@ button[type="submit"],
     cursor: pointer;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
     transition: all 0.3s ease;
+}
+
+.back-btn,
+.show-btn {
+    margin-top: 0;
 }
 
 button[type="submit"],

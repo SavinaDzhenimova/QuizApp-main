@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec='http://www.thymeleaf.org/extras/spring-security'>
+      xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <th:block th:replace="~{fragments/commons::head}"></th:block>
@@ -45,14 +44,7 @@
             <button type="button" id="prevBtn"><i class="fa-solid fa-angle-left"></i></button>
             <div id="pageNumbers" class="page-numbers"></div>
             <button type="button" id="nextBtn"><i class="fa-solid fa-angle-right"></i></button>
-            <a class="btn-start" sec:authorize="isAuthenticated()"
-               th:if="${from == 'list'}"
-               th:href="@{/users/quizzes}">Обратно към всички</a>
-            <a class="btn-start" sec:authorize="isAuthenticated()"
-               th:if="${from == 'result'}"
-               th:href="@{/users/quizzes/{id}/result(id=${solvedQuiz.id})}">Обратно към резултата</a>
-            <a class="btn-start" sec:authorize="isAnonymous()"
-               th:href="@{/guest/quizzes/{viewToken}/result(viewToken=${solvedQuiz.viewToken})}">Обратно към резултата</a>
+            <button onclick="history.back()" class="back-btn"><i class="fa-solid fa-rotate-left"></i> Назад</button>
         </div>
     </main>
 

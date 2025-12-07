@@ -46,7 +46,6 @@ public class UserQuizController {
 
         QuizDTO solvedQuizDTO = this.userQuizService.getSolvedQuizById(id);
         modelAndView.addObject("solvedQuiz", solvedQuizDTO);
-        modelAndView.addObject("from", from);
 
         return modelAndView;
     }

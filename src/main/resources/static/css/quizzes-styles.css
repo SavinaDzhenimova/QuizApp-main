@@ -37,10 +37,9 @@
     font-weight: 600;
 }
 
-.quiz-card ul li a.edit-btn {
+.quiz-card ul li a.show-btn {
     display: block;
-    margin-top: 0;
-    padding: 0.2em 0;
+    padding: 0;
     text-align: center;
 }
 
