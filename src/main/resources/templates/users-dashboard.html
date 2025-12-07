@@ -19,6 +19,7 @@
 
             <form th:action="@{/statistics/users}"
                   th:method="GET"
+                  th:unless="${warning}"
                   class="search-form">
                 <input type="hidden" name="page" value="0"/>
 

@@ -24,6 +24,10 @@
                 <p th:text="${success}"></p>
             </div>
 
+            <div th:if="${warning}" class="warning">
+                <p th:text="${warning}"></p>
+            </div>
+
             <form th:action="@{/categories}"
                   th:method="GET"
                   class="search-form">
