@@ -22,14 +22,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/api/**", "/", "/about-us", "/subscribe",
-                                "/contacts", "/contacts/send-inquiry",
-                                "/report-problem", "/report-problem/send-report",
-                                "/users/login", "/users/register",
-                                "/start-quiz", "/quizzes/start", "/quizzes/quiz/**").permitAll()
-                        .requestMatchers("/users/forgot-password", "/users/reset-password/**",
+                                "/contacts", "/report-problem",
+                                "/users/login", "/users/register").permitAll()
+                        .requestMatchers("/contacts/send-inquiry", "/report-problem/send-report",
+                                "/users/forgot-password", "/users/reset-password/**",
                                 "/guest/quizzes/**").anonymous()
-                        .requestMatchers("/users/logout", "/users/home",
-                                "/users/quizzes/**").authenticated()
+                        .requestMatchers("/users/logout", "/users/home").authenticated()
+                        .requestMatchers("/contacts/send-inquiry", "/report-problem/send-report",
+                                "/start-quiz", "/quizzes/start", "/quizzes/quiz/**",
+                                "/users/quizzes/**").hasRole("USER")
                         .requestMatchers("/admin/**",
                                 "/categories", "/categories/add-category",
                                 "/questions", "/questions/add-question", "/statistics/**").hasRole("ADMIN")

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec='http://www.thymeleaf.org/extras/spring-security'>
 
 <head>
     <th:block th:replace="~{fragments/commons::head}"></th:block>
@@ -95,7 +96,7 @@
                                    class="text-danger">Message error message</small>
                         </div>
 
-                        <button type="submit">Изпрати</button>
+                        <button sec:authorize="!hasRole('ADMIN')" type="submit">Изпрати</button>
                     </form>
                 </section>
             </div>
