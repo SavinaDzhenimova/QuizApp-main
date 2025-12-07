@@ -35,7 +35,7 @@ public class StatisticsController {
                                             @RequestParam(value = "sortBy", required = false) CategorySortField sortBy,
                                             @RequestParam(value = "categoryId", required = false) Long categoryId) {
 
-        ModelAndView modelAndView = new ModelAndView("categories-dashboard");
+        ModelAndView modelAndView = new ModelAndView("categories-statistics");
 
         Sort sort = Sort.unsorted();
         if (sortBy != null) {
@@ -68,7 +68,7 @@ public class StatisticsController {
                                            @RequestParam(value = "sortBy", required = false) QuestionSortField sortBy,
                                            @RequestParam(value = "questionText", required = false) String questionText) {
 
-        ModelAndView modelAndView = new ModelAndView("questions-dashboard");
+        ModelAndView modelAndView = new ModelAndView("questions-statistics");
 
         Sort sort = Sort.unsorted();
         if (sortBy != null) {
@@ -102,7 +102,7 @@ public class StatisticsController {
                                        @RequestParam(value = "sortBy", required = false) UserSortField sortBy,
                                        @RequestParam(value = "username", required = false) String username) {
 
-        ModelAndView modelAndView = new ModelAndView("users-dashboard");
+        ModelAndView modelAndView = new ModelAndView("users-statistics");
 
         Pageable pageable;
         if (sortBy == UserSortField.LAST_SOLVED_AT) {
