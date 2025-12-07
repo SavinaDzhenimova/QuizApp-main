@@ -3,6 +3,7 @@ package com.quizapp.config;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -24,16 +25,19 @@ public class SecurityConfig {
                         .requestMatchers("/api/**", "/", "/about-us", "/subscribe",
                                 "/contacts", "/report-problem",
                                 "/users/login", "/users/register").permitAll()
-                        .requestMatchers("/contacts/send-inquiry", "/report-problem/send-report",
-                                "/users/forgot-password", "/users/reset-password/**",
+                        .requestMatchers("/users/forgot-password", "/users/reset-password/**",
                                 "/guest/quizzes/**").anonymous()
                         .requestMatchers("/users/logout", "/users/home").authenticated()
-                        .requestMatchers("/contacts/send-inquiry", "/report-problem/send-report",
-                                "/start-quiz", "/quizzes/start", "/quizzes/quiz/**",
-                                "/users/quizzes/**").hasRole("USER")
+                        .requestMatchers("/users/quizzes/**").hasRole("USER")
                         .requestMatchers("/admin/**",
                                 "/categories", "/categories/add-category",
                                 "/questions", "/questions/add-question", "/statistics/**").hasRole("ADMIN")
+                        .requestMatchers("/contacts/send-inquiry", "/report-problem/send-report",
+                                "/start-quiz", "/quizzes/start", "/quizzes/quiz/**").access((authentication, context) -> {
+                                    boolean isAdmin = authentication.get().getAuthorities().stream()
+                                            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                                    return new AuthorizationDecision(!isAdmin);
+                                })
                         .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin
