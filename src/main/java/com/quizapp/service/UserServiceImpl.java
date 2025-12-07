@@ -272,6 +272,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteById(Long id) {
+
+        Optional<User> optionalUser = this.userRepository.findById(id);
+
+        if (optionalUser.isEmpty()) {
+            return;
+        }
+
+        User user = optionalUser.get();
+        user.getRoles().clear();
+        this.userRepository.saveAndFlush(user);
+
         this.userRepository.deleteById(id);
     }
 }
