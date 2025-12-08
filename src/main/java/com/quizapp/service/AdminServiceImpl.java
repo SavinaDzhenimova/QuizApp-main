@@ -52,7 +52,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Result addAdmin(AddAdminDTO addAdminDTO) {
         if (addAdminDTO == null) {
-            return new Result(false, "Не е намерен дмин!");
+            return new Result(false, "Не е намерен админ!");
         }
 
         if (this.userRepository.existsByUsername(addAdminDTO.getUsername())) {
