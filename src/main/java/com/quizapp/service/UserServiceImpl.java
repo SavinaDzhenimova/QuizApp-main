@@ -209,10 +209,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Result updatePassword(String username, UpdatePasswordDTO updatePasswordDTO) {
-        Optional<User> optionalUser = this.userRepository.findByUsername(username);
+        if (updatePasswordDTO == null) {
+            return new Result(false, "Невалидни входни данни!");
+        }
 
+        Optional<User> optionalUser = this.userRepository.findByUsername(username);
         if (optionalUser.isEmpty()) {
-            return new Result(false, "Потребителят не е намерен");
+            return new Result(false, "Потребителят не е намерен!");
         }
 
         User user = optionalUser.get();

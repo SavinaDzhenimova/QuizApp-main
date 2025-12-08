@@ -1,6 +1,7 @@
 package com.quizapp.service;
 
 import com.quizapp.exception.UserNotFoundException;
+import com.quizapp.model.dto.user.UpdatePasswordDTO;
 import com.quizapp.model.dto.user.UserDTO;
 import com.quizapp.model.dto.user.UserRegisterDTO;
 import com.quizapp.model.entity.Result;
@@ -9,7 +10,6 @@ import com.quizapp.model.entity.User;
 import com.quizapp.model.entity.UserStatistics;
 import com.quizapp.model.enums.RoleName;
 import com.quizapp.repository.UserRepository;
-import com.quizapp.service.events.ForgotPasswordEvent;
 import com.quizapp.service.events.UserRegisterEvent;
 import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.RoleService;
@@ -56,6 +56,7 @@ public class UserServiceImplTest {
     private User testUser;
     private UserStatistics userStatistics;
     private UserRegisterDTO mockRegisterDTO;
+    private UpdatePasswordDTO mockPasswordDTO;
 
     @BeforeEach
     void setUp() {
@@ -85,6 +86,12 @@ public class UserServiceImplTest {
                 .email("user@gmail.com")
                 .password("Password123")
                 .confirmPassword("Password123")
+                .build();
+
+        this.mockPasswordDTO = UpdatePasswordDTO.builder()
+                .oldPassword("Password123")
+                .newPassword("Pass123")
+                .confirmPassword("Pass123")
                 .build();
     }
 
@@ -188,7 +195,74 @@ public class UserServiceImplTest {
     }
 
     @Test
+    void updatePassword_ShouldReturnError_WhenDtoIsNull() {
+        Result result = this.mockUserService.updatePassword(this.testUser.getUsername(), null);
+
+        Assertions.assertFalse(result.isSuccess());
+        Assertions.assertEquals("Невалидни входни данни!", result.getMessage());
+    }
+
+    @Test
     void updatePassword_ShouldReturnError_WhenUserNotFound() {
-        
+        when(this.mockUserRepository.findByUsername(this.testUser.getUsername())).thenReturn(Optional.empty());
+
+        Result result = this.mockUserService.updatePassword(this.testUser.getUsername(), this.mockPasswordDTO);
+
+        Assertions.assertFalse(result.isSuccess());
+        Assertions.assertEquals("Потребителят не е намерен!", result.getMessage());
+    }
+
+    @Test
+    void updatePassword_ShouldReturnError_WhenPasswordsDoNotMatch() {
+        when(this.mockUserRepository.findByUsername(this.testUser.getUsername())).thenReturn(Optional.of(this.testUser));
+        this.mockPasswordDTO.setConfirmPassword("WrongPassword");
+
+        Result result = this.mockUserService.updatePassword(this.testUser.getUsername(), this.mockPasswordDTO);
+
+        Assertions.assertFalse(result.isSuccess());
+        Assertions.assertEquals("Паролите не съвпадат!", result.getMessage());
+    }
+
+    @Test
+    void updatePassword_ShouldReturnError_WhenOldPasswordIsWrong() {
+        when(this.mockUserRepository.findByUsername(this.testUser.getUsername())).thenReturn(Optional.of(this.testUser));
+        this.mockPasswordDTO.setOldPassword("WrongPassword");
+
+        Result result = this.mockUserService.updatePassword(this.testUser.getUsername(), this.mockPasswordDTO);
+
+        Assertions.assertFalse(result.isSuccess());
+        Assertions.assertEquals("Старата парола е грешна!", result.getMessage());
+    }
+
+    @Test
+    void updatePassword_ShouldReturnError_WhenNewEqualsOldPassword() {
+        when(this.mockUserRepository.findByUsername(this.testUser.getUsername())).thenReturn(Optional.of(this.testUser));
+        this.mockPasswordDTO.setOldPassword("Password123");
+        this.mockPasswordDTO.setNewPassword("Password123");
+        this.mockPasswordDTO.setConfirmPassword("Password123");
+        when(this.mockPasswordEncoder.matches(this.mockPasswordDTO.getOldPassword(), this.mockPasswordDTO.getNewPassword())).thenReturn(true);
+
+        Result result = this.mockUserService.updatePassword(this.testUser.getUsername(), this.mockPasswordDTO);
+
+        Assertions.assertFalse(result.isSuccess());
+        Assertions.assertEquals("Новата парола не може да е като старата парола!", result.getMessage());
+    }
+
+    @Test
+    void updatePassword_ShouldUpdatePassword_WhenDtoIsValid() {
+        this.testUser.setPassword("encodedOldPassword");
+
+        when(mockUserRepository.findByUsername("user")).thenReturn(Optional.of(this.testUser));
+        when(mockPasswordEncoder.matches("Password123", "encodedOldPassword")).thenReturn(true);
+        when(mockPasswordEncoder.matches("Pass123", "encodedOldPassword")).thenReturn(false);
+        when(mockPasswordEncoder.encode("Pass123")).thenReturn("encodedNewPassword");
+        when(mockUserRepository.saveAndFlush(any(User.class))).thenReturn(this.testUser);
+
+        Result result = mockUserService.updatePassword("user", mockPasswordDTO);
+
+        Assertions.assertTrue(result.isSuccess());
+        Assertions.assertEquals("Успешно променихте паролата си.", result.getMessage());
+        Assertions.assertEquals("encodedNewPassword", testUser.getPassword());
+        verify(this.mockUserRepository, times(1)).saveAndFlush(this.testUser);
     }
 }
