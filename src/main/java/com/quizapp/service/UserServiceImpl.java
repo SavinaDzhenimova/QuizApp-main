@@ -198,10 +198,6 @@ public class UserServiceImpl implements UserService {
 
         List<User> inactiveUsers = this.userStatisticsService.findInactiveLoginUsersWarned(oneYearAgo);
 
-        if (inactiveUsers.isEmpty()) {
-            return 0;
-        }
-
         inactiveUsers.forEach(user -> this.deleteById(user.getId()));
 
         return inactiveUsers.size();
@@ -277,14 +273,12 @@ public class UserServiceImpl implements UserService {
 
         Optional<User> optionalUser = this.userRepository.findById(id);
 
-        if (optionalUser.isEmpty()) {
-            return;
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.getRoles().clear();
+            this.userRepository.saveAndFlush(user);
+
+            this.userRepository.deleteById(id);
         }
-
-        User user = optionalUser.get();
-        user.getRoles().clear();
-        this.userRepository.saveAndFlush(user);
-
-        this.userRepository.deleteById(id);
     }
 }

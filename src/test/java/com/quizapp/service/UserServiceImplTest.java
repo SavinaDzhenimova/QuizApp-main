@@ -22,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,6 +50,7 @@ public class UserServiceImplTest {
     private UserStatisticsService mockUserStatisticsService;
     @InjectMocks
     private UserServiceImpl mockUserService;
+    private UserServiceImpl spyUserService;
 
     private Role roleUser;
     private User testUser;
@@ -58,6 +60,8 @@ public class UserServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        this.spyUserService = Mockito.spy(mockUserService);
+
         this.roleUser = new Role();
         this.roleUser.setName(RoleName.USER);
 
@@ -256,7 +260,62 @@ public class UserServiceImplTest {
         verify(this.mockAplEventPublisher, times(list.size())).publishEvent(eventCaptor.capture());
     }
 
-    
+    @Test
+    void sendInactiveUsersWarnEmail_ShouldReturnZero_WhenNoInactiveUsers() {
+        when(this.mockUserStatisticsService.findInactiveNotWarned(any())).thenReturn(Collections.emptyList());
+
+        Integer result = this.mockUserService.sendInactiveUsersWarnEmail();
+
+        Assertions.assertEquals(0, result);
+        verify(this.mockAplEventPublisher, never()).publishEvent(any());
+        verify(this.mockUserStatisticsService, never()).saveAndFlushUserStatistics(any());
+    }
+
+    @Test
+    void sendInactiveUsersWarnEmail_ShouldSendEmailsAndUpdateUserStatistics() {
+        this.userStatistics.setUser(this.testUser);
+        User user2 = User.builder().id(2L).username("user2").email("user2@gmail.com").build();
+        UserStatistics userStatistics2 = UserStatistics.builder().user(user2).build();
+
+        List<UserStatistics> list = List.of(this.userStatistics, userStatistics2);
+
+        when(this.mockUserStatisticsService.findInactiveNotWarned(any())).thenReturn(list);
+
+        Integer result = this.mockUserService.sendInactiveUsersWarnEmail();
+
+        Assertions.assertEquals(list.size(), result);
+        Assertions.assertTrue(this.userStatistics.isDeletionWarningSent());
+        Assertions.assertTrue(userStatistics2.isDeletionWarningSent());
+        Assertions.assertNotNull(this.userStatistics.getDeletionWarningSentAt());
+        Assertions.assertNotNull(userStatistics2.getDeletionWarningSentAt());
+    }
+
+    @Test
+    void removeWarnedInactiveLoginUsersAccounts_ShouldReturnZero_WhenNoUsers() {
+        when(this.mockUserStatisticsService.findInactiveLoginUsersWarned(any())).thenReturn(Collections.emptyList());
+
+        Integer result = this.mockUserService.removeWarnedInactiveLoginUsersAccounts();
+
+        Assertions.assertEquals(0, result);
+        verify(this.mockUserStatisticsService, times(1)).findInactiveLoginUsersWarned(any());
+        verify(this.mockUserRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void removeWarnedInactiveLoginUsersAccounts_ShouldDeleteInactiveUsers() {
+        User user2 = User.builder().id(2L).build();
+
+        List<User> list = List.of(this.testUser, user2);
+
+        when(this.mockUserStatisticsService.findInactiveLoginUsersWarned(any())).thenReturn(list);
+        doNothing().when(spyUserService).deleteById(anyLong());
+
+        Integer result = this.spyUserService.removeWarnedInactiveLoginUsersAccounts();
+
+        Assertions.assertEquals(list.size(), result);
+        verify(this.mockUserStatisticsService, times(1)).findInactiveLoginUsersWarned(any());
+        verify(this.spyUserService, times(list.size())).deleteById(any());
+    }
 
     @Test
     void updatePassword_ShouldReturnError_WhenDtoIsNull() {
