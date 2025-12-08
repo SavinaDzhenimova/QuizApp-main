@@ -1,6 +1,7 @@
 package com.quizapp.service;
 
 import com.quizapp.model.dto.user.AddAdminDTO;
+import com.quizapp.model.dto.user.AdminDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.model.entity.Role;
 import com.quizapp.model.entity.User;
@@ -14,12 +15,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -59,8 +68,26 @@ public class AdminServiceImplTest {
                 .username("admin")
                 .email("admin@gmail.com")
                 .password("encodedPass")
-                .roles(Set.of(this.mockRoleAdmin))
+                .roles(new HashSet<>(Set.of(this.mockRoleAdmin)))
                 .build();
+    }
+
+    @Test
+    void getAllAdmins_ShouldReturnPageOfAdmins() {
+        User testUser2 = User.builder().id(2L).username("admin2").email("admin2@gmail.com").build();
+
+        Page<User> page = new PageImpl<>(List.of(this.testUser, testUser2));
+
+        when(this.mockUserRepository.findAll(ArgumentMatchers.<Specification<User>>any(), any(Pageable.class))).thenReturn(page);
+
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<AdminDTO> result = this.mockAdminService.getAllAdmins("", pageable);
+
+        Assertions.assertEquals(2, result.getContent().size());
+        Assertions.assertEquals("admin", result.getContent().get(0).getUsername());
+        Assertions.assertEquals("admin2", result.getContent().get(1).getUsername());
+        Assertions.assertEquals("admin@gmail.com", result.getContent().get(0).getEmail());
+        Assertions.assertEquals("admin2@gmail.com", result.getContent().get(1).getEmail());
     }
 
     @Test
@@ -138,5 +165,29 @@ public class AdminServiceImplTest {
         Assertions.assertEquals("token123", publishedEvent.getToken());
 
         verifyNoMoreInteractions(mockUserRepository, mockPasswordResetService, mockAplEventPublisher);
+    }
+
+    @Test
+    void deleteAdminById_ShouldReturnError_WhenUserNotFound() {
+        when(this.mockUserRepository.findById(2L)).thenReturn(Optional.empty());
+
+        Result result = this.mockAdminService.deleteAdminById(2L);
+
+        Assertions.assertFalse(result.isSuccess());
+        Assertions.assertEquals("Не е намерен админ.", result.getMessage());
+    }
+
+    @Test
+    void deleteAdminById_ShouldDeleteAdmin_WhenExists() {
+        when(this.mockUserRepository.findById(1L)).thenReturn(Optional.of(this.testUser));
+
+        Result result = this.mockAdminService.deleteAdminById(1L);
+
+        Assertions.assertTrue(result.isSuccess());
+        Assertions.assertEquals("Успешно премахнахте админ admin.", result.getMessage());
+
+        Assertions.assertTrue(this.testUser.getRoles().isEmpty());
+        verify(this.mockUserRepository).saveAndFlush(testUser);
+        verify(this.mockUserRepository).deleteById(1L);
     }
 }
