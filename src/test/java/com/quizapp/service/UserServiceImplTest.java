@@ -256,13 +256,63 @@ public class UserServiceImplTest {
         when(mockPasswordEncoder.matches("Password123", "encodedOldPassword")).thenReturn(true);
         when(mockPasswordEncoder.matches("Pass123", "encodedOldPassword")).thenReturn(false);
         when(mockPasswordEncoder.encode("Pass123")).thenReturn("encodedNewPassword");
-        when(mockUserRepository.saveAndFlush(any(User.class))).thenReturn(this.testUser);
+        when(mockUserRepository.saveAndFlush(this.testUser)).thenReturn(this.testUser);
 
         Result result = mockUserService.updatePassword("user", mockPasswordDTO);
 
         Assertions.assertTrue(result.isSuccess());
         Assertions.assertEquals("Успешно променихте паролата си.", result.getMessage());
         Assertions.assertEquals("encodedNewPassword", testUser.getPassword());
+        verify(this.mockUserRepository, times(1)).saveAndFlush(this.testUser);
+    }
+
+    @Test
+    void resetUserPassword_ShouldEncodeAndSavePassword() {
+        this.testUser.setPassword("oldPassword");
+        String newPassword = "newPassword";
+
+        when(this.mockPasswordEncoder.encode(newPassword)).thenReturn("encodedNewPassword");
+        when(this.mockUserRepository.saveAndFlush(this.testUser)).thenReturn(this.testUser);
+
+        this.mockUserService.resetUserPassword(this.testUser, newPassword);
+
+        Assertions.assertEquals("encodedNewPassword", this.testUser.getPassword());
+        verify(this.mockPasswordEncoder, times(1)).encode(newPassword);
+        verify(this.mockUserRepository, times(1)).saveAndFlush(this.testUser);
+    }
+
+    @Test
+    void updateLastLoginTime_ShouldThrowUserNotFoundException_WhenUserNotFound() {
+        when(this.mockUserRepository.findByUsername("non_existent")).thenReturn(Optional.empty());
+
+        UserNotFoundException exception = Assertions.assertThrows(UserNotFoundException.class,
+                () -> this.mockUserService.updateLastLoginTime("non_existent"));
+
+        Assertions.assertEquals("Не е намерен потребител non_existent.", exception.getMessage());
+    }
+
+    @Test
+    void updateLastLoginTime_ShouldNotDoAnything_WhenUserStatisticsNull() {
+        this.testUser.setUserStatistics(null);
+        when(this.mockUserRepository.findByUsername(this.testUser.getUsername())).thenReturn(Optional.of(this.testUser));
+
+        this.mockUserService.updateLastLoginTime(this.testUser.getUsername());
+
+        Assertions.assertNull(this.testUser.getUserStatistics());
+        verify(this.mockUserRepository, never()).saveAndFlush(this.testUser);
+    }
+
+    @Test
+    void updateLastLoginTime_ShouldUpdateTimestamp_WhenUserExists() {
+        this.userStatistics.setLastLoginAt(LocalDateTime.now().minusDays(1));
+        this.testUser.setUserStatistics(this.userStatistics);
+
+        when(this.mockUserRepository.findByUsername(this.testUser.getUsername())).thenReturn(Optional.of(this.testUser));
+
+        this.mockUserService.updateLastLoginTime(this.testUser.getUsername());
+
+        Assertions.assertNotNull(this.testUser.getUserStatistics().getLastLoginAt());
+        Assertions.assertTrue(this.testUser.getUserStatistics().getLastLoginAt().isAfter(LocalDateTime.now().minusMinutes(1)));
         verify(this.mockUserRepository, times(1)).saveAndFlush(this.testUser);
     }
 }

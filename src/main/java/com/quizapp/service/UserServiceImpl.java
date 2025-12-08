@@ -253,9 +253,8 @@ public class UserServiceImpl implements UserService {
 
         if (user.getUserStatistics() != null) {
             user.getUserStatistics().setLastLoginAt(LocalDateTime.now());
+            this.userRepository.saveAndFlush(user);
         }
-
-        this.userRepository.saveAndFlush(user);
     }
 
     @Override
