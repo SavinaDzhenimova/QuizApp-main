@@ -11,15 +11,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -95,7 +94,16 @@ public class PasswordResetServiceImplTest {
 
         Assertions.assertTrue(result.isSuccess());
         Assertions.assertEquals("Моля проверете пощата си за имейл с линк за смяна на паролата!", result.getMessage());
-        verify(this.mockAplEventPublisher, times(1)).publishEvent(any(ForgotPasswordEvent.class));
+
+        ArgumentCaptor<ForgotPasswordEvent> eventCaptor = ArgumentCaptor.forClass(ForgotPasswordEvent.class);
+        verify(this.mockAplEventPublisher, times(1)).publishEvent(eventCaptor.capture());
+
+        ForgotPasswordEvent publishedEvent = eventCaptor.getValue();
+
+        Assertions.assertEquals(this.testUser.getUsername(), publishedEvent.getUsername());
+        Assertions.assertEquals(this.testUser.getEmail(), publishedEvent.getEmail());
+        Assertions.assertNotNull(publishedEvent.getToken());
+        Assertions.assertFalse(publishedEvent.getToken().isEmpty());
     }
 
     @Test
@@ -161,5 +169,42 @@ public class PasswordResetServiceImplTest {
         verify(this.mockUserService, times(1)).resetUserPassword(this.testUser, this.mockResetPasswordDTO.getPassword());
         Assertions.assertTrue(this.resetToken.isUsed());
         verify(this.mockTokenRepository, times(1)).save(this.resetToken);
+    }
+
+    @Test
+    void isValidToken_ShouldReturnFalse_WhenTokenUsed() {
+        this.resetToken.setUsed(true);
+        when(this.mockTokenRepository.findByToken(this.resetToken.getToken())).thenReturn(Optional.of(this.resetToken));
+
+        boolean isValid = this.mockPasswordResetService.isValidToken(this.resetToken.getToken());
+
+        Assertions.assertFalse(isValid);
+    }
+
+    @Test
+    void isValidToken_ShouldReturnFalse_WhenTokenExpired() {
+        this.resetToken.setExpiryDate(LocalDateTime.now().minusMinutes(1));
+        when(this.mockTokenRepository.findByToken(this.resetToken.getToken())).thenReturn(Optional.of(this.resetToken));
+
+        boolean isValid = this.mockPasswordResetService.isValidToken(this.resetToken.getToken());
+
+        Assertions.assertFalse(isValid);
+    }
+
+    @Test
+    void isValidToken_ShouldReturnTrue_WhenTokenValid() {
+        when(this.mockTokenRepository.findByToken(this.resetToken.getToken())).thenReturn(Optional.of(this.resetToken));
+
+        boolean isValid = this.mockPasswordResetService.isValidToken(this.resetToken.getToken());
+
+        Assertions.assertTrue(isValid);
+    }
+
+    @Test
+    void deleteInvalidPasswordResetTokens_ShouldCallRepository() {
+        String timestamp = this.mockPasswordResetService.deleteInvalidPasswordResetTokens();
+
+        verify(this.mockTokenRepository, times(1)).deleteExpiredOrUsedTokens(any(LocalDateTime.class));
+        Assertions.assertNotNull(timestamp);
     }
 }
