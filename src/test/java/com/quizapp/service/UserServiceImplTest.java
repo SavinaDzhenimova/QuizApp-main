@@ -194,6 +194,8 @@ public class UserServiceImplTest {
         Assertions.assertEquals(this.testUser.getEmail(), publishedEvent.getEmail());
     }
 
+    
+
     @Test
     void updatePassword_ShouldReturnError_WhenDtoIsNull() {
         Result result = this.mockUserService.updatePassword(this.testUser.getUsername(), null);
@@ -314,5 +316,75 @@ public class UserServiceImplTest {
         Assertions.assertNotNull(this.testUser.getUserStatistics().getLastLoginAt());
         Assertions.assertTrue(this.testUser.getUserStatistics().getLastLoginAt().isAfter(LocalDateTime.now().minusMinutes(1)));
         verify(this.mockUserRepository, times(1)).saveAndFlush(this.testUser);
+    }
+
+    @Test
+    void getUserByUsername_ShouldReturnEmpty_WhenUsernameNotFound() {
+        when(this.mockUserRepository.findByUsername("non_existent")).thenReturn(Optional.empty());
+
+        Optional<User> optionalUser = this.mockUserService.getUserByUsername("non_existent");
+
+        Assertions.assertTrue(optionalUser.isEmpty());
+    }
+
+    @Test
+    void getUserByUsername_ShouldReturnUser_WhenUsernameFound() {
+        when(this.mockUserRepository.findByUsername(this.testUser.getUsername())).thenReturn(Optional.of(this.testUser));
+
+        Optional<User> optionalUser = this.mockUserService.getUserByUsername(this.testUser.getUsername());
+
+        Assertions.assertTrue(optionalUser.isPresent());
+        Assertions.assertEquals(this.testUser.getUsername(), optionalUser.get().getUsername());
+    }
+
+    @Test
+    void getUserByUsername_ShouldReturnEmpty_WhenEmailNotFound() {
+        when(this.mockUserRepository.findByEmail("wrong@gmail.com")).thenReturn(Optional.empty());
+
+        Optional<User> optionalUser = this.mockUserService.getUserByEmail("wrong@gmail.com");
+
+        Assertions.assertTrue(optionalUser.isEmpty());
+    }
+
+    @Test
+    void getUserByUsername_ShouldReturnUser_WhenEmailFound() {
+        when(this.mockUserRepository.findByEmail(this.testUser.getEmail())).thenReturn(Optional.of(this.testUser));
+
+        Optional<User> optionalUser = this.mockUserService.getUserByEmail(this.testUser.getEmail());
+
+        Assertions.assertTrue(optionalUser.isPresent());
+        Assertions.assertEquals(this.testUser.getEmail(), optionalUser.get().getEmail());
+    }
+
+    @Test
+    void saveAndFlushUser_ShouldSaveUser() {
+        when(this.mockUserRepository.saveAndFlush(this.testUser)).thenReturn(this.testUser);
+
+        User savedUser = this.mockUserService.saveAndFlushUser(this.testUser);
+
+        Assertions.assertNotNull(savedUser);
+        Assertions.assertEquals(this.testUser, savedUser);
+        verify(this.mockUserRepository, times(1)).saveAndFlush(this.testUser);
+    }
+
+    @Test
+    void deleteById_ShouldReturn_WhenUserNotFound() {
+        when(this.mockUserRepository.findById(3L)).thenReturn(Optional.empty());
+
+        this.mockUserService.deleteById(3L);
+
+        verify(this.mockUserRepository, never()).saveAndFlush(this.testUser);
+        verify(this.mockUserRepository, never()).deleteById(3L);
+    }
+
+    @Test
+    void deleteById_ShouldDeleteUser_WhenUserExists() {
+        when(this.mockUserRepository.findById(this.testUser.getId())).thenReturn(Optional.of(this.testUser));
+
+        this.mockUserService.deleteById(this.testUser.getId());
+
+        Assertions.assertTrue(this.testUser.getRoles().isEmpty());
+        verify(this.mockUserRepository, times(1)).saveAndFlush(this.testUser);
+        verify(this.mockUserRepository, times(1)).deleteById(this.testUser.getId());
     }
 }
