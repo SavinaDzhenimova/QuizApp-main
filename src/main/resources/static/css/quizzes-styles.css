@@ -30,7 +30,7 @@
 }
 
 .quiz-card ul li {
-    flex: 0 1 calc(100% / 4 - 2em);
+    flex: 0 1 calc(100% / 3 - 2em);
 }
 
 .quiz-card ul li.review-quiz {
