@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> optionalUser = this.userRepository.findByUsername(username);
 
         if (optionalUser.isEmpty()) {
-            return null;
+            throw new UserNotFoundException("Не е намерен потребител");
         }
 
         User user = optionalUser.get();
