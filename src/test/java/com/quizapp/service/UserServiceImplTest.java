@@ -10,6 +10,7 @@ import com.quizapp.model.entity.User;
 import com.quizapp.model.entity.UserStatistics;
 import com.quizapp.model.enums.RoleName;
 import com.quizapp.repository.UserRepository;
+import com.quizapp.service.events.InactiveSolvingQuizzesEvent;
 import com.quizapp.service.events.UserRegisterEvent;
 import com.quizapp.service.interfaces.CategoryService;
 import com.quizapp.service.interfaces.RoleService;
@@ -26,10 +27,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -192,6 +190,70 @@ public class UserServiceImplTest {
 
         Assertions.assertEquals(this.testUser.getUsername(), publishedEvent.getUsername());
         Assertions.assertEquals(this.testUser.getEmail(), publishedEvent.getEmail());
+    }
+
+    @Test
+    void sendInactiveSolvingQuizzesUsersEmails_ShouldReturnZero_WhenNoInactiveUsers() {
+        when(mockUserStatisticsService.findInactiveSolvingQuizzesUsersNotWarned(any())).thenReturn(Collections.emptyList());
+
+        Integer result = this.mockUserService.sendInactiveSolvingQuizzesUsersEmails();
+
+        Assertions.assertEquals(0, result);
+        verify(this.mockAplEventPublisher, never()).publishEvent(any());
+        verify(this.mockUserStatisticsService, never()).saveAndFlushUserStatistics(any());
+    }
+
+    @Test
+    void sendInactiveSolvingQuizzesUsersEmails_ShouldSendEmailsAndUpdateStatistics() {
+        this.userStatistics.setUser(this.testUser);
+        User user2 = User.builder().id(2L).username("user2").email("user2@gmail.com").build();
+        UserStatistics userStatistics2 = UserStatistics.builder().user(user2).build();
+
+        List<UserStatistics> list = List.of(this.userStatistics, userStatistics2);
+
+        when(this.mockUserStatisticsService.findInactiveSolvingQuizzesUsersNotWarned(any())).thenReturn(list);
+
+        Integer result = this.mockUserService.sendInactiveSolvingQuizzesUsersEmails();
+
+        Assertions.assertEquals(list.size(), result);
+        Assertions.assertTrue(this.userStatistics.isLastSolvingWarningSent());
+        Assertions.assertTrue(userStatistics2.isLastSolvingWarningSent());
+        Assertions.assertNotNull(this.userStatistics.getLastSolvingWarningSentAt());
+        Assertions.assertNotNull(userStatistics2.getLastSolvingWarningSentAt());
+
+        ArgumentCaptor<InactiveSolvingQuizzesEvent> eventCaptor = ArgumentCaptor.forClass(InactiveSolvingQuizzesEvent.class);
+        verify(this.mockAplEventPublisher, times(list.size())).publishEvent(eventCaptor.capture());
+    }
+
+    @Test
+    void resendWarnedInactiveSolvingQuizzesUsersEmails_ShouldReturnZero_WhenNoInactiveUsers() {
+        when(this.mockUserStatisticsService.findWarnedUsersToResendSolvingWarning(any())).thenReturn(Collections.emptyList());
+
+        Integer result = this.mockUserService.resendWarnedInactiveSolvingQuizzesUsersEmails();
+
+        Assertions.assertEquals(0, result);
+        verify(this.mockAplEventPublisher, never()).publishEvent(any());
+        verify(this.mockUserStatisticsService, never()).saveAndFlushUserStatistics(any());
+    }
+
+    @Test
+    void resendWarnedInactiveSolvingQuizzesUsersEmails_ShouldSendEmailsAndUpdateStatistics() {
+        this.userStatistics.setUser(this.testUser);
+        User user2 = User.builder().id(2L).username("user2").email("user2@gmail.com").build();
+        UserStatistics userStatistics2 = UserStatistics.builder().user(user2).build();
+
+        List<UserStatistics> list = List.of(this.userStatistics, userStatistics2);
+
+        when(this.mockUserStatisticsService.findWarnedUsersToResendSolvingWarning(any())).thenReturn(list);
+
+        Integer result = this.mockUserService.resendWarnedInactiveSolvingQuizzesUsersEmails();
+
+        Assertions.assertEquals(list.size(), result);
+        Assertions.assertNotNull(this.userStatistics.getLastSolvingWarningSentAt());
+        Assertions.assertNotNull(userStatistics2.getLastSolvingWarningSentAt());
+
+        ArgumentCaptor<InactiveSolvingQuizzesEvent> eventCaptor = ArgumentCaptor.forClass(InactiveSolvingQuizzesEvent.class);
+        verify(this.mockAplEventPublisher, times(list.size())).publishEvent(eventCaptor.capture());
     }
 
     
