@@ -3,10 +3,8 @@ package com.quizapp.service;
 import com.quizapp.exception.QuestionStatisticsNotFound;
 import com.quizapp.model.dto.question.QuestionDTO;
 import com.quizapp.model.dto.question.QuestionStatsDTO;
-import com.quizapp.model.entity.CategoryStatistics;
 import com.quizapp.model.entity.QuestionStatistics;
 import com.quizapp.model.entity.Quiz;
-import com.quizapp.model.rest.QuestionApiDTO;
 import com.quizapp.repository.QuestionStatisticsRepository;
 import com.quizapp.service.interfaces.CategoryService;
 import org.junit.jupiter.api.Assertions;
@@ -174,6 +172,30 @@ public class QuestionStatisticsServiceImplTest {
 
         Assertions.assertEquals("Не е намерена статистика за този въпрос.", exception.getMessage());
         verify(this.mockQuestionStatsRepository, never()).saveAndFlush(any());
+    }
+
+    @Test
+    void updateOnQuizCompleted_ShouldUpdateQuestionStats_WhenWrongAnswer() {
+        when(this.mockQuestionStatsRepository.findByQuestionId(1L))
+                .thenReturn(Optional.of(this.mockQuestionStats));
+
+        Map<Long, String> answers = Map.of(1L, "C");
+
+        this.mockQuestionStatsService.updateOnQuizCompleted(this.mockQuiz, answers);
+
+        Assertions.assertEquals(15, this.mockQuestionStats.getCorrectAnswers());
+        Assertions.assertEquals(3, this.mockQuestionStats.getWrongAnswers());
+
+        double accuracy = this.mockQuestionStats.getCorrectAnswers() * 100.00 / this.mockQuestionStats.getAttempts();
+        Assertions.assertEquals(accuracy, this.mockQuestionStats.getAccuracy());
+
+        double difficulty = this.mockQuestionStats.getWrongAnswers() * 100.00 / this.mockQuestionStats.getAttempts();
+        Assertions.assertEquals(difficulty, this.mockQuestionStats.getDifficulty());
+
+        double completionRate = (this.mockQuestionStats.getCorrectAnswers() + this.mockQuestionStats.getWrongAnswers()) * 100.00 / this.mockQuestionStats.getAttempts();
+        Assertions.assertEquals(completionRate, this.mockQuestionStats.getCompletionRate());
+
+        verify(this.mockQuestionStatsRepository, times(1)).saveAndFlush(this.mockQuestionStats);
     }
 
     @Test
