@@ -39,8 +39,7 @@ public class SubscribeServiceImpl implements SubscribeService {
         this.subscriptionRepository.saveAndFlush(subscription);
 
         this.applicationEventPublisher.publishEvent(
-                new SubscribeEvent(this, subscription.getEmail())
-        );
+                new SubscribeEvent(this, subscription.getEmail()));
 
         return new Result(true, "Успешно се абонирахте.");
     }
