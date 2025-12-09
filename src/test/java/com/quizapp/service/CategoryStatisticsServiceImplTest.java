@@ -95,7 +95,8 @@ public class CategoryStatisticsServiceImplTest {
 
         Assertions.assertEquals(1, savedStats.getTotalStartedQuizzes());
         Assertions.assertEquals(0, savedStats.getTotalCompletedQuizzes());
-        Assertions.assertEquals(0.0, savedStats.getCompletionRate());}
+        Assertions.assertEquals(0.0, savedStats.getCompletionRate());
+    }
 
     @Test
     void increaseStartedQuizzes_ShouldIncreaseStartAndRecalculateRate_WhenStatsExist() {
@@ -123,7 +124,8 @@ public class CategoryStatisticsServiceImplTest {
 
     @Test
     void updateOnQuizCompleted_ShouldUpdateCategoryStats_WhenQuizCompleted() {
-        when(this.mockCategoryStatisticsRepository.findByCategoryId(1L)).thenReturn(Optional.of(this.mockCategoryStats));
+        when(this.mockCategoryStatisticsRepository.findByCategoryId(1L))
+                .thenReturn(Optional.of(this.mockCategoryStats));
 
         this.mockCategoryStatisticsService.updateOnQuizCompleted(1L, 3, 5);
 
