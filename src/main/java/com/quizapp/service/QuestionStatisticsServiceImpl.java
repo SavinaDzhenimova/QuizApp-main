@@ -24,8 +24,7 @@ public class QuestionStatisticsServiceImpl implements QuestionStatisticsService 
     private final CategoryService categoryService;
 
     @Override
-    public Page<QuestionStatsDTO> getFilteredQuestionStatistics(Long categoryId, String questionText,
-                                                                Pageable pageable) {
+    public Page<QuestionStatsDTO> getFilteredQuestionStatistics(Long categoryId, String questionText, Pageable pageable) {
         Specification<QuestionStatistics> spec = Specification
                 .allOf(QuestionStatisticsSpecifications.hasQuestionText(questionText))
                 .and(QuestionStatisticsSpecifications.hasCategory(categoryId));

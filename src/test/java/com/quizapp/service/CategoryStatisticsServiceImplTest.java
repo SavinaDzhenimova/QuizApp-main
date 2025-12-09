@@ -36,14 +36,10 @@ public class CategoryStatisticsServiceImplTest {
     @InjectMocks
     private CategoryStatisticsServiceImpl mockCategoryStatisticsService;
 
-    private Pageable pageable;
     private CategoryStatistics mockCategoryStats;
-    private CategoryStatsDTO mockCategoryStatsDTO;
 
     @BeforeEach
     void setUp() {
-        pageable = PageRequest.of(0, 10);
-
         this.mockCategoryStats = CategoryStatistics.builder()
                 .id(1L)
                 .categoryId(1L)
@@ -59,6 +55,7 @@ public class CategoryStatisticsServiceImplTest {
 
     @Test
     void getAllCategoriesFiltered_ShouldReturnPageCategoryStatsDTO() {
+        Pageable pageable = PageRequest.of(0, 10);
         Page<CategoryStatistics> page = new PageImpl<>(List.of(this.mockCategoryStats));
 
         ArgumentCaptor<Specification<CategoryStatistics>> specCaptor =
@@ -66,7 +63,7 @@ public class CategoryStatisticsServiceImplTest {
 
         when(this.mockCategoryStatisticsRepository.findAll(ArgumentMatchers.<Specification<CategoryStatistics>>any(), eq(pageable))).thenReturn(page);
 
-        Page<CategoryStatsDTO> result = this.mockCategoryStatisticsService.getAllCategoriesFiltered(1L, this.pageable);
+        Page<CategoryStatsDTO> result = this.mockCategoryStatisticsService.getAllCategoriesFiltered(1L, pageable);
 
         verify(this.mockCategoryStatisticsRepository, times(1)).findAll(specCaptor.capture(), eq(pageable));
 
