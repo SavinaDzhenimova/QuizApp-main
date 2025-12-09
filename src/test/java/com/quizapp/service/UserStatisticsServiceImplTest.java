@@ -1,9 +1,7 @@
 package com.quizapp.service;
 
-import com.quizapp.model.dto.category.CategoryStatsDTO;
 import com.quizapp.model.dto.user.UserStatisticsDTO;
-import com.quizapp.model.dto.user.UserStatsDTO;
-import com.quizapp.model.entity.CategoryStatistics;
+import com.quizapp.model.entity.SolvedQuiz;
 import com.quizapp.model.entity.User;
 import com.quizapp.model.entity.UserStatistics;
 import com.quizapp.model.enums.UserSortField;
@@ -23,6 +21,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -45,6 +46,7 @@ public class UserStatisticsServiceImplTest {
                 .id(1L)
                 .username("user1")
                 .email("user@gmail.com")
+                .solvedQuizzes(new ArrayList<>())
                 .build();
 
         this.mockUserStats = UserStatistics.builder()
@@ -122,5 +124,143 @@ public class UserStatisticsServiceImplTest {
         Assertions.assertEquals(0, result.getTotalElements());
     }
 
-    
+    @Test
+    void createInitialStatistics_ShouldCreateNewUserStatsForUser() {
+        ArgumentCaptor<UserStatistics> captor = ArgumentCaptor.forClass(UserStatistics.class);
+
+        when(this.mockUserStatsRepository.saveAndFlush(any(UserStatistics.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        UserStatistics result = this.mockUserStatsService.createInitialStatistics(this.mockUser);
+
+        verify(this.mockUserStatsRepository, times(1)).saveAndFlush(captor.capture());
+        UserStatistics saved = captor.getValue();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(this.mockUser, saved.getUser());
+        Assertions.assertEquals(0, saved.getTotalQuizzes());
+        Assertions.assertEquals(0, saved.getTotalCorrectAnswers());
+        Assertions.assertEquals(0, saved.getMaxScore());
+        Assertions.assertEquals(0, saved.getAverageScore());
+        Assertions.assertFalse(saved.isDeletionWarningSent());
+        Assertions.assertNull(saved.getDeletionWarningSentAt());
+        Assertions.assertFalse(saved.isLastSolvingWarningSent());
+        Assertions.assertNull(saved.getLastSolvingWarningSentAt());
+    }
+
+    @Test
+    void updateUserStatistics_ShouldChangeUserStats() {
+        when(this.mockUserStatsRepository.saveAndFlush(this.mockUserStats)).thenReturn(this.mockUserStats);
+
+        UserStatistics updatedUserStats = this.mockUserStatsService.updateUserStatistics(this.mockUserStats, 3, 5, LocalDateTime.now().plusMinutes(30));
+
+        Assertions.assertEquals(6, updatedUserStats.getTotalQuizzes());
+        Assertions.assertEquals(23, updatedUserStats.getTotalCorrectAnswers());
+        Assertions.assertEquals(30, updatedUserStats.getMaxScore());
+
+        double avgScore = (double) updatedUserStats.getTotalCorrectAnswers() / updatedUserStats.getMaxScore() * 100.00;
+        Assertions.assertEquals(avgScore, updatedUserStats.getAverageScore());
+
+        Assertions.assertNotNull(updatedUserStats.getLastSolvedAt());
+        verify(this.mockUserStatsRepository, times(1)).saveAndFlush(this.mockUserStats);
+    }
+
+    @Test
+    void findInactiveSolvingQuizzesUsersNotWarned_ShouldReturnZero_WhenUserStatsNotFound() {
+        when(this.mockUserStatsRepository.findInactiveSolvingQuizzesUsersNotWarned(any()))
+                .thenReturn(Collections.emptyList());
+
+        List<UserStatistics> result = this.mockUserStatsService.findInactiveSolvingQuizzesUsersNotWarned(any());
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @Test
+    void findInactiveSolvingQuizzesUsersNotWarned_ShouldReturnListUserStats_WhenUsersFound() {
+        when(this.mockUserStatsRepository.findInactiveSolvingQuizzesUsersNotWarned(any()))
+                .thenReturn(List.of(this.mockUserStats));
+
+        List<UserStatistics> result = this.mockUserStatsService.findInactiveSolvingQuizzesUsersNotWarned(any());
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals(this.mockUser, result.get(0).getUser());
+    }
+
+    @Test
+    void findWarnedUsersToResendSolvingWarning_ShouldReturnZero_WhenUserStatsNotFound() {
+        when(this.mockUserStatsRepository.findWarnedUsersToResendSolvingWarning(any()))
+                .thenReturn(Collections.emptyList());
+
+        List<UserStatistics> result = this.mockUserStatsService.findWarnedUsersToResendSolvingWarning(any());
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @Test
+    void findWarnedUsersToResendSolvingWarning_ShouldReturnListUserStats_WhenUsersFound() {
+        when(this.mockUserStatsRepository.findWarnedUsersToResendSolvingWarning(any()))
+                .thenReturn(List.of(this.mockUserStats));
+
+        List<UserStatistics> result = this.mockUserStatsService.findWarnedUsersToResendSolvingWarning(any());
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals(this.mockUser, result.get(0).getUser());
+    }
+
+    @Test
+    void findInactiveLoginUsersWarned_ShouldReturnZero_WhenUserStatsNotFound() {
+        when(this.mockUserStatsRepository.findInactiveLoginUsersWarned(any()))
+                .thenReturn(Collections.emptyList());
+
+        List<User> result = this.mockUserStatsService.findInactiveLoginUsersWarned(any());
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @Test
+    void findInactiveLoginUsersWarned_ShouldReturnListUserStats_WhenUsersFound() {
+        when(this.mockUserStatsRepository.findInactiveLoginUsersWarned(any()))
+                .thenReturn(List.of(this.mockUser));
+
+        List<User> result = this.mockUserStatsService.findInactiveLoginUsersWarned(any());
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals(this.mockUser, result.get(0));
+    }
+
+    @Test
+    void findInactiveNotWarned_ShouldReturnZero_WhenUserStatsNotFound() {
+        when(this.mockUserStatsRepository.findInactiveNotWarned(any()))
+                .thenReturn(Collections.emptyList());
+
+        List<UserStatistics> result = this.mockUserStatsService.findInactiveNotWarned(any());
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @Test
+    void findInactiveNotWarned_ShouldReturnListUserStats_WhenUsersFound() {
+        when(this.mockUserStatsRepository.findInactiveNotWarned(any()))
+                .thenReturn(List.of(this.mockUserStats));
+
+        List<UserStatistics> result = this.mockUserStatsService.findInactiveNotWarned(any());
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals(this.mockUser, result.get(0).getUser());
+    }
+
+    @Test
+    void saveAndFlushUserStatistics_ShouldSaveUserStats() {
+        this.mockUserStatsService.saveAndFlushUserStatistics(this.mockUserStats);
+
+        verify(this.mockUserStatsRepository, times(1)).saveAndFlush(this.mockUserStats);
+    }
 }
