@@ -61,8 +61,7 @@ public class GuestQuizServiceImplTest {
                 .expireAt(LocalDateTime.now().plusMinutes(30))
                 .questions(List.of(
                         QuestionDTO.builder().id(1L).questionText("Q1").options(List.of("A","B")).correctAnswer("A").build(),
-                        QuestionDTO.builder().id(2L).questionText("Q2").options(List.of("A","B")).correctAnswer("B").build()
-                ))
+                        QuestionDTO.builder().id(2L).questionText("Q2").options(List.of("A","B")).correctAnswer("B").build()))
                 .build();
 
         this.submissionDTO = QuizSubmissionDTO.builder()

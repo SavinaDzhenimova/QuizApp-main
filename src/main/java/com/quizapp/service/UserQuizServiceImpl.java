@@ -98,8 +98,6 @@ public class UserQuizServiceImpl extends AbstractQuizHelper implements UserQuizS
         User user = this.userService.getUserByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("Потребителят не е намерен."));
 
-//        Map<Long, String> userAnswers = super.mapUserAnswers(formData);
-
         this.questionStatisticsService.updateOnQuizCompleted(quiz, quizSubmissionDTO.getAnswers());
 
         return this.saveSolvedQuiz(quiz, user, quizSubmissionDTO.getAnswers());
