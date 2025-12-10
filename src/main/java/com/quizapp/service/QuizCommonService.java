@@ -40,6 +40,11 @@ public class QuizCommonService extends AbstractQuizHelper {
     }
 
     public Quiz createQuiz(Long categoryId, int numberOfQuestions) {
+        String categoryName = this.categoryService.getCategoryNameById(categoryId);
+        if (categoryName.isBlank()) {
+            throw new CategoryNotFoundException("Категорията не е намерена.");
+        }
+
         List<QuestionApiDTO> questionApiDTOs = Arrays.asList(this.questionService.makeGetRequestByCategoryId(categoryId));
         if (questionApiDTOs.isEmpty()) {
             throw new NoQuestionsFoundException("Няма налични въпроси в тази категория.");
@@ -49,21 +54,14 @@ public class QuizCommonService extends AbstractQuizHelper {
             throw new NotEnoughQuestionsException("Броят на въпросите налични в тази категория не е достатъчен, за да започнете куиз.");
         }
 
-        String categoryName = this.categoryService.getCategoryNameById(categoryId)
-                .describeConstable()
-                .orElseThrow(() -> new CategoryNotFoundException("Категорията не е намерена."));
-
         Collections.shuffle(questionApiDTOs);
         List<QuestionDTO> questionDTOs = questionApiDTOs.stream()
                 .limit(numberOfQuestions)
                 .map(this.questionService::mapQuestionApiToDTO)
+                .peek(questionDTO -> Collections.shuffle(questionDTO.getOptions()))
+                .peek(questionDTO -> this.questionStatisticsService
+                        .increaseUsedQuestion(questionDTO.getId(), questionDTO.getQuestionText(), categoryId))
                 .toList();
-
-        questionDTOs.forEach(questionDTO -> Collections.shuffle(questionDTO.getOptions()));
-
-        questionDTOs.forEach(questionDTO ->
-                this.questionStatisticsService.increaseUsedQuestion(questionDTO.getId(), questionDTO.getQuestionText(),
-                        categoryId));
 
         String viewToken = UUID.randomUUID().toString();
         Quiz quiz = Quiz.builder()
