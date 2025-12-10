@@ -94,19 +94,6 @@ public class UserQuizServiceImplTest {
                 .options(List.of("A", "B"))
                 .correctAnswer("A")
                 .build();
-
-        QuizDTO quizDTO = QuizDTO.builder()
-                .id(1L)
-                .categoryId(5L)
-                .categoryName("Maths")
-                .correctAnswers(1)
-                .totalQuestions(2)
-                .solvedAt(LocalDateTime.now())
-                .questions(List.of(
-                        QuestionDTO.builder().id(1L).questionText("Q1").options(List.of("A", "B")).correctAnswer("A").build(),
-                        QuestionDTO.builder().id(2L).questionText("Q2").options(List.of("A", "B")).correctAnswer("B").build()))
-                .userAnswers(Map.of(1L, "A", 2L, "X"))
-                .build();
     }
 
     @Test
