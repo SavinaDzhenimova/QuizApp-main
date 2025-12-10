@@ -40,7 +40,8 @@ public class GuestQuizServiceImplTest {
     private CategoryStatisticsService mockCategoryStatsService;
     @Mock
     private QuestionStatisticsService mockQuestionStatsService;
-    @InjectMocks GuestQuizServiceImpl mockGuestQuizService;
+    @InjectMocks
+    private GuestQuizServiceImpl mockGuestQuizService;
 
     private Quiz mockQuiz;
     private QuizSubmissionDTO submissionDTO;
