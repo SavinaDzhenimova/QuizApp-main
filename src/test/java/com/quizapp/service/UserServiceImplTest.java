@@ -4,10 +4,7 @@ import com.quizapp.exception.UserNotFoundException;
 import com.quizapp.model.dto.user.UpdatePasswordDTO;
 import com.quizapp.model.dto.user.UserDTO;
 import com.quizapp.model.dto.user.UserRegisterDTO;
-import com.quizapp.model.entity.Result;
-import com.quizapp.model.entity.Role;
-import com.quizapp.model.entity.User;
-import com.quizapp.model.entity.UserStatistics;
+import com.quizapp.model.entity.*;
 import com.quizapp.model.enums.RoleName;
 import com.quizapp.repository.UserRepository;
 import com.quizapp.service.events.InactiveSolvingQuizzesEvent;
@@ -80,7 +77,12 @@ public class UserServiceImplTest {
                 .password("Password123")
                 .roles(new HashSet<>(Set.of(this.roleUser)))
                 .userStatistics(this.userStatistics)
-                .solvedQuizzes(new ArrayList<>())
+                .solvedQuizzes(List.of(SolvedQuiz.builder()
+                        .id(1L)
+                        .categoryId(5L)
+                        .score(3)
+                        .maxScore(5)
+                        .build()))
                 .build();
 
         this.mockRegisterDTO = UserRegisterDTO.builder()
@@ -119,6 +121,12 @@ public class UserServiceImplTest {
         Assertions.assertNotNull(userDTO.getUserStats());
         Assertions.assertNotNull(userDTO.getSolvedQuizzes());
         Assertions.assertEquals(this.userStatistics.getTotalQuizzes(), userDTO.getUserStats().getTotalQuizzes());
+
+        SolvedQuiz expectedQuiz = this.testUser.getSolvedQuizzes().get(0);
+        Assertions.assertEquals(expectedQuiz.getCategoryId(), userDTO.getSolvedQuizzes().get(0).getCategoryId());
+        Assertions.assertEquals(expectedQuiz.getId(), userDTO.getSolvedQuizzes().get(0).getId());
+        Assertions.assertEquals(expectedQuiz.getScore(), userDTO.getSolvedQuizzes().get(0).getCorrectAnswers());
+        Assertions.assertEquals(expectedQuiz.getMaxScore(), userDTO.getSolvedQuizzes().get(0).getTotalQuestions());
     }
 
     @Test
