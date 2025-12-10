@@ -37,8 +37,6 @@ public class GuestQuizServiceImpl extends AbstractQuizHelper implements GuestQui
     public void evaluateQuiz(QuizSubmissionDTO quizSubmissionDTO) {
         Quiz quiz = super.loadTempQuiz(quizSubmissionDTO.getViewToken());
 
-//        Map<Long, String> userAnswers = super.mapUserAnswers(quizSubmissionDTO.getFormData());
-
         this.questionStatisticsService.updateOnQuizCompleted(quiz, quizSubmissionDTO.getAnswers());
 
         super.removeTempQuiz(quizSubmissionDTO.getViewToken());
