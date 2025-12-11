@@ -35,6 +35,17 @@ public class CronSchedulerTest {
     }
 
     @Test
+    void cleanUpGuestQuizzes_ShouldCallGuestQuizService() {
+        when(this.mockGuestQuizService.deleteExpiredGuestQuizzes())
+                .thenReturn("11.12.2025 16:20");
+
+        this.cronScheduler.cleanUpGuestQuizzes();
+
+        verify(this.mockGuestQuizService, times(1))
+                .deleteExpiredGuestQuizzes();
+    }
+
+    @Test
     void sendDeletionWarningEmails_ShouldCallUserService() {
         when(this.mockUserService.sendInactiveUsersWarnEmail())
                 .thenReturn(24);
