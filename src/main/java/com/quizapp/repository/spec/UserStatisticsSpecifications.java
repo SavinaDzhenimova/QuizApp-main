@@ -10,10 +10,14 @@ import org.springframework.data.jpa.domain.Specification;
 public class UserStatisticsSpecifications {
 
     public static Specification<UserStatistics> hasUsername(String username) {
-        return (root, query, cb) ->
-                username == null || username.isBlank()
-                        ? null
-                        : cb.like(cb.lower(root.get("username")), "%" + username.trim().toLowerCase() + "%");
+        return (root, query, cb) -> {
+            if (username == null || username.isBlank()) {
+                return cb.conjunction();
+            }
+
+            Join<UserStatistics, User> userJoin = root.join("user");
+            return cb.equal(userJoin.get("username"), username);
+        };
     }
 
     public static Specification<UserStatistics> onlyRegularUsers() {

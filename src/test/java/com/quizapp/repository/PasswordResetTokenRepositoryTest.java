@@ -75,7 +75,7 @@ public class PasswordResetTokenRepositoryTest {
                 .password("Password123")
                 .roles(Set.of(userRole))
                 .build();
-        this.userRepository.save(user);
+        User savedUser = this.userRepository.save(user);
 
         this.passwordResetToken.setUser(user);
         this.passwordResetTokenRepo.save(this.passwordResetToken);
@@ -84,7 +84,7 @@ public class PasswordResetTokenRepositoryTest {
 
         assertThat(optionalPasswordResetToken).isPresent();
         assertThat(optionalPasswordResetToken.get().getUser()).isNotNull();
-        assertThat(optionalPasswordResetToken.get().getUser().getId()).isEqualTo(1L);
+        assertThat(optionalPasswordResetToken.get().getUser().getId()).isEqualTo(savedUser.getId());
     }
 
     @Test
