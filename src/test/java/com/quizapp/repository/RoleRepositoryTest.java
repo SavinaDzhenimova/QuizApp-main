@@ -17,11 +17,9 @@ public class RoleRepositoryTest {
     @Autowired
     private RoleRepository roleRepository;
 
-    private Role userRole;
-
     @BeforeEach
     void setUp() {
-        this.userRole = Role.builder()
+        Role userRole = Role.builder()
                 .name(RoleName.USER)
                 .description("Role User")
                 .build();

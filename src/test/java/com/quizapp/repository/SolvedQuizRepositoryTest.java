@@ -27,9 +27,6 @@ public class SolvedQuizRepositoryTest {
     @Autowired
     private RoleRepository roleRepository;
 
-    private SolvedQuiz solvedQuiz1;
-    private SolvedQuiz solvedQuiz2;
-
     @BeforeEach
     void setUp() {
         Role userRole = Role.builder()
@@ -46,19 +43,19 @@ public class SolvedQuizRepositoryTest {
                 .build();
         this.userRepository.save(user);
 
-        this.solvedQuiz1 = SolvedQuiz.builder()
+        SolvedQuiz solvedQuiz1 = SolvedQuiz.builder()
                 .categoryId(5L)
                 .user(user)
                 .solvedAt(LocalDateTime.now().minusDays(1))
                 .build();
-        this.solvedQuizRepository.save(this.solvedQuiz1);
+        this.solvedQuizRepository.save(solvedQuiz1);
 
-        this.solvedQuiz2 = SolvedQuiz.builder()
+        SolvedQuiz solvedQuiz2 = SolvedQuiz.builder()
                 .categoryId(1L)
                 .user(user)
                 .solvedAt(LocalDateTime.now())
                 .build();
-        this.solvedQuizRepository.save(this.solvedQuiz2);
+        this.solvedQuizRepository.save(solvedQuiz2);
     }
 
     @Test

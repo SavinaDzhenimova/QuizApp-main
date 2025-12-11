@@ -21,17 +21,15 @@ public class QuestionStatisticsRepositoryTest {
     @Autowired
     private QuestionStatisticsRepository questionStatisticsRepo;
 
-    private QuestionStatistics questionStatistics;
-
     @BeforeEach
     void setUp() {
-        this.questionStatistics = QuestionStatistics.builder()
+        QuestionStatistics questionStatistics = QuestionStatistics.builder()
                 .questionId(1L)
                 .questionText("Question")
                 .categoryId(5L)
                 .build();
 
-        this.questionStatisticsRepo.save(this.questionStatistics);
+        this.questionStatisticsRepo.save(questionStatistics);
     }
 
     @Test
