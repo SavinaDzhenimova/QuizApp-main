@@ -1,12 +1,14 @@
 package com.quizapp.repository;
 
 import com.quizapp.model.entity.CategoryStatistics;
+import com.quizapp.repository.spec.CategoryStatisticsSpecifications;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Optional;
@@ -52,18 +54,22 @@ public class CategoryStatisticsRepositoryTest {
 
     @Test
     void findAllWithSpecification_ShouldReturnEmptyPage_WhenCategoryStatsNotFound() {
-        Page<CategoryStatistics> page = this.categoryStatsRepo.findAll(
-                (Specification<CategoryStatistics>) (root, query, cb) -> cb.equal(root.get("categoryId"), 5L),
-                PageRequest.of(0, 10));
+        Specification<CategoryStatistics> spec = Specification
+                .allOf(CategoryStatisticsSpecifications.hasCategory(5L));
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<CategoryStatistics> page = this.categoryStatsRepo.findAll(spec, pageable);
 
         assertThat(page).isEmpty();
     }
 
     @Test
     void findAllWithSpecification_ShouldReturnPage_WhenCategoryStatsFound() {
-        Page<CategoryStatistics> page = this.categoryStatsRepo.findAll(
-                (Specification<CategoryStatistics>) (root, query, cb) -> cb.equal(root.get("categoryId"), 1L),
-                PageRequest.of(0, 10));
+        Specification<CategoryStatistics> spec = Specification
+                .allOf(CategoryStatisticsSpecifications.hasCategory(1L));
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<CategoryStatistics> page = this.categoryStatsRepo.findAll(spec, pageable);
 
         assertThat(page).isNotEmpty();
         assertThat(page.getContent().get(0).getCategoryId()).isEqualTo(1L);

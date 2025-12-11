@@ -1,18 +1,16 @@
 package com.quizapp.repository;
 
 import com.quizapp.model.entity.PasswordResetToken;
-import com.quizapp.model.entity.Role;
 import com.quizapp.model.entity.User;
-import com.quizapp.model.enums.RoleName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,23 +18,44 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PasswordResetTokenRepositoryTest {
 
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
+    private TestEntityManager entityManager;
     @Autowired
     private PasswordResetTokenRepository passwordResetTokenRepo;
 
     private PasswordResetToken passwordResetToken;
+    private PasswordResetToken usedToken;
+    private PasswordResetToken expiredToken;
 
     @BeforeEach
     void setUp() {
+        User user = User.builder()
+                .username("user1")
+                .email("user@gmail.com")
+                .password("Password123")
+                .build();
+        this.entityManager.persist(user);
+
         this.passwordResetToken = PasswordResetToken.builder()
                 .token("token123")
+                .user(user)
                 .expiryDate(LocalDateTime.now().plusDays(1))
                 .used(false)
                 .build();
+        this.passwordResetTokenRepo.save(this.passwordResetToken);
 
-        this.passwordResetTokenRepo.save(passwordResetToken);
+        this.usedToken = PasswordResetToken.builder()
+                .token("used")
+                .used(true)
+                .expiryDate(LocalDateTime.now().plusDays(1))
+                .build();
+        this.passwordResetTokenRepo.save(this.usedToken);
+
+        this.expiredToken = PasswordResetToken.builder()
+                .token("expired")
+                .used(false)
+                .expiryDate(LocalDateTime.now().minusDays(1))
+                .build();
+        this.passwordResetTokenRepo.save(this.expiredToken);
     }
 
     @Test
@@ -51,7 +70,7 @@ public class PasswordResetTokenRepositoryTest {
         Optional<PasswordResetToken> optionalPasswordResetToken = this.passwordResetTokenRepo.findByToken("token123");
 
         assertThat(optionalPasswordResetToken).isPresent();
-        assertThat(optionalPasswordResetToken.get().getUser()).isNull();
+        assertThat(optionalPasswordResetToken.get().getUser()).isNotNull();
         assertThat(optionalPasswordResetToken.get().getToken()).isEqualTo("token123");
     }
 
@@ -64,64 +83,23 @@ public class PasswordResetTokenRepositoryTest {
 
     @Test
     void findByUserId_ShouldReturnPasswordResetToken_WhenUserFound() {
-        Role userRole = new Role();
-        userRole.setName(RoleName.USER);
-        userRole.setDescription("User role");
-        this.roleRepository.save(userRole);
-
-        User user = User.builder()
-                .username("user1")
-                .email("user@gmail.com")
-                .password("Password123")
-                .roles(Set.of(userRole))
-                .build();
-        User savedUser = this.userRepository.save(user);
-
-        this.passwordResetToken.setUser(user);
-        this.passwordResetTokenRepo.save(this.passwordResetToken);
-
-        Optional<PasswordResetToken> optionalPasswordResetToken = this.passwordResetTokenRepo.findByUserId(1L);
+        Optional<PasswordResetToken> optionalPasswordResetToken = this.passwordResetTokenRepo
+                .findByUserId(this.passwordResetToken.getUser().getId());
 
         assertThat(optionalPasswordResetToken).isPresent();
         assertThat(optionalPasswordResetToken.get().getUser()).isNotNull();
-        assertThat(optionalPasswordResetToken.get().getUser().getId()).isEqualTo(savedUser.getId());
+        assertThat(optionalPasswordResetToken.get().getUser().getId()).isEqualTo(this.passwordResetToken.getUser().getId());
     }
 
     @Test
-    void deleteExpiredOrUsedTokens_ShouldDeleteToken_WhenUsed() {
-        PasswordResetToken usedToken = PasswordResetToken.builder()
-                .token("used")
-                .used(true)
-                .expiryDate(LocalDateTime.now().plusDays(1))
-                .build();
-        this.passwordResetTokenRepo.save(usedToken);
-
+    void deleteExpiredOrUsedTokens_ShouldDeleteToken_WhenUsedOrExpired() {
         this.passwordResetTokenRepo.deleteExpiredOrUsedTokens(LocalDateTime.now());
 
-        Optional<PasswordResetToken> optionalPasswordResetToken = this.passwordResetTokenRepo.findByToken("used");
         List<PasswordResetToken> tokens = this.passwordResetTokenRepo.findAll();
 
-        assertThat(optionalPasswordResetToken).isEmpty();
+        assertThat(tokens).doesNotContain(this.usedToken);
+        assertThat(tokens).doesNotContain(this.expiredToken);
         assertThat(tokens).hasSize(1);
-        assertThat(tokens.get(0).getToken()).isEqualTo("token123");
-    }
-
-    @Test
-    void deleteExpiredOrUsedTokens_ShouldDeleteToken_WhenExpired() {
-        PasswordResetToken expiredToken = PasswordResetToken.builder()
-                .token("expired")
-                .used(false)
-                .expiryDate(LocalDateTime.now().minusDays(1))
-                .build();
-        this.passwordResetTokenRepo.save(expiredToken);
-
-        this.passwordResetTokenRepo.deleteExpiredOrUsedTokens(LocalDateTime.now());
-
-        Optional<PasswordResetToken> optionalPasswordResetToken = this.passwordResetTokenRepo.findByToken("expired");
-        List<PasswordResetToken> tokens = this.passwordResetTokenRepo.findAll();
-
-        assertThat(optionalPasswordResetToken).isEmpty();
-        assertThat(tokens).hasSize(1);
-        assertThat(tokens.get(0).getToken()).isEqualTo("token123");
+        assertThat(tokens).contains(this.passwordResetToken);
     }
 }
