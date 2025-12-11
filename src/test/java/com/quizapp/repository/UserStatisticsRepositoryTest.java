@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
@@ -110,8 +111,9 @@ public class UserStatisticsRepositoryTest {
         Specification<UserStatistics> spec = Specification
                 .allOf(UserStatisticsSpecifications.hasUsername("missing"))
                 .and(UserStatisticsSpecifications.onlyRegularUsers());
+        Pageable pageable = PageRequest.of(0, 10);
 
-        Page<UserStatistics> page = this.userStatisticsRepo.findAll(spec, PageRequest.of(0, 10));
+        Page<UserStatistics> page = this.userStatisticsRepo.findAll(spec, pageable);
 
         assertThat(page).isEmpty();
     }
@@ -121,11 +123,28 @@ public class UserStatisticsRepositoryTest {
         Specification<UserStatistics> spec = Specification
                 .allOf(UserStatisticsSpecifications.hasUsername(""))
                 .and(UserStatisticsSpecifications.onlyRegularUsers());
+        Pageable pageable = PageRequest.of(0, 10);
 
-        Page<UserStatistics> page = this.userStatisticsRepo.findAll(spec, PageRequest.of(0, 10));
+        Page<UserStatistics> page = this.userStatisticsRepo.findAll(spec, pageable);
 
         assertThat(page).isNotEmpty();
         assertThat(page.getTotalElements()).isEqualTo(1);
         assertThat(page.getContent().get(0).getUser()).isEqualTo(this.user1);
+    }
+
+    @Test
+    void findAll_ShouldReturnUserStatsSortedByLastSolvedAt() {
+        Specification<UserStatistics> spec = Specification
+                .allOf(UserStatisticsSpecifications.sortByLastSolvedAtNullLast());
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<UserStatistics> page = this.userStatisticsRepo.findAll(spec, pageable);
+
+        assertThat(page).isNotEmpty();
+        assertThat(page.getTotalElements()).isEqualTo(2);
+        assertThat(page.getContent().get(0).getLastSolvedAt()).isEqualTo(this.stats1.getLastSolvedAt());
+        assertThat(page.getContent().get(1).getLastSolvedAt()).isEqualTo(this.stats2.getLastSolvedAt());
+        assertThat(page.getContent().get(0).getLastSolvedAt()).isNotNull();
+        assertThat(page.getContent().get(1).getLastSolvedAt()).isNull();
     }
 }

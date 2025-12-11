@@ -56,6 +56,8 @@ public class PasswordResetTokenRepositoryTest {
                 .expiryDate(LocalDateTime.now().minusDays(1))
                 .build();
         this.passwordResetTokenRepo.save(this.expiredToken);
+
+        this.entityManager.flush();
     }
 
     @Test

@@ -42,6 +42,8 @@ public class UserRepositoryTest {
                 .roles(Set.of(adminRole))
                 .build();
         this.userRepository.save(user);
+
+        this.entityManager.flush();
     }
 
     @Test

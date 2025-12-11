@@ -55,6 +55,8 @@ public class SolvedQuizRepositoryTest {
                 .solvedAt(LocalDateTime.now())
                 .build();
         this.solvedQuizRepository.save(solvedQuiz2);
+
+        this.entityManager.flush();
     }
 
     @Test
