@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,9 +24,7 @@ public class SolvedQuizRepositoryTest {
     @Autowired
     private SolvedQuizRepository solvedQuizRepository;
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
+    private TestEntityManager entityManager;
 
     @BeforeEach
     void setUp() {
@@ -33,7 +32,7 @@ public class SolvedQuizRepositoryTest {
                 .name(RoleName.USER)
                 .description("User role")
                 .build();
-        this.roleRepository.save(userRole);
+        this.entityManager.persist(userRole);
 
         User user = User.builder()
                 .username("user1")
@@ -41,7 +40,7 @@ public class SolvedQuizRepositoryTest {
                 .password("Password123")
                 .roles(Set.of(userRole))
                 .build();
-        this.userRepository.save(user);
+        this.entityManager.persist(user);
 
         SolvedQuiz solvedQuiz1 = SolvedQuiz.builder()
                 .categoryId(5L)

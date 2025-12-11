@@ -1,6 +1,5 @@
 package com.quizapp.repository;
 
-import com.quizapp.model.entity.CategoryStatistics;
 import com.quizapp.model.entity.QuestionStatistics;
 import com.quizapp.repository.spec.QuestionStatisticsSpecifications;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Optional;
@@ -52,9 +52,9 @@ public class QuestionStatisticsRepositoryTest {
         Specification<QuestionStatistics> spec = Specification
                 .allOf(QuestionStatisticsSpecifications.hasQuestionText("Question"))
                 .and(QuestionStatisticsSpecifications.hasCategory(1L));
+        Pageable pageable = PageRequest.of(0, 10);
 
-        Page<QuestionStatistics> page = this.questionStatisticsRepo
-                .findAll(spec, PageRequest.of(0, 10));
+        Page<QuestionStatistics> page = this.questionStatisticsRepo.findAll(spec, pageable);
 
         assertThat(page).isEmpty();
     }
@@ -64,9 +64,9 @@ public class QuestionStatisticsRepositoryTest {
         Specification<QuestionStatistics> spec = Specification
                 .allOf(QuestionStatisticsSpecifications.hasQuestionText("Question"))
                 .and(QuestionStatisticsSpecifications.hasCategory(5L));
+        Pageable pageable = PageRequest.of(0, 10);
 
-        Page<QuestionStatistics> page = this.questionStatisticsRepo
-                .findAll(spec, PageRequest.of(0, 10));
+        Page<QuestionStatistics> page = this.questionStatisticsRepo.findAll(spec, pageable);
 
         assertThat(page).isNotEmpty();
         assertThat(page.getContent().get(0).getCategoryId()).isEqualTo(5L);

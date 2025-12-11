@@ -8,8 +8,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Optional;
@@ -23,7 +25,7 @@ public class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private RoleRepository roleRepository;
+    private TestEntityManager entityManager;
 
     @BeforeEach
     void setUp() {
@@ -31,7 +33,7 @@ public class UserRepositoryTest {
                 .name(RoleName.ADMIN)
                 .description("Admin role")
                 .build();
-        this.roleRepository.save(adminRole);
+        this.entityManager.persist(adminRole);
 
         User user = User.builder()
                 .username("user1")
@@ -107,8 +109,9 @@ public class UserRepositoryTest {
         Specification<User> spec = Specification
                 .allOf(UserSpecifications.hasUsername("admin"))
                 .and(UserSpecifications.onlyAdminUsers());
+        Pageable pageable = PageRequest.of(0, 10);
 
-        Page<User> page = this.userRepository.findAll(spec, PageRequest.of(0, 10));
+        Page<User> page = this.userRepository.findAll(spec, pageable);
 
         assertThat(page).isEmpty();
     }
@@ -118,8 +121,9 @@ public class UserRepositoryTest {
         Specification<User> spec = Specification
                 .allOf(UserSpecifications.hasUsername(""))
                 .and(UserSpecifications.onlyAdminUsers());
+        Pageable pageable = PageRequest.of(0, 10);
 
-        Page<User> page = this.userRepository.findAll(spec, PageRequest.of(0, 10));
+        Page<User> page = this.userRepository.findAll(spec, pageable);
 
         assertThat(page).isNotEmpty();
         assertThat(page.getTotalElements()).isEqualTo(1);
