@@ -61,7 +61,8 @@ public class CategoryStatisticsServiceImplTest {
         ArgumentCaptor<Specification<CategoryStatistics>> specCaptor =
                 ArgumentCaptor.forClass(Specification.class);
 
-        when(this.mockCategoryStatisticsRepository.findAll(ArgumentMatchers.<Specification<CategoryStatistics>>any(), eq(pageable))).thenReturn(page);
+        when(this.mockCategoryStatisticsRepository
+                .findAll(ArgumentMatchers.<Specification<CategoryStatistics>>any(), eq(pageable))).thenReturn(page);
 
         Page<CategoryStatsDTO> result = this.mockCategoryStatisticsService.getAllCategoriesFiltered(1L, pageable);
 
