@@ -24,7 +24,7 @@ public class SecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/api/**", "/", "/about-us",
                                 "/contacts", "/report-problem").permitAll()
-                        .requestMatchers("/users/login", "/users/register",
+                        .requestMatchers("/users/login", "/users/login-error", "/users/register",
                                 "/users/forgot-password", "/users/reset-password/**",
                                 "/guest/quizzes/**").anonymous()
                         .requestMatchers("/users/logout", "/users/home").authenticated()
@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin
-                        .loginPage("/users/login").permitAll()
+                        .loginPage("/users/login")
                         .usernameParameter("username")
                         .passwordParameter("password")
                         .defaultSuccessUrl("/users/home", true)
