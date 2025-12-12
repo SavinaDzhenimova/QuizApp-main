@@ -23,9 +23,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/api/**", "/", "/about-us",
-                                "/contacts", "/report-problem",
-                                "/users/login", "/users/register").permitAll()
-                        .requestMatchers("/users/forgot-password", "/users/reset-password/**",
+                                "/contacts", "/report-problem").permitAll()
+                        .requestMatchers("/users/login", "/users/register",
+                                "/users/forgot-password", "/users/reset-password/**",
                                 "/guest/quizzes/**").anonymous()
                         .requestMatchers("/users/logout", "/users/home").authenticated()
                         .requestMatchers("/users/quizzes/**").hasRole("USER")
@@ -34,7 +34,8 @@ public class SecurityConfig {
                                 "/questions", "/questions/add-question", "/statistics/**").hasRole("ADMIN")
                         .requestMatchers("/subscribe",
                                 "/contacts/send-inquiry", "/report-problem/send-report",
-                                "/start-quiz", "/quizzes/start", "/quizzes/quiz/**").access((authentication, context) -> {
+                                "/start-quiz", "/quizzes/start", "/quizzes/quiz/**",
+                                "/subscribe").access((authentication, context) -> {
                                     boolean isAdmin = authentication.get().getAuthorities().stream()
                                             .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
                                     return new AuthorizationDecision(!isAdmin);

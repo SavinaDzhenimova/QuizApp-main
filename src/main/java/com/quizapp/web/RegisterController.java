@@ -23,7 +23,7 @@ public class RegisterController {
     private final UserService userService;
 
     @GetMapping("/register")
-    public ModelAndView register(Model model) {
+    public ModelAndView showRegisterPage(Model model) {
         if (!model.containsAttribute("userRegisterDTO")) {
             model.addAttribute("userRegisterDTO", new UserRegisterDTO());
         }
