@@ -22,7 +22,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/api/**", "/", "/about-us", "/subscribe",
+                        .requestMatchers("/api/**", "/", "/about-us",
                                 "/contacts", "/report-problem",
                                 "/users/login", "/users/register").permitAll()
                         .requestMatchers("/users/forgot-password", "/users/reset-password/**",
@@ -32,7 +32,8 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**",
                                 "/categories", "/categories/add-category",
                                 "/questions", "/questions/add-question", "/statistics/**").hasRole("ADMIN")
-                        .requestMatchers("/contacts/send-inquiry", "/report-problem/send-report",
+                        .requestMatchers("/subscribe",
+                                "/contacts/send-inquiry", "/report-problem/send-report",
                                 "/start-quiz", "/quizzes/start", "/quizzes/quiz/**").access((authentication, context) -> {
                                     boolean isAdmin = authentication.get().getAuthorities().stream()
                                             .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));

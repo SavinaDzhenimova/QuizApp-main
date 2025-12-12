@@ -24,7 +24,6 @@ public class SubscribeController {
     public ModelAndView subscribe(@Valid @ModelAttribute("subscribeDTO")SubscribeDTO subscribeDTO,
                                   BindingResult bindingResult, RedirectAttributes redirectAttributes) {
 
-
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("subscribeDTO", subscribeDTO)
                     .addFlashAttribute("org.springframework.validation.BindingResult.subscribeDTO",
