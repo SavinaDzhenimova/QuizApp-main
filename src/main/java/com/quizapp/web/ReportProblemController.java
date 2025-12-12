@@ -2,7 +2,7 @@ package com.quizapp.web;
 
 import com.quizapp.model.dto.ReportProblemDTO;
 import com.quizapp.model.entity.Result;
-import com.quizapp.service.ReportProblemService;
+import com.quizapp.service.interfaces.ReportProblemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

@@ -3,6 +3,7 @@ package com.quizapp.service;
 import com.quizapp.model.dto.ReportProblemDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.events.ReportProblemEvent;
+import com.quizapp.service.interfaces.ReportProblemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
