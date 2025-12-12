@@ -1,11 +1,10 @@
 package com.quizapp.web;
 
 import com.quizapp.model.dto.ReportProblemDTO;
-import com.quizapp.service.events.ReportProblemEvent;
-import com.quizapp.service.events.SendInquiryEvent;
+import com.quizapp.model.entity.Result;
+import com.quizapp.service.ReportProblemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,7 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 public class ReportProblemController {
 
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final ReportProblemService reportProblemService;
 
     @GetMapping
     public ModelAndView getReportProblemPage(Model model) {
@@ -44,12 +43,13 @@ public class ReportProblemController {
             return new ModelAndView("report-problem");
         }
 
-        this.applicationEventPublisher.publishEvent(
-                new ReportProblemEvent(this, reportProblemDTO.getFullName(), reportProblemDTO.getEmail(),
-                        reportProblemDTO.getProblemType().getDisplayName(), reportProblemDTO.getQuestionIdentifier(),
-                        reportProblemDTO.getDescription()));
+        Result result = this.reportProblemService.sendEmailToReportProblem(reportProblemDTO);
 
-        redirectAttributes.addFlashAttribute("success", "Докладът Ви за проблем беше изпратен успешно!");
+        if (result.isSuccess()) {
+            redirectAttributes.addFlashAttribute("success", result.getMessage());
+        } else {
+            redirectAttributes.addFlashAttribute("error", result.getMessage());
+        }
 
         return new ModelAndView("redirect:/report-problem");
     }
