@@ -1,6 +1,7 @@
 package com.quizapp.web;
 
 import com.quizapp.config.SecurityConfig;
+import com.quizapp.exception.InvalidPasswordResetToken;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.PasswordResetService;
 import org.junit.jupiter.api.Test;
@@ -98,4 +99,44 @@ public class PasswordResetControllerTest {
 
         verify(this.passwordResetService, never()).sendEmailForForgottenPassword(anyString());
     }
+
+    @WithAnonymousUser
+    @Test
+    void showResetPassword_ShouldThrowException_WhenTokenInvalid() throws Exception {
+        when(this.passwordResetService.isValidToken("missing")).thenReturn(false);
+
+        this.mockMvc.perform(get("/users/reset-password")
+                        .param("token", "missing"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("error/invalid-token"))
+                .andExpect(model().attribute("message", "Линкът за смяна на паролата е невалиден или изтекъл."));
+
+        verify(this.passwordResetService, times(1)).isValidToken("missing");
+    }
+
+    @WithAnonymousUser
+    @Test
+    void showResetPassword_ShouldAddPasswordResetTokenDTO_WhenTokenIsValid() throws Exception {
+        when(this.passwordResetService.isValidToken("token123")).thenReturn(true);
+
+        this.mockMvc.perform(get("/users/reset-password")
+                        .param("token", "token123"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("reset-password"))
+                .andExpect(model().attributeExists("token"))
+                .andExpect(model().attributeExists("resetPasswordDTO"))
+                .andExpect(model().attribute("token", "token123"));
+    }
+
+    @WithMockUser(authorities = {"ROLE_USER"})
+    @Test
+    void showResetPassword_ShouldReturnError_WhenUser() throws Exception {
+        when(this.passwordResetService.isValidToken("token123")).thenReturn(true);
+
+        this.mockMvc.perform(get("/users/reset-password")
+                        .param("token", "token123"))
+                .andExpect(status().isForbidden());
+    }
+
+    
 }
