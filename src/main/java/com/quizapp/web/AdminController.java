@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -87,7 +86,6 @@ public class AdminController {
 
     @DeleteMapping("/delete-admin/{id}")
     public ModelAndView deleteAdmin(@PathVariable Long id,
-                                    @AuthenticationPrincipal UserDetails userDetails,
                                     RedirectAttributes redirectAttributes) {
 
         Result result = this.adminService.deleteAdminById(id);
