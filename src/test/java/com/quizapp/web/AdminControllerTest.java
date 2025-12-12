@@ -6,7 +6,6 @@ import com.quizapp.model.dto.user.AdminDTO;
 import com.quizapp.model.dto.user.UserDetailsDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.AdminService;
-import com.quizapp.service.interfaces.CategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,6 +123,13 @@ public class AdminControllerTest {
                 .andExpect(model().attributeExists("addAdminDTO"));
     }
 
+    @WithMockUser(username = "user", authorities = {"ROLE_USER"})
+    @Test
+    void showAddAdminPage_ShouldReturnError_WhenUserIsNotAdmin() throws Exception {
+        this.mockMvc.perform(get("/admin/add-admin"))
+                .andExpect(status().isForbidden());
+    }
+
     @Test
     void showAddAdminPage_ShouldReturnError_WhenBindingFails() throws Exception {
         this.mockMvc.perform(post("/admin/add-admin")
@@ -153,7 +159,7 @@ public class AdminControllerTest {
     }
 
     @Test
-    void showAddAdminPage_ShouldRedirectWithError_WhenAdminNotCreated()  throws Exception {
+    void showAddAdminPage_ShouldRedirectWithError_WhenAdminNotCreated() throws Exception {
         when(this.adminService.addAdmin(any(AddAdminDTO.class)))
                 .thenReturn(new Result(false, "Вече съществува потребител с това потребителско име!"));
 
@@ -165,5 +171,15 @@ public class AdminControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/add-admin"))
                 .andExpect(flash().attribute("error", "Вече съществува потребител с това потребителско име!"));
+    }
+
+    @WithMockUser(username = "user", authorities = {"ROLE_USER"})
+    @Test
+    void showAddAdminPagePost_ShouldReturnError_WhenUserIsNotAdmin() throws Exception {
+        this.mockMvc.perform(post("/admin/add-admin")
+                        .with(csrf())
+                        .param("username", "admin1")
+                        .param("email", "admin1@gmail.com"))
+                .andExpect(status().isForbidden());
     }
 }
