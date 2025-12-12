@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,8 +28,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = AdminController.class)
@@ -183,5 +183,58 @@ public class AdminControllerTest {
                         .param("username", "admin1")
                         .param("email", "admin1@gmail.com"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deleteAdmin_ShouldRedirectWithError_WhenAdminNotFound() throws Exception {
+        when(this.adminService.deleteAdminById(anyLong()))
+                .thenReturn(new Result(false, "Не е намерен админ."));
+
+        this.mockMvc.perform(delete("/admin/delete-admin/2")
+                        .with(csrf())
+                        .with(user(this.loggedUser)))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin"))
+                .andExpect(flash().attributeExists("error"))
+                .andExpect(flash().attribute("error", "Не е намерен админ."));
+
+        verify(this.adminService, times(1)).deleteAdminById(anyLong());
+    }
+
+    @Test
+    void deleteAdmin_ShouldRedirectWithSuccess_WhenAdminFound() throws Exception {
+        when(this.adminService.deleteAdminById(anyLong()))
+                .thenReturn(new Result(true, "Успешно премахнахте админ admin1."));
+
+        this.mockMvc.perform(delete("/admin/delete-admin/2")
+                        .with(csrf())
+                        .with(user(this.loggedUser)))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin"))
+                .andExpect(flash().attributeExists("success"))
+                .andExpect(flash().attribute("success", "Успешно премахнахте админ admin1."));
+
+        verify(this.adminService, times(1)).deleteAdminById(anyLong());
+    }
+
+    @WithMockUser(authorities = {"ROLE_USER"})
+    @Test
+    void deleteAdmin_ShouldReturnError_WhenUser() throws Exception {
+        this.mockMvc.perform(delete("/admin/delete-admin/2")
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+
+        verify(this.adminService, never()).deleteAdminById(anyLong());
+    }
+
+    @WithAnonymousUser
+    @Test
+    void deleteAdmin_ShouldRedirectToLoginPage_WhenAnonymous() throws Exception {
+        this.mockMvc.perform(delete("/admin/delete-admin/2")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/users/login"));
+
+        verify(this.adminService, never()).deleteAdminById(anyLong());
     }
 }
