@@ -10,8 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,8 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = AdminController.class, excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = GlobalController.class)})
+@WebMvcTest(controllers = AdminController.class)
 @Import(SecurityConfig.class)
 public class AdminControllerTest {
 
@@ -43,6 +40,9 @@ public class AdminControllerTest {
 
     @MockitoBean
     private AdminService adminService;
+
+    @MockitoBean
+    private GlobalController globalController;
 
     private UserDetailsDTO loggedUser;
     private AdminDTO adminDTO;
@@ -66,7 +66,7 @@ public class AdminControllerTest {
         this.pageable = PageRequest.of(0, 10);
     }
 
-    @WithMockUser(username = "user", authorities = {"ROLE_USER"})
+    @WithMockUser(authorities = {"ROLE_USER"})
     @Test
     void showAdminsPage_ShouldReturnError_WhenUserIsNotAdmin() throws Exception {
         Page<AdminDTO> page = new PageImpl<>(List.of(this.adminDTO), this.pageable, 1);
@@ -123,7 +123,7 @@ public class AdminControllerTest {
                 .andExpect(model().attributeExists("addAdminDTO"));
     }
 
-    @WithMockUser(username = "user", authorities = {"ROLE_USER"})
+    @WithMockUser(authorities = {"ROLE_USER"})
     @Test
     void showAddAdminPage_ShouldReturnError_WhenUserIsNotAdmin() throws Exception {
         this.mockMvc.perform(get("/admin/add-admin"))
@@ -175,7 +175,7 @@ public class AdminControllerTest {
                 .andExpect(flash().attribute("error", "Вече съществува потребител с това потребителско име!"));
     }
 
-    @WithMockUser(username = "user", authorities = {"ROLE_USER"})
+    @WithMockUser(authorities = {"ROLE_USER"})
     @Test
     void showAddAdminPagePost_ShouldReturnError_WhenUserIsNotAdmin() throws Exception {
         this.mockMvc.perform(post("/admin/add-admin")

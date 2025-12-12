@@ -7,8 +7,6 @@ import com.quizapp.service.interfaces.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -22,8 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = RegisterController.class, excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = GlobalController.class)})
+@WebMvcTest(controllers = RegisterController.class)
 @Import(SecurityConfig.class)
 public class RegisterControllerTest {
 
@@ -32,6 +29,9 @@ public class RegisterControllerTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private GlobalController globalController;
 
     @WithAnonymousUser
     @Test

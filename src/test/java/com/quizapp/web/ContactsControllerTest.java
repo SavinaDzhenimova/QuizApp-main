@@ -7,8 +7,6 @@ import com.quizapp.service.interfaces.ContactsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -21,8 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = ContactsController.class, excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = GlobalController.class)})
+@WebMvcTest(controllers = ContactsController.class)
 @Import(SecurityConfig.class)
 public class ContactsControllerTest {
 
@@ -31,6 +28,9 @@ public class ContactsControllerTest {
 
     @MockitoBean
     private ContactsService contactsService;
+
+    @MockitoBean
+    private GlobalController globalController;
 
     @Test
     void getContactsPage_ShouldReturnModelAndView() throws Exception {

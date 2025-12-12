@@ -7,8 +7,6 @@ import com.quizapp.service.interfaces.SubscribeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -20,8 +18,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = SubscribeController.class, excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = GlobalController.class)})
+@WebMvcTest(controllers = SubscribeController.class)
 @Import(SecurityConfig.class)
 public class SubscribeControllerTest {
 
@@ -30,6 +27,9 @@ public class SubscribeControllerTest {
 
     @MockitoBean
     private SubscribeService subscribeService;
+
+    @MockitoBean
+    private GlobalController globalController;
 
     @WithMockUser(authorities = {"ROLE_USER"})
     @Test
