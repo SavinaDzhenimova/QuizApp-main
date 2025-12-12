@@ -138,7 +138,9 @@ public class AdminControllerTest {
                         .param("username", "")
                         .param("email", ""))
                 .andExpect(status().isOk())
-                .andExpect(view().name("add-admin"));
+                .andExpect(view().name("add-admin"))
+                .andExpect(model().attributeExists("addAdminDTO"))
+                .andExpect(model().attributeExists("org.springframework.validation.BindingResult.addAdminDTO"));
     }
 
     @Test
