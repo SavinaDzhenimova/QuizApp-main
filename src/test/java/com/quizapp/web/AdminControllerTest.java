@@ -1,7 +1,6 @@
 package com.quizapp.web;
 
 import com.quizapp.config.SecurityConfig;
-import com.quizapp.model.dto.category.CategoryPageDTO;
 import com.quizapp.model.dto.user.AddAdminDTO;
 import com.quizapp.model.dto.user.AdminDTO;
 import com.quizapp.model.dto.user.UserDetailsDTO;
@@ -20,6 +19,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -27,8 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -45,9 +44,6 @@ public class AdminControllerTest {
 
     @MockitoBean
     private AdminService adminService;
-
-    @MockitoBean
-    private CategoryService categoryService;
 
     private UserDetailsDTO loggedUser;
     private AdminDTO adminDTO;
@@ -69,6 +65,19 @@ public class AdminControllerTest {
                 .build();
 
         this.pageable = PageRequest.of(0, 10);
+    }
+
+    @WithMockUser(username = "user", authorities = {"ROLE_USER"})
+    @Test
+    void showAdminsPage_ShouldReturnError_WhenUserIsNotAdmin() throws Exception {
+        Page<AdminDTO> page = new PageImpl<>(List.of(this.adminDTO), this.pageable, 1);
+
+        when(this.adminService.getAllAdmins(eq(null), any(Pageable.class))).thenReturn(page);
+
+        this.mockMvc.perform(get("/admin"))
+                .andExpect(status().isForbidden());
+
+        verify(this.adminService, never()).getAllAdmins(eq(null), any(Pageable.class));
     }
 
     @Test
