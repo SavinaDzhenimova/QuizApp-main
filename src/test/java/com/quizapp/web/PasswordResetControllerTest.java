@@ -1,7 +1,7 @@
 package com.quizapp.web;
 
 import com.quizapp.config.SecurityConfig;
-import com.quizapp.exception.InvalidPasswordResetToken;
+import com.quizapp.model.dto.ResetPasswordDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.PasswordResetService;
 import org.junit.jupiter.api.Test;
@@ -123,8 +123,8 @@ public class PasswordResetControllerTest {
                         .param("token", "token123"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("reset-password"))
-                .andExpect(model().attributeExists("token"))
                 .andExpect(model().attributeExists("resetPasswordDTO"))
+                .andExpect(model().attributeExists("token"))
                 .andExpect(model().attribute("token", "token123"));
     }
 
@@ -138,5 +138,69 @@ public class PasswordResetControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    
+    @WithAnonymousUser
+    @Test
+    void handleResetPassword_ShouldReturnError_WhenBindingFails() throws Exception {
+        this.mockMvc.perform(post("/users/reset-password")
+                    .with(csrf())
+                    .param("token", "token123")
+                    .param("password", "")
+                    .param("confirmPassword", ""))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/users/reset-password"))
+                .andExpect(flash().attributeExists("org.springframework.validation.BindingResult.resetPasswordDTO"));
+
+        verify(this.passwordResetService, never()).resetPassword(any(ResetPasswordDTO.class));
+    }
+
+    @WithAnonymousUser
+    @Test
+    void handleResetPassword_ShouldRedirectWithError_WhenDataNotValid() throws Exception {
+        when(this.passwordResetService.resetPassword(any(ResetPasswordDTO.class)))
+                .thenReturn(new Result(false, "Паролите не съвпадат!"));
+
+        this.mockMvc.perform(post("/users/reset-password")
+                        .with(csrf())
+                        .param("token", "token123")
+                        .param("password", "Password123")
+                        .param("confirmPassword", "Password"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/users/reset-password?token=token123"))
+                .andExpect(flash().attributeExists("error"))
+                .andExpect(flash().attribute("error", "Паролите не съвпадат!"));
+
+        verify(this.passwordResetService, times(1)).resetPassword(any(ResetPasswordDTO.class));
+    }
+
+    @WithAnonymousUser
+    @Test
+    void handleResetPassword_ShouldRedirectWithSuccess_WhenDataIsValid() throws Exception {
+        when(this.passwordResetService.resetPassword(any(ResetPasswordDTO.class)))
+                .thenReturn(new Result(true, "Успешно променихте своята парола!"));
+
+        this.mockMvc.perform(post("/users/reset-password")
+                        .with(csrf())
+                        .param("token", "token123")
+                        .param("password", "Password123")
+                        .param("confirmPassword", "Password123"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/users/login"))
+                .andExpect(flash().attributeExists("success"))
+                .andExpect(flash().attribute("success", "Успешно променихте своята парола!"));
+
+        verify(this.passwordResetService, times(1)).resetPassword(any(ResetPasswordDTO.class));
+    }
+
+    @WithMockUser(authorities = {"ROLE_USER"})
+    @Test
+    void handleResetPassword_ShouldReturnError_WhenUser() throws Exception {
+        this.mockMvc.perform(post("/users/reset-password")
+                        .with(csrf())
+                        .param("token", "token123")
+                        .param("password", "Password123")
+                        .param("confirmPassword", "Password123"))
+                .andExpect(status().isForbidden());
+
+        verify(this.passwordResetService, never()).resetPassword(any(ResetPasswordDTO.class));
+    }
 }
