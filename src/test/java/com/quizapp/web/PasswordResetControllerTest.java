@@ -191,6 +191,30 @@ public class PasswordResetControllerTest {
         verify(this.passwordResetService, times(1)).resetPassword(any(ResetPasswordDTO.class));
     }
 
+    @WithAnonymousUser
+    @Test
+    void showResetPassword_ShouldUseFlashAttribute_WhenPresent() throws Exception {
+        ResetPasswordDTO flashedDto = ResetPasswordDTO.builder()
+                .token("token123")
+                .password("Pass1234")
+                .confirmPassword("Pass1234")
+                .build();
+
+        when(this.passwordResetService.isValidToken("token123")).thenReturn(true);
+
+        this.mockMvc.perform(get("/users/reset-password")
+                        .param("token", "token123")
+                        .flashAttr("resetPasswordDTO", flashedDto))
+                .andExpect(status().isOk())
+                .andExpect(view().name("reset-password"))
+                .andExpect(model().attributeExists("resetPasswordDTO"))
+                .andExpect(model().attribute("resetPasswordDTO", flashedDto))
+                .andExpect(model().attributeExists("token"))
+                .andExpect(model().attribute("token", "token123"));
+
+        verify(this.passwordResetService, times(1)).isValidToken("token123");
+    }
+
     @WithMockUser(authorities = {"ROLE_USER"})
     @Test
     void handleResetPassword_ShouldReturnError_WhenUser() throws Exception {
