@@ -2,7 +2,10 @@ package com.quizapp.web;
 
 import com.quizapp.config.SecurityConfig;
 import com.quizapp.model.dto.category.CategoryStatsDTO;
+import com.quizapp.model.dto.question.QuestionStatsDTO;
+import com.quizapp.model.dto.user.UserStatsDTO;
 import com.quizapp.model.enums.CategorySortField;
+import com.quizapp.model.enums.QuestionSortField;
 import com.quizapp.service.interfaces.CategoryStatisticsService;
 import com.quizapp.service.interfaces.QuestionStatisticsService;
 import com.quizapp.service.interfaces.UserStatisticsService;
@@ -46,11 +49,13 @@ public class StatisticsControllerTest {
     @MockitoBean
     private GlobalController globalController;
 
-    private CategoryStatsDTO categoryStatsDTO1;
+    private CategoryStatsDTO categoryStatsDTO;
+    private QuestionStatsDTO questionStatsDTO;
+    private UserStatsDTO userStatsDTO;
 
     @BeforeEach
     void setUp() {
-        this.categoryStatsDTO1 = CategoryStatsDTO.builder()
+        this.categoryStatsDTO = CategoryStatsDTO.builder()
                 .categoryId(1L)
                 .categoryName("Maths")
                 .totalStartedQuizzes(10)
@@ -61,12 +66,22 @@ public class StatisticsControllerTest {
                 .totalCorrectAnswers(33)
                 .averageAccuracy(94.00)
                 .build();
+
+        this.questionStatsDTO = QuestionStatsDTO.builder()
+                .categoryId(1L)
+                .questionId(1L)
+                .categoryName("Maths")
+                .attempts(10)
+                .correctAnswers(9)
+                .accuracy(90.00)
+                .difficulty(10.00)
+                .build();
     }
 
     @WithMockUser(authorities = {"ROLE_ADMIN"})
     @Test
     void showCategoriesStats_ShouldReturnPageCategoryStatsFiltered_WhenDataFound() throws Exception {
-        Page<CategoryStatsDTO> page = new PageImpl<>(List.of(this.categoryStatsDTO1));
+        Page<CategoryStatsDTO> page = new PageImpl<>(List.of(this.categoryStatsDTO));
 
         Sort sort = Sort.by(CategorySortField.TOTAL_STARTED_QUIZZES.getFieldName()).descending();
         Pageable pageable = PageRequest.of(0, 10, sort);
@@ -80,7 +95,7 @@ public class StatisticsControllerTest {
                         .param("sortBy", "TOTAL_STARTED_QUIZZES"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("categories-statistics"))
-                .andExpect(model().attribute("categoriesStats", List.of(this.categoryStatsDTO1)))
+                .andExpect(model().attribute("categoriesStats", List.of(this.categoryStatsDTO)))
                 .andExpect(model().attribute("currentPage", 0))
                 .andExpect(model().attribute("totalPages", 1))
                 .andExpect(model().attribute("totalElements", 1L))
@@ -95,7 +110,7 @@ public class StatisticsControllerTest {
     @WithMockUser(authorities = {"ROLE_ADMIN"})
     @Test
     void showCategoriesStats_ShouldReturnPageCategoryStatsNotFiltered_WhenNoSortBy() throws Exception {
-        Page<CategoryStatsDTO> page = new PageImpl<>(List.of(this.categoryStatsDTO1));
+        Page<CategoryStatsDTO> page = new PageImpl<>(List.of(this.categoryStatsDTO));
 
         Pageable pageable = PageRequest.of(0, 10, Sort.unsorted());
         when(this.categoryStatsService.getAllCategoriesFiltered(anyLong(), eq(pageable)))
@@ -108,7 +123,7 @@ public class StatisticsControllerTest {
                         .param("sortBy", ""))
                 .andExpect(status().isOk())
                 .andExpect(view().name("categories-statistics"))
-                .andExpect(model().attribute("categoriesStats", List.of(this.categoryStatsDTO1)))
+                .andExpect(model().attribute("categoriesStats", List.of(this.categoryStatsDTO)))
                 .andExpect(model().attribute("currentPage", 0))
                 .andExpect(model().attribute("totalPages", 1))
                 .andExpect(model().attribute("totalElements", 1L))
@@ -177,5 +192,127 @@ public class StatisticsControllerTest {
         verify(this.categoryStatsService, never()).getAllCategoriesFiltered(anyLong(), any(Pageable.class));
     }
 
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
+    @Test
+    void showQuestionsStats_ShouldReturnPageQuestionsStatsFiltered_WhenDataFound() throws Exception {
+        Page<QuestionStatsDTO> page = new PageImpl<>(List.of(this.questionStatsDTO));
 
+        Sort sort = Sort.by(QuestionSortField.COMPLETION_RATE.getFieldName()).descending();
+        Pageable pageable = PageRequest.of(0, 10, sort);
+        when(this.questionStatsService.getFilteredQuestionStatistics(anyLong(), anyString(), eq(pageable)))
+                .thenReturn(page);
+
+        this.mockMvc.perform(get("/statistics/questions")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("categoryId", "1")
+                        .param("sortBy", "COMPLETION_RATE")
+                        .param("questionText", "Question"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("questions-statistics"))
+                .andExpect(model().attribute("questionStats", List.of(this.questionStatsDTO)))
+                .andExpect(model().attribute("currentPage", 0))
+                .andExpect(model().attribute("totalPages", 1))
+                .andExpect(model().attribute("totalElements", 1L))
+                .andExpect(model().attribute("size", 1))
+                .andExpect(model().attribute("categoryId", 1L))
+                .andExpect(model().attribute("sortBy", QuestionSortField.COMPLETION_RATE))
+                .andExpect(model().attribute("questionText", "Question"));
+
+        verify(this.questionStatsService, times(1))
+                .getFilteredQuestionStatistics(anyLong(), anyString(), eq(pageable));
+    }
+
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
+    @Test
+    void showQuestionsStats_ShouldReturnPageQuestionStatsNotFiltered_WhenNoSortBy() throws Exception {
+        Page<QuestionStatsDTO> page = new PageImpl<>(List.of(this.questionStatsDTO));
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.unsorted());
+        when(this.questionStatsService.getFilteredQuestionStatistics(anyLong(), anyString(), eq(pageable)))
+                .thenReturn(page);
+
+        this.mockMvc.perform(get("/statistics/questions")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("categoryId", "1")
+                        .param("sortBy", "")
+                        .param("questionText", ""))
+                .andExpect(status().isOk())
+                .andExpect(view().name("questions-statistics"))
+                .andExpect(model().attribute("questionStats", List.of(this.questionStatsDTO)))
+                .andExpect(model().attribute("currentPage", 0))
+                .andExpect(model().attribute("totalPages", 1))
+                .andExpect(model().attribute("totalElements", 1L))
+                .andExpect(model().attribute("size", 1))
+                .andExpect(model().attribute("categoryId", 1L))
+                .andExpect(model().attribute("sortBy", nullValue()))
+                .andExpect(model().attribute("questionText", ""));
+
+        verify(this.questionStatsService, times(1))
+                .getFilteredQuestionStatistics(anyLong(), anyString(), eq(pageable));
+    }
+
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
+    @Test
+    void showQuestionsStats_ShouldReturnEmptyPage_WhenQuestionsNotFound() throws Exception {
+        Page<QuestionStatsDTO> page = new PageImpl<>(Collections.emptyList());
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.unsorted());
+        when(this.questionStatsService.getFilteredQuestionStatistics(anyLong(), anyString(), eq(pageable)))
+                .thenReturn(page);
+
+        this.mockMvc.perform(get("/statistics/questions")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("categoryId", "1")
+                        .param("sortBy", "")
+                        .param("questionText", ""))
+                .andExpect(status().isOk())
+                .andExpect(view().name("questions-statistics"))
+                .andExpect(model().attribute("questionStats", Collections.emptyList()))
+                .andExpect(model().attribute("currentPage", 0))
+                .andExpect(model().attribute("totalPages", 1))
+                .andExpect(model().attribute("totalElements", 0L))
+                .andExpect(model().attribute("size", 0))
+                .andExpect(model().attribute("categoryId", 1L))
+                .andExpect(model().attribute("sortBy", nullValue()))
+                .andExpect(model().attribute("questionText", ""))
+                .andExpect(model().attributeExists("warning"))
+                .andExpect(model().attribute("warning", "Няма намерени статистики за въпроси."));
+
+        verify(this.questionStatsService, times(1))
+                .getFilteredQuestionStatistics(anyLong(), anyString(), eq(pageable));
+    }
+
+    @WithMockUser(authorities = {"ROLE_USER"})
+    @Test
+    void showQuestionsStats_ShouldReturnError_WhenUser() throws Exception {
+        this.mockMvc.perform(get("/statistics/questions")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("categoryId", "1")
+                        .param("sortBy", "COMPLETION_RATE")
+                        .param("questionText", ""))
+                .andExpect(status().isForbidden());
+
+        verify(this.questionStatsService, never())
+                .getFilteredQuestionStatistics(anyLong(), anyString(), any(Pageable.class));
+    }
+
+    @WithAnonymousUser
+    @Test
+    void showQuestionsStats_ShouldRedirectToLoginError_WhenAnonymous() throws Exception {
+        this.mockMvc.perform(get("/statistics/questions")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("categoryId", "1")
+                        .param("sortBy", "COMPLETION_RATE")
+                        .param("questionText", ""))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/users/login"));
+
+        verify(this.questionStatsService, never())
+                .getFilteredQuestionStatistics(anyLong(), anyString(), any(Pageable.class));
+    }
 }
