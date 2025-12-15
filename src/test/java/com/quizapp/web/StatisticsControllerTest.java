@@ -12,12 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.*;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.*;
@@ -43,11 +45,11 @@ public class StatisticsControllerTest {
     @MockitoBean
     private GlobalController globalController;
 
-    private CategoryStatsDTO categoryStatsDTO;
+    private CategoryStatsDTO categoryStatsDTO1;
 
     @BeforeEach
     void setUp() {
-        this.categoryStatsDTO = CategoryStatsDTO.builder()
+        this.categoryStatsDTO1 = CategoryStatsDTO.builder()
                 .categoryId(1L)
                 .categoryName("Maths")
                 .totalStartedQuizzes(10)
@@ -62,8 +64,8 @@ public class StatisticsControllerTest {
 
     @WithMockUser(authorities = {"ROLE_ADMIN"})
     @Test
-    void showCategoriesStats_ShouldReturnPageCategoryStats_WhenDataFound() throws Exception {
-        Page<CategoryStatsDTO> page = new PageImpl<>(List.of(this.categoryStatsDTO));
+    void showCategoriesStats_ShouldReturnPageCategoryStatsFiltered_WhenDataFound() throws Exception {
+        Page<CategoryStatsDTO> page = new PageImpl<>(List.of(this.categoryStatsDTO1));
 
         Sort sort = Sort.by(CategorySortField.TOTAL_STARTED_QUIZZES.getFieldName()).descending();
         Pageable pageable = PageRequest.of(0, 10, sort);
@@ -77,7 +79,7 @@ public class StatisticsControllerTest {
                         .param("sortBy", "TOTAL_STARTED_QUIZZES"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("categories-statistics"))
-                .andExpect(model().attribute("categoriesStats", List.of(this.categoryStatsDTO)))
+                .andExpect(model().attribute("categoriesStats", List.of(this.categoryStatsDTO1)))
                 .andExpect(model().attribute("currentPage", 0))
                 .andExpect(model().attribute("totalPages", 1))
                 .andExpect(model().attribute("totalElements", 1L))
@@ -87,5 +89,60 @@ public class StatisticsControllerTest {
 
         verify(this.categoryStatsService, times(1))
                 .getAllCategoriesFiltered(anyLong(), eq(pageable));
+    }
+
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
+    @Test
+    void showCategoriesStats_ShouldReturnPageCategoryStatsNotFiltered_WhenNoSortBy() throws Exception {
+        Page<CategoryStatsDTO> page = new PageImpl<>(List.of(this.categoryStatsDTO1));
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.unsorted());
+        when(this.categoryStatsService.getAllCategoriesFiltered(anyLong(), eq(pageable)))
+                .thenReturn(page);
+
+        this.mockMvc.perform(get("/statistics/categories")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("categoryId", "1")
+                        .param("sortBy", ""))
+                .andExpect(status().isOk())
+                .andExpect(view().name("categories-statistics"))
+                .andExpect(model().attribute("categoriesStats", List.of(this.categoryStatsDTO1)))
+                .andExpect(model().attribute("currentPage", 0))
+                .andExpect(model().attribute("totalPages", 1))
+                .andExpect(model().attribute("totalElements", 1L))
+                .andExpect(model().attribute("size", 1))
+                .andExpect(model().attribute("categoryId", 1L))
+                .andExpect(model().attribute("sortBy", nullValue()));
+
+        verify(this.categoryStatsService, times(1))
+                .getAllCategoriesFiltered(anyLong(), eq(pageable));
+    }
+
+    @WithMockUser(authorities = {"ROLE_USER"})
+    @Test
+    void showCategoriesStats_ShouldReturnError_WhenUser() throws Exception {
+        this.mockMvc.perform(get("/statistics/categories")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("categoryId", "1")
+                        .param("sortBy", "TOTAL_STARTED_QUIZZES"))
+                .andExpect(status().isForbidden());
+
+        verify(this.categoryStatsService, never()).getAllCategoriesFiltered(anyLong(), any(Pageable.class));
+    }
+
+    @WithAnonymousUser
+    @Test
+    void showCategoriesStats_ShouldRedirectToLoginError_WhenAnonymous() throws Exception {
+        this.mockMvc.perform(get("/statistics/categories")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("categoryId", "1")
+                        .param("sortBy", "TOTAL_STARTED_QUIZZES"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/users/login"));
+
+        verify(this.categoryStatsService, never()).getAllCategoriesFiltered(anyLong(), any(Pageable.class));
     }
 }
