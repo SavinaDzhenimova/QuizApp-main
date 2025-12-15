@@ -3,9 +3,11 @@ package com.quizapp.web;
 import com.quizapp.config.SecurityConfig;
 import com.quizapp.model.dto.category.CategoryStatsDTO;
 import com.quizapp.model.dto.question.QuestionStatsDTO;
+import com.quizapp.model.dto.user.UserStatisticsDTO;
 import com.quizapp.model.dto.user.UserStatsDTO;
 import com.quizapp.model.enums.CategorySortField;
 import com.quizapp.model.enums.QuestionSortField;
+import com.quizapp.model.enums.UserSortField;
 import com.quizapp.service.interfaces.CategoryStatisticsService;
 import com.quizapp.service.interfaces.QuestionStatisticsService;
 import com.quizapp.service.interfaces.UserStatisticsService;
@@ -20,6 +22,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -51,7 +54,7 @@ public class StatisticsControllerTest {
 
     private CategoryStatsDTO categoryStatsDTO;
     private QuestionStatsDTO questionStatsDTO;
-    private UserStatsDTO userStatsDTO;
+    private UserStatisticsDTO userStatisticsDTO;
 
     @BeforeEach
     void setUp() {
@@ -75,6 +78,14 @@ public class StatisticsControllerTest {
                 .correctAnswers(9)
                 .accuracy(90.00)
                 .difficulty(10.00)
+                .build();
+
+        this.userStatisticsDTO = UserStatisticsDTO.builder()
+                .totalQuizzes(10)
+                .maxScore(50)
+                .totalCorrectAnswers(45)
+                .averageScore(90.00)
+                .lastSolvedAt(LocalDateTime.now())
                 .build();
     }
 
@@ -314,5 +325,62 @@ public class StatisticsControllerTest {
 
         verify(this.questionStatsService, never())
                 .getFilteredQuestionStatistics(anyLong(), anyString(), any(Pageable.class));
+    }
+
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
+    @Test
+    void showUserStats_ShouldReturnPageUserStatsFiltered_WhenDataFound() throws Exception {
+        Page<UserStatisticsDTO> page = new PageImpl<>(List.of(this.userStatisticsDTO));
+
+        Sort sort = Sort.by(UserSortField.TOTAL_CORRECT_ANSWERS.getFieldName()).descending();
+        Pageable pageable = PageRequest.of(0, 10, sort);
+        when(this.userStatsService.getUserStatisticsFiltered(anyString(), any(UserSortField.class), eq(pageable)))
+                .thenReturn(page);
+
+        this.mockMvc.perform(get("/statistics/users")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("username", "username")
+                        .param("sortBy", "TOTAL_CORRECT_ANSWERS"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("users-statistics"))
+                .andExpect(model().attribute("userStats", List.of(this.userStatisticsDTO)))
+                .andExpect(model().attribute("currentPage", 0))
+                .andExpect(model().attribute("totalPages", 1))
+                .andExpect(model().attribute("totalElements", 1L))
+                .andExpect(model().attribute("size", 1))
+                .andExpect(model().attribute("username", "username"))
+                .andExpect(model().attribute("sortBy", UserSortField.TOTAL_CORRECT_ANSWERS));
+
+        verify(this.userStatsService, times(1))
+                .getUserStatisticsFiltered(anyString(), any(UserSortField.class), eq(pageable));
+    }
+
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
+    @Test
+    void showUserStats_ShouldReturnPageUserStatsNotFiltered_WhenNoSortBy() throws Exception {
+        Page<UserStatisticsDTO> page = new PageImpl<>(List.of(this.userStatisticsDTO));
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.unsorted());
+        when(this.userStatsService.getUserStatisticsFiltered(anyString(), eq(null), eq(pageable)))
+                .thenReturn(page);
+
+        this.mockMvc.perform(get("/statistics/users")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("username", "")
+                        .param("sortBy", ""))
+                .andExpect(status().isOk())
+                .andExpect(view().name("users-statistics"))
+                .andExpect(model().attribute("userStats", List.of(this.userStatisticsDTO)))
+                .andExpect(model().attribute("currentPage", 0))
+                .andExpect(model().attribute("totalPages", 1))
+                .andExpect(model().attribute("totalElements", 1L))
+                .andExpect(model().attribute("size", 1))
+                .andExpect(model().attribute("username", ""))
+                .andExpect(model().attribute("sortBy", nullValue()));
+
+        verify(this.userStatsService, times(1))
+                .getUserStatisticsFiltered(anyString(), eq(null), eq(pageable));
     }
 }
