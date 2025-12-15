@@ -17,6 +17,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.nullValue;
@@ -119,6 +120,36 @@ public class StatisticsControllerTest {
                 .getAllCategoriesFiltered(anyLong(), eq(pageable));
     }
 
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
+    @Test
+    void showCategoriesStats_ShouldReturnEmptyPage_WhenCategoriesNotFound() throws Exception {
+        Page<CategoryStatsDTO> page = new PageImpl<>(Collections.emptyList());
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.unsorted());
+        when(this.categoryStatsService.getAllCategoriesFiltered(anyLong(), eq(pageable)))
+                .thenReturn(page);
+
+        this.mockMvc.perform(get("/statistics/categories")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("categoryId", "1")
+                        .param("sortBy", ""))
+                .andExpect(status().isOk())
+                .andExpect(view().name("categories-statistics"))
+                .andExpect(model().attribute("categoriesStats", Collections.emptyList()))
+                .andExpect(model().attribute("currentPage", 0))
+                .andExpect(model().attribute("totalPages", 1))
+                .andExpect(model().attribute("totalElements", 0L))
+                .andExpect(model().attribute("size", 0))
+                .andExpect(model().attribute("categoryId", 1L))
+                .andExpect(model().attribute("sortBy", nullValue()))
+                .andExpect(model().attributeExists("warning"))
+                .andExpect(model().attribute("warning", "Няма намерени статистики за категории."));
+
+        verify(this.categoryStatsService, times(1))
+                .getAllCategoriesFiltered(anyLong(), eq(pageable));
+    }
+
     @WithMockUser(authorities = {"ROLE_USER"})
     @Test
     void showCategoriesStats_ShouldReturnError_WhenUser() throws Exception {
@@ -145,4 +176,6 @@ public class StatisticsControllerTest {
 
         verify(this.categoryStatsService, never()).getAllCategoriesFiltered(anyLong(), any(Pageable.class));
     }
+
+
 }
