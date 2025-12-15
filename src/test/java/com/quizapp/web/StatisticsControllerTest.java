@@ -4,7 +4,6 @@ import com.quizapp.config.SecurityConfig;
 import com.quizapp.model.dto.category.CategoryStatsDTO;
 import com.quizapp.model.dto.question.QuestionStatsDTO;
 import com.quizapp.model.dto.user.UserStatisticsDTO;
-import com.quizapp.model.dto.user.UserStatsDTO;
 import com.quizapp.model.enums.CategorySortField;
 import com.quizapp.model.enums.QuestionSortField;
 import com.quizapp.model.enums.UserSortField;
@@ -358,6 +357,33 @@ public class StatisticsControllerTest {
 
     @WithMockUser(authorities = {"ROLE_ADMIN"})
     @Test
+    void showUserStats_ShouldReturnPageUserStatsFiltered_WhenSortingByLastSolvedAt() throws Exception {
+        Page<UserStatisticsDTO> page = new PageImpl<>(List.of(this.userStatisticsDTO));
+
+        when(this.userStatsService.getUserStatisticsFiltered(anyString(), any(UserSortField.class), any(Pageable.class)))
+                .thenReturn(page);
+
+        this.mockMvc.perform(get("/statistics/users")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("username", "username")
+                        .param("sortBy", "LAST_SOLVED_AT"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("users-statistics"))
+                .andExpect(model().attribute("userStats", List.of(this.userStatisticsDTO)))
+                .andExpect(model().attribute("currentPage", 0))
+                .andExpect(model().attribute("totalPages", 1))
+                .andExpect(model().attribute("totalElements", 1L))
+                .andExpect(model().attribute("size", 1))
+                .andExpect(model().attribute("username", "username"))
+                .andExpect(model().attribute("sortBy", UserSortField.LAST_SOLVED_AT));
+
+        verify(this.userStatsService, times(1))
+                .getUserStatisticsFiltered(anyString(), any(UserSortField.class), any(Pageable.class));
+    }
+
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
+    @Test
     void showUserStats_ShouldReturnPageUserStatsNotFiltered_WhenNoSortBy() throws Exception {
         Page<UserStatisticsDTO> page = new PageImpl<>(List.of(this.userStatisticsDTO));
 
@@ -382,5 +408,64 @@ public class StatisticsControllerTest {
 
         verify(this.userStatsService, times(1))
                 .getUserStatisticsFiltered(anyString(), eq(null), eq(pageable));
+    }
+
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
+    @Test
+    void showUserStats_ShouldReturnEmptyPage_WhenUsersNotFound() throws Exception {
+        Page<UserStatisticsDTO> page = new PageImpl<>(Collections.emptyList());
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.unsorted());
+        when(this.userStatsService.getUserStatisticsFiltered(anyString(), eq(null), eq(pageable)))
+                .thenReturn(page);
+
+        this.mockMvc.perform(get("/statistics/users")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("username", "")
+                        .param("sortBy", ""))
+                .andExpect(status().isOk())
+                .andExpect(view().name("users-statistics"))
+                .andExpect(model().attribute("userStats", Collections.emptyList()))
+                .andExpect(model().attribute("currentPage", 0))
+                .andExpect(model().attribute("totalPages", 1))
+                .andExpect(model().attribute("totalElements", 0L))
+                .andExpect(model().attribute("size", 0))
+                .andExpect(model().attribute("username", ""))
+                .andExpect(model().attribute("sortBy", nullValue()))
+                .andExpect(model().attributeExists("warning"))
+                .andExpect(model().attribute("warning", "Няма намерени статистики за потребители."));
+
+        verify(this.userStatsService, times(1))
+                .getUserStatisticsFiltered(anyString(), eq(null), eq(pageable));
+    }
+
+    @WithMockUser(authorities = {"ROLE_USER"})
+    @Test
+    void showUsersStats_ShouldReturnError_WhenUser() throws Exception {
+        this.mockMvc.perform(get("/statistics/users")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("username", "")
+                        .param("sortBy", ""))
+                .andExpect(status().isForbidden());
+
+        verify(this.userStatsService, never())
+                .getUserStatisticsFiltered(anyString(), any(UserSortField.class), any(Pageable.class));
+    }
+
+    @WithAnonymousUser
+    @Test
+    void showUsersStats_ShouldRedirectToLoginError_WhenAnonymous() throws Exception {
+        this.mockMvc.perform(get("/statistics/users")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("username", "")
+                        .param("sortBy", ""))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/users/login"));
+
+        verify(this.userStatsService, never())
+                .getUserStatisticsFiltered(anyString(), any(UserSortField.class), any(Pageable.class));
     }
 }
