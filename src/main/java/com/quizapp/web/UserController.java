@@ -3,6 +3,7 @@ package com.quizapp.web;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.user.UpdatePasswordDTO;
 import com.quizapp.model.dto.user.UserDTO;
+import com.quizapp.model.dto.user.UserDetailsDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.UserQuizService;
 import com.quizapp.service.interfaces.UserService;
@@ -24,13 +25,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class UserController {
 
     private final UserService userService;
-    private final UserQuizService solvedQuizService;
+    private final UserQuizService userQuizService;
 
     @GetMapping("/home")
-    public ModelAndView showHomePage(@AuthenticationPrincipal UserDetails userDetails) {
+    public ModelAndView showHomePage(@AuthenticationPrincipal UserDetailsDTO userDetailsDTO) {
         ModelAndView modelAndView = new ModelAndView("home");
 
-        UserDTO userDTO = this.userService.getUserInfo(userDetails.getUsername());
+        UserDTO userDTO = this.userService.getUserInfo(userDetailsDTO.getUsername());
 
         modelAndView.addObject("user", userDTO);
         modelAndView.addObject("userStats", userDTO.getUserStats());
@@ -43,12 +44,12 @@ public class UserController {
     }
 
     @GetMapping("/quizzes")
-    public ModelAndView viewUserQuizzes(@AuthenticationPrincipal UserDetails userDetails,
+    public ModelAndView viewUserQuizzes(@AuthenticationPrincipal UserDetailsDTO userDetailsDTO,
                                         @RequestParam(defaultValue = "0") int page) {
 
         int pageSize = 5;
-        Page<QuizDTO> quizPage = this.solvedQuizService
-                .getSolvedQuizzesByUsername(userDetails.getUsername(), page, pageSize);
+        Page<QuizDTO> quizPage = this.userQuizService
+                .getSolvedQuizzesByUsername(userDetailsDTO.getUsername(), page, pageSize);
 
         ModelAndView modelAndView = new ModelAndView("quizzes");
 
@@ -75,7 +76,7 @@ public class UserController {
     @PostMapping("/update-password")
     public ModelAndView showUpdatePasswordPage(@Valid @ModelAttribute("updatePasswordDTO") UpdatePasswordDTO updatePasswordDTO,
                                                BindingResult bindingResult, RedirectAttributes redirectAttributes,
-                                               @AuthenticationPrincipal UserDetails userDetails) {
+                                               @AuthenticationPrincipal UserDetailsDTO userDetailsDTO) {
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("updatePasswordDTO", updatePasswordDTO)
@@ -85,7 +86,7 @@ public class UserController {
             return new ModelAndView("update-password");
         }
 
-        Result result = this.userService.updatePassword(userDetails.getUsername(), updatePasswordDTO);
+        Result result = this.userService.updatePassword(userDetailsDTO.getUsername(), updatePasswordDTO);
 
         if (result.isSuccess()) {
             redirectAttributes.addFlashAttribute("success", result.getMessage());
