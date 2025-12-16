@@ -34,10 +34,16 @@ public class UserController {
         UserDTO userDTO = this.userService.getUserInfo(userDetailsDTO.getUsername());
 
         modelAndView.addObject("user", userDTO);
-        modelAndView.addObject("userStats", userDTO.getUserStats());
 
-        if (userDTO.getSolvedQuizzes().isEmpty()) {
-            modelAndView.addObject("warning", "Все още нямате решени куизове.");
+        boolean isUser = userDetailsDTO.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_USER"));
+
+        if (isUser) {
+            modelAndView.addObject("userStats", userDTO.getUserStats());
+
+            if (userDTO.getSolvedQuizzes().isEmpty()) {
+                modelAndView.addObject("warning", "Все още нямате решени куизове.");
+            }
         }
 
         return modelAndView;
