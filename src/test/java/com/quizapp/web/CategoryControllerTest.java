@@ -1,6 +1,7 @@
 package com.quizapp.web;
 
 import com.quizapp.config.SecurityConfig;
+import com.quizapp.model.dto.category.AddCategoryDTO;
 import com.quizapp.model.dto.category.CategoryDTO;
 import com.quizapp.model.dto.category.CategoryPageDTO;
 import com.quizapp.model.dto.category.UpdateCategoryDTO;
@@ -324,5 +325,86 @@ public class CategoryControllerTest {
         this.mockMvc.perform(get("/categories/add-category"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("**/users/login"));
+    }
+
+    @Test
+    void addCategory_ShouldReturnError_WhenBindingFails() throws Exception {
+        this.mockMvc.perform(post("/categories/add-category")
+                        .with(csrf())
+                        .with(user(this.admin))
+                        .param("name", "")
+                        .param("description", ""))
+                .andExpect(status().isOk())
+                .andExpect(view().name("add-category"))
+                .andExpect(model().attributeExists("addCategoryDTO"))
+                .andExpect(model().attributeExists("org.springframework.validation.BindingResult.addCategoryDTO"));
+
+        verify(this.categoryService, never())
+                .addCategory(any(AddCategoryDTO.class));
+    }
+
+    @Test
+    void addCategory_ShouldRedirectWithError_WhenDataIsInvalid() throws Exception {
+        when(this.categoryService.addCategory(any(AddCategoryDTO.class)))
+                .thenReturn(new Result(false, "Категорията не можа да бъде добавена."));
+
+        this.mockMvc.perform(post("/categories/add-category")
+                        .with(csrf())
+                        .with(user(this.admin))
+                        .param("name", "Mathematics")
+                        .param("description", "Description"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/categories/add-category"))
+                .andExpect(flash().attributeExists("error"))
+                .andExpect(flash().attribute("error", "Категорията не можа да бъде добавена."));
+
+        verify(this.categoryService, times(1))
+                .addCategory(any(AddCategoryDTO.class));
+    }
+
+    @Test
+    void addCategory_ShouldRedirectWithSuccess_WhenDataIsInvalid() throws Exception {
+        when(this.categoryService.addCategory(any(AddCategoryDTO.class)))
+                .thenReturn(new Result(true, "Успешно добавихте категория Mathematics."));
+
+        this.mockMvc.perform(post("/categories/add-category")
+                        .with(csrf())
+                        .with(user(this.admin))
+                        .param("name", "Mathematics")
+                        .param("description", "Description"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/categories/add-category"))
+                .andExpect(flash().attributeExists("success"))
+                .andExpect(flash().attribute("success", "Успешно добавихте категория Mathematics."));
+
+        verify(this.categoryService, times(1))
+                .addCategory(any(AddCategoryDTO.class));
+    }
+
+    @Test
+    void addCategory_ShouldReturnError_WhenUser() throws Exception {
+        this.mockMvc.perform(post("/categories/add-category")
+                        .with(csrf())
+                        .with(user(this.user))
+                        .param("name", "Mathematics")
+                        .param("description", "Description"))
+                .andExpect(status().isForbidden());
+
+        verify(this.categoryService, never())
+                .addCategory(any(AddCategoryDTO.class));
+    }
+
+    @WithAnonymousUser
+    @Test
+    void addCategory_ShouldReturnError_WhenAnonymousUser() throws Exception {
+        this.mockMvc.perform(post("/categories/add-category")
+                        .with(csrf())
+                        .param("name", "Mathematics")
+                        .param("description", "Description"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/users/login"));
+
+        verify(this.categoryService, never())
+                .addCategory(any(AddCategoryDTO.class));
     }
 }
