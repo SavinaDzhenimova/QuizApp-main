@@ -4,6 +4,7 @@ import com.quizapp.config.SecurityConfig;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.user.UserDTO;
 import com.quizapp.model.dto.user.UserDetailsDTO;
+import com.quizapp.model.dto.user.UserStatisticsDTO;
 import com.quizapp.model.dto.user.UserStatsDTO;
 import com.quizapp.service.interfaces.UserQuizService;
 import com.quizapp.service.interfaces.UserService;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -19,6 +22,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import static org.mockito.Mockito.*;
@@ -44,7 +49,9 @@ public class UserControllerTest {
     private GlobalController globalController;
 
     private UserDetailsDTO loggedUser;
+    private UserDetailsDTO admin;
     private UserDTO userDTO;
+    private UserDTO adminDTO;
     private UserStatsDTO userStatsDTO;
 
     @BeforeEach
@@ -69,6 +76,18 @@ public class UserControllerTest {
                 .email("user@gmail.com")
                 .userStats(this.userStatsDTO)
                 .solvedQuizzes(new ArrayList<>())
+                .build();
+
+        this.admin = UserDetailsDTO.builder()
+                .username("admin")
+                .email("admin@gmail.com")
+                .authorities(Set.of(new SimpleGrantedAuthority("ROLE_ADMIN")))
+                .build();
+
+        this.adminDTO = UserDTO.builder()
+                .id(1L)
+                .username("user")
+                .email("user@gmail.com")
                 .build();
     }
 
@@ -124,30 +143,85 @@ public class UserControllerTest {
 
     @Test
     void showHomePage_ShouldReturnUserInfoForHomePageAndAddWarningMessage_WhenAdmin() throws Exception {
-        UserDetailsDTO admin = UserDetailsDTO.builder()
-                .username("admin")
-                .email("admin@gmail.com")
-                .authorities(Set.of(new SimpleGrantedAuthority("ROLE_ADMIN")))
-                .build();
-
-        UserDTO adminDTO = UserDTO.builder()
-                .id(1L)
-                .username("user")
-                .email("user@gmail.com")
-                .build();
-
         when(this.userService.getUserInfo("admin"))
-                .thenReturn(adminDTO);
+                .thenReturn(this.adminDTO);
 
         this.mockMvc.perform(get("/users/home")
-                        .with(user(admin)))
+                        .with(user(this.admin)))
                 .andExpect(status().isOk())
                 .andExpect(view().name("home"))
                 .andExpect(model().attributeExists("user"))
-                .andExpect(model().attribute("user", adminDTO))
+                .andExpect(model().attribute("user", this.adminDTO))
                 .andExpect(model().attributeDoesNotExist("userStats"))
                 .andExpect(model().attributeDoesNotExist("warning"));
 
         verify(this.userService, times(1)).getUserInfo("admin");
+    }
+
+    @Test
+    void viewUserQuizzes_ShouldReturnEmptyPage_WhenQuizzesNotFound() throws Exception {
+        when(this.userQuizService.getSolvedQuizzesByUsername(anyString(), anyInt(), anyInt()))
+                .thenReturn(Page.empty());
+
+        this.mockMvc.perform(get("/users/quizzes")
+                        .with(user(this.loggedUser))
+                        .param("page", "0")
+                        .param("size", "5"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("quizzes"))
+                .andExpect(model().attributeExists("warning"))
+                .andExpect(model().attribute("warning", "Все още нямате решени куизове."));
+
+        verify(this.userQuizService, times(1))
+                .getSolvedQuizzesByUsername(anyString(), anyInt(), anyInt());
+    }
+
+    @Test
+    void viewUserQuizzes_ShouldReturnQuizzesPage_WhenQuizzesFound() throws Exception {
+        QuizDTO quizDTO = QuizDTO.builder().id(1L).categoryId(5L).build();
+        Page<QuizDTO> page = new PageImpl<>(List.of(quizDTO));
+
+        when(this.userQuizService.getSolvedQuizzesByUsername(anyString(), anyInt(), anyInt()))
+                .thenReturn(page);
+
+        this.mockMvc.perform(get("/users/quizzes")
+                        .with(user(this.loggedUser))
+                        .param("page", "0")
+                        .param("size", "5"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("quizzes"))
+                .andExpect(model().attributeDoesNotExist("warning"))
+                .andExpect(model().attributeExists("quizzes"))
+                .andExpect(model().attribute("quizzes", page.getContent()))
+                .andExpect(model().attribute("currentPage", 0))
+                .andExpect(model().attribute("totalPages", 1));
+
+        verify(this.userQuizService, times(1))
+                .getSolvedQuizzesByUsername(anyString(), anyInt(), anyInt());
+    }
+
+    @Test
+    void viewUserQuizzes_ShouldReturnError_WhenAdmin() throws Exception {
+        this.mockMvc.perform(get("/users/quizzes")
+                        .with(user(this.admin))
+                        .param("page", "0")
+                        .param("size", "5"))
+                .andExpect(status().isForbidden());
+
+        verify(this.userQuizService, never())
+                .getSolvedQuizzesByUsername(anyString(), anyInt(), anyInt());
+    }
+
+    @WithAnonymousUser
+    @Test
+    void viewUserQuizzes_ShouldReturnError_WhenAnonymousUser() throws Exception {
+        this.mockMvc.perform(get("/users/quizzes")
+                        .param("page", "0")
+                        .param("size", "5"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/users/login"));
+
+        verify(this.userQuizService, never())
+                .getSolvedQuizzesByUsername(anyString(), anyInt(), anyInt());
     }
 }

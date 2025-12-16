@@ -51,11 +51,11 @@ public class UserController {
 
     @GetMapping("/quizzes")
     public ModelAndView viewUserQuizzes(@AuthenticationPrincipal UserDetailsDTO userDetailsDTO,
-                                        @RequestParam(defaultValue = "0") int page) {
+                                        @RequestParam(defaultValue = "0") int page,
+                                        @RequestParam(defaultValue = "5") int size) {
 
-        int pageSize = 5;
         Page<QuizDTO> quizPage = this.userQuizService
-                .getSolvedQuizzesByUsername(userDetailsDTO.getUsername(), page, pageSize);
+                .getSolvedQuizzesByUsername(userDetailsDTO.getUsername(), page, size);
 
         ModelAndView modelAndView = new ModelAndView("quizzes");
 
