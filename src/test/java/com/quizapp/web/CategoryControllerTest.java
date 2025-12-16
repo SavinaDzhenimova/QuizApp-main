@@ -301,4 +301,28 @@ public class CategoryControllerTest {
         verify(this.categoryService, never())
                 .getAllCategories("", 0, 100);
     }
+
+    @Test
+    void showAddCategoryPage_ShouldReturnAddCategoryPage_WhenAdmin() throws Exception {
+        this.mockMvc.perform(get("/categories/add-category")
+                        .with(user(this.admin)))
+                .andExpect(status().isOk())
+                .andExpect(view().name("add-category"))
+                .andExpect(model().attributeExists("addCategoryDTO"));
+    }
+
+    @Test
+    void showAddCategoryPage_ShouldReturnAddCategoryPage_WhenUser() throws Exception {
+        this.mockMvc.perform(get("/categories/add-category")
+                        .with(user(this.user)))
+                .andExpect(status().isForbidden());
+    }
+
+    @WithAnonymousUser
+    @Test
+    void showAddCategoryPage_ShouldReturnAddCategoryPage_WhenAnonymousUser() throws Exception {
+        this.mockMvc.perform(get("/categories/add-category"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/users/login"));
+    }
 }
