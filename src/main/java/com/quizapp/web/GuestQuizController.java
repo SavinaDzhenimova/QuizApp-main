@@ -1,5 +1,6 @@
 package com.quizapp.web;
 
+import com.quizapp.exception.QuizNotFoundException;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.dto.quiz.QuizSubmissionDTO;
