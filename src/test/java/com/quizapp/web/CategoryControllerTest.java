@@ -244,4 +244,61 @@ public class CategoryControllerTest {
         verify(this.categoryService, never())
                 .updateCategory(eq(1L), any(UpdateCategoryDTO.class));
     }
+
+    @Test
+    void showCategoriesPage_ShouldReturnCategories_WhenDataFoundAndUser() throws Exception {
+        CategoryPageDTO<CategoryDTO> page = new CategoryPageDTO<>(List.of(this.categoryDTO));
+        page.setTotalPages(1);
+        page.setTotalElements(1);
+        page.setSize(100);
+
+        when(this.categoryService.getAllCategories("", 0, 100))
+                .thenReturn(page);
+
+        this.mockMvc.perform(get("/start-quiz")
+                        .with(user(this.user))
+                        .param("categoryName", ""))
+                .andExpect(status().isOk())
+                .andExpect(view().name("start-quiz"))
+                .andExpect(model().attributeExists("categories"))
+                .andExpect(model().attribute("categories", List.of(this.categoryDTO)))
+                .andExpect(model().attribute("categoryName", ""));
+
+        verify(this.categoryService, times(1))
+                .getAllCategories("", 0, 100);
+    }
+
+    @WithAnonymousUser
+    @Test
+    void showCategoriesPage_ShouldReturnCategories_WhenDataFoundAndAnonymousUser() throws Exception {
+        CategoryPageDTO<CategoryDTO> page = new CategoryPageDTO<>(List.of(this.categoryDTO));
+        page.setTotalPages(1);
+        page.setTotalElements(1);
+        page.setSize(100);
+
+        when(this.categoryService.getAllCategories("", 0, 100))
+                .thenReturn(page);
+
+        this.mockMvc.perform(get("/start-quiz")
+                        .param("categoryName", ""))
+                .andExpect(status().isOk())
+                .andExpect(view().name("start-quiz"))
+                .andExpect(model().attributeExists("categories"))
+                .andExpect(model().attribute("categories", List.of(this.categoryDTO)))
+                .andExpect(model().attribute("categoryName", ""));
+
+        verify(this.categoryService, times(1))
+                .getAllCategories("", 0, 100);
+    }
+
+    @Test
+    void showCategoriesPage_ShouldReturnError_WhenAdmin() throws Exception {
+        this.mockMvc.perform(get("/start-quiz")
+                        .with(user(this.admin))
+                        .param("categoryName", ""))
+                .andExpect(status().isForbidden());
+
+        verify(this.categoryService, never())
+                .getAllCategories("", 0, 100);
+    }
 }
