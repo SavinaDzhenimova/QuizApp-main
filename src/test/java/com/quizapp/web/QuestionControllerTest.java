@@ -1,6 +1,7 @@
 package com.quizapp.web;
 
 import com.quizapp.config.SecurityConfig;
+import com.quizapp.model.dto.question.AddQuestionDTO;
 import com.quizapp.model.dto.question.QuestionDTO;
 import com.quizapp.model.dto.question.QuestionPageDTO;
 import com.quizapp.model.dto.question.UpdateQuestionDTO;
@@ -294,7 +295,93 @@ public class QuestionControllerTest {
     }
 
     @Test
-    void addQuestion_ShouldReturnError_WhenBindingFails() {
-        
+    void addQuestion_ShouldReturnError_WhenBindingFails() throws Exception {
+        this.mockMvc.perform(post("/questions/add-question")
+                        .with(csrf())
+                        .with(user(this.admin))
+                        .param("questionText", "")
+                        .param("categoryId", "")
+                        .param("correctAnswer", "")
+                        .param("options", ""))
+                .andExpect(status().isOk())
+                .andExpect(view().name("add-question"))
+                .andExpect(model().attributeExists("addQuestionDTO"))
+                .andExpect(model().attributeExists("org.springframework.validation.BindingResult.addQuestionDTO"));
+
+        verify(this.questionService, never())
+                .addQuestion(any(AddQuestionDTO.class));
+    }
+
+    @Test
+    void addQuestion_ShouldRedirectWithError_WhenDataIsInvalid() throws Exception {
+        when(this.questionService.addQuestion(any(AddQuestionDTO.class)))
+                .thenReturn(new Result(false, "Грешка при добавяне на въпрос."));
+
+        this.mockMvc.perform(post("/questions/add-question")
+                        .with(csrf())
+                        .with(user(this.admin))
+                        .param("questionText", "Question?")
+                        .param("categoryId", "1")
+                        .param("correctAnswer", "B")
+                        .param("options", "A, B, C, D"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/questions/add-question"))
+                .andExpect(flash().attributeExists("error"))
+                .andExpect(flash().attribute("error", "Грешка при добавяне на въпрос."));
+
+        verify(this.questionService, times(1))
+                .addQuestion(any(AddQuestionDTO.class));
+    }
+
+    @Test
+    void addQuestion_ShouldRedirectWithSuccess_WhenDataIsValid() throws Exception {
+        when(this.questionService.addQuestion(any(AddQuestionDTO.class)))
+                .thenReturn(new Result(true, "Успешно добавихте въпрос."));
+
+        this.mockMvc.perform(post("/questions/add-question")
+                        .with(csrf())
+                        .with(user(this.admin))
+                        .param("questionText", "Question?")
+                        .param("categoryId", "1")
+                        .param("correctAnswer", "B")
+                        .param("options", "A, B, C, D"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/questions/add-question"))
+                .andExpect(flash().attributeExists("success"))
+                .andExpect(flash().attribute("success", "Успешно добавихте въпрос."));
+
+        verify(this.questionService, times(1))
+                .addQuestion(any(AddQuestionDTO.class));
+    }
+
+    @Test
+    void addQuestion_ShouldReturnError_WhenUser() throws Exception {
+        this.mockMvc.perform(post("/questions/add-question")
+                        .with(csrf())
+                        .with(user(this.user))
+                        .param("questionText", "Question?")
+                        .param("categoryId", "1")
+                        .param("correctAnswer", "B")
+                        .param("options", "A, B, C, D"))
+                .andExpect(status().isForbidden());
+
+        verify(this.questionService, never())
+                .addQuestion(any(AddQuestionDTO.class));
+    }
+
+    @WithAnonymousUser
+    @Test
+    void addQuestion_ShouldReturnError_WhenAnonymousUser() throws Exception {
+        this.mockMvc.perform(post("/questions/add-question")
+                        .with(csrf())
+                        .param("questionText", "Question?")
+                        .param("categoryId", "1")
+                        .param("correctAnswer", "B")
+                        .param("options", "A, B, C, D"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/users/login"));
+
+        verify(this.questionService, never())
+                .addQuestion(any(AddQuestionDTO.class));
     }
 }
