@@ -30,8 +30,9 @@ public class SecurityConfig {
                         .requestMatchers("/users/logout", "/users/home").authenticated()
                         .requestMatchers("/users/quizzes/**").hasRole("USER")
                         .requestMatchers("/admin/**",
-                                "/categories", "/categories/add-category",
-                                "/questions", "/questions/add-question", "/statistics/**").hasRole("ADMIN")
+                                "/categories", "/categories/add-category", "/categories/update/**",
+                                "/questions", "/questions/add-question", "/questions/update/**",
+                                "/statistics/**").hasRole("ADMIN")
                         .requestMatchers("/subscribe",
                                 "/contacts/send-inquiry", "/report-problem/send-report",
                                 "/start-quiz", "/quizzes/start", "/quizzes/quiz/**",

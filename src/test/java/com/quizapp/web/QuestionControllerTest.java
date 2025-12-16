@@ -3,9 +3,11 @@ package com.quizapp.web;
 import com.quizapp.config.SecurityConfig;
 import com.quizapp.model.dto.question.QuestionDTO;
 import com.quizapp.model.dto.question.QuestionPageDTO;
+import com.quizapp.model.dto.question.UpdateQuestionDTO;
 import com.quizapp.model.dto.user.UserDTO;
 import com.quizapp.model.dto.user.UserDetailsDTO;
 import com.quizapp.model.dto.user.UserStatsDTO;
+import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.QuestionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,8 +32,7 @@ import java.util.Set;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = QuestionController.class)
@@ -170,5 +171,103 @@ public class QuestionControllerTest {
 
         verify(this.questionService, never())
                 .getAllQuestions(anyString(), anyLong(), any(Pageable.class));
+    }
+
+    @Test
+    void updateQuestion_ShouldReturnError_WhenBindingFails() throws Exception {
+        this.mockMvc.perform(put("/questions/update/1")
+                        .with(csrf())
+                        .with(user(this.admin))
+                        .param("id", "1")
+                        .param("questionText", "")
+                        .param("categoryName", "")
+                        .param("correctAnswer", "")
+                        .param("options", ""))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/questions"))
+                .andExpect(flash().attributeExists("updateQuestionDTO"))
+                .andExpect(flash().attributeExists("org.springframework.validation.BindingResult.updateQuestionDTO"))
+                .andExpect(flash().attributeExists("openModal"))
+                .andExpect(flash().attribute("openModal", true));
+
+        verify(this.questionService, never())
+                .updateQuestion(eq(1L), any(UpdateQuestionDTO.class));
+    }
+
+    @Test
+    void updateQuestion_ShouldRedirectWithSuccess_WhenDataFound() throws Exception {
+        when(this.questionService.updateQuestion(eq(1L), any(UpdateQuestionDTO.class)))
+                .thenReturn(new Result(true, "Успешно редактирахте въпрос."));
+
+        this.mockMvc.perform(put("/questions/update/1")
+                        .with(csrf())
+                        .with(user(this.admin))
+                        .param("id", "1")
+                        .param("questionText", "Question")
+                        .param("categoryName", "Maths")
+                        .param("correctAnswer", "B")
+                        .param("options", "A, B, C, D"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/questions"))
+                .andExpect(flash().attributeExists("success"))
+                .andExpect(flash().attribute("success","Успешно редактирахте въпрос."));
+
+        verify(this.questionService, times(1))
+                .updateQuestion(eq(1L), any(UpdateQuestionDTO.class));
+    }
+
+    @Test
+    void updateQuestion_ShouldRedirectWithError_WhenDataNotFound() throws Exception {
+        when(this.questionService.updateQuestion(eq(1L), any(UpdateQuestionDTO.class)))
+                .thenReturn(new Result(false, "Въпросът не беше намерен."));
+
+        this.mockMvc.perform(put("/questions/update/1")
+                        .with(csrf())
+                        .with(user(this.admin))
+                        .param("id", "1")
+                        .param("questionText", "Question")
+                        .param("categoryName", "Maths")
+                        .param("correctAnswer", "B")
+                        .param("options", "A, B, C, D"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/questions"))
+                .andExpect(flash().attributeExists("error"))
+                .andExpect(flash().attribute("error","Въпросът не беше намерен."));
+
+        verify(this.questionService, times(1))
+                .updateQuestion(eq(1L), any(UpdateQuestionDTO.class));
+    }
+
+    @Test
+    void updateQuestion_ShouldReturnError_WhenUser() throws Exception {
+        this.mockMvc.perform(put("/questions/update/1")
+                        .with(csrf())
+                        .with(user(this.user))
+                        .param("id", "1")
+                        .param("questionText", "Question")
+                        .param("categoryName", "Maths")
+                        .param("correctAnswer", "B")
+                        .param("options", "A, B, C, D"))
+                .andExpect(status().isForbidden());
+
+        verify(this.questionService, never())
+                .updateQuestion(eq(1L), any(UpdateQuestionDTO.class));
+    }
+
+    @WithAnonymousUser
+    @Test
+    void updateQuestion_ShouldReturnError_WhenAnonymousUser() throws Exception {
+        this.mockMvc.perform(put("/questions/update/1")
+                        .with(csrf())
+                        .param("id", "1")
+                        .param("questionText", "Question")
+                        .param("categoryName", "Maths")
+                        .param("correctAnswer", "B")
+                        .param("options", "A, B, C, D"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/users/login"));
+
+        verify(this.questionService, never())
+                .updateQuestion(eq(1L), any(UpdateQuestionDTO.class));
     }
 }
