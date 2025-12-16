@@ -253,7 +253,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void showUpdatePasswordPage_ShouldReturnError_WhenBindingFails() throws Exception {
+    void updatePassword_ShouldReturnError_WhenBindingFails() throws Exception {
         this.mockMvc.perform(post("/users/update-password")
                         .with(csrf())
                         .with(user(this.loggedUser))
@@ -270,7 +270,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void showUpdatePasswordPage_ShouldRedirectWithError_WhenDataIsInvalid() throws Exception {
+    void updatePassword_ShouldRedirectWithError_WhenDataIsInvalid() throws Exception {
         when(this.userService.updatePassword(anyString(), any(UpdatePasswordDTO.class)))
                 .thenReturn(new Result(false, "Паролите не съвпадат!"));
 
@@ -290,7 +290,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void showUpdatePasswordPage_ShouldRedirectWithSuccess_WhenDataIsValid() throws Exception {
+    void updatePassword_ShouldRedirectWithSuccess_WhenDataIsValid() throws Exception {
         when(this.userService.updatePassword(anyString(), any(UpdatePasswordDTO.class)))
                 .thenReturn(new Result(true, "Успешно променихте паролата си."));
 
@@ -310,7 +310,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void showUpdatePasswordPage_ShouldRedirectWithSuccess_WhenDataIsValidAndAdmin() throws Exception {
+    void updatePassword_ShouldRedirectWithSuccess_WhenDataIsValidAndAdmin() throws Exception {
         when(this.userService.updatePassword(anyString(), any(UpdatePasswordDTO.class)))
                 .thenReturn(new Result(true, "Успешно променихте паролата си."));
 
@@ -331,7 +331,7 @@ public class UserControllerTest {
 
     @WithAnonymousUser
     @Test
-    void showUpdatePasswordPage_ShouldRedirectToLoginPage_WhenAnonymousUser() throws Exception {
+    void updatePassword_ShouldRedirectToLoginPage_WhenAnonymousUser() throws Exception {
         this.mockMvc.perform(post("/users/update-password")
                         .with(csrf())
                         .param("oldPassword", "Pass1234")

@@ -80,7 +80,7 @@ public class UserController {
     }
 
     @PostMapping("/update-password")
-    public ModelAndView showUpdatePasswordPage(@Valid @ModelAttribute("updatePasswordDTO") UpdatePasswordDTO updatePasswordDTO,
+    public ModelAndView updatePassword(@Valid @ModelAttribute("updatePasswordDTO") UpdatePasswordDTO updatePasswordDTO,
                                                BindingResult bindingResult, RedirectAttributes redirectAttributes,
                                                @AuthenticationPrincipal UserDetailsDTO userDetailsDTO) {
 
