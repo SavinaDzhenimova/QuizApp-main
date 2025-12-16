@@ -61,7 +61,7 @@ public class UserQuizControllerTest {
                 .build();
 
         this.quizDTO = QuizDTO.builder()
-                .viewToken("token123")
+                .id(1L)
                 .categoryId(1L)
                 .categoryName("Maths")
                 .build();
@@ -165,5 +165,42 @@ public class UserQuizControllerTest {
                 .andExpect(redirectedUrlPattern("**/users/login"));
 
         verify(this.userQuizService, never()).getQuizResult(anyLong());
+    }
+
+    @Test
+    void showSolvedQuizById_ShouldReturnSolvedQuizPage_WhenDataIsValid() throws Exception {
+        when(this.userQuizService.getSolvedQuizById(1L))
+                .thenReturn(this.quizDTO);
+
+        this.mockMvc.perform(get("/users/quizzes/1/review")
+                        .with(user(this.loggedUser))
+                        .param("id", "1L"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("solved-quiz"))
+                .andExpect(model().attributeExists("solvedQuiz"))
+                .andExpect(model().attribute("solvedQuiz", this.quizDTO));
+
+        verify(this.userQuizService, times(1)).getSolvedQuizById(anyLong());
+    }
+
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
+    @Test
+    void showSolvedQuizById_ShouldReturnError_WhenUser() throws Exception {
+        this.mockMvc.perform(get("/users/quizzes/1/review")
+                        .param("id", "1L"))
+                .andExpect(status().isForbidden());
+
+        verify(this.userQuizService, never()).getSolvedQuizById(anyLong());
+    }
+
+    @WithAnonymousUser
+    @Test
+    void showSolvedQuizById_ShouldReturnError_WhenAnonymousUser() throws Exception {
+        this.mockMvc.perform(get("/users/quizzes/1/review")
+                        .param("id", "1L"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/users/login"));
+
+        verify(this.userQuizService, never()).getSolvedQuizById(anyLong());
     }
 }
