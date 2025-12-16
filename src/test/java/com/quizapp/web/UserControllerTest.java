@@ -2,10 +2,11 @@ package com.quizapp.web;
 
 import com.quizapp.config.SecurityConfig;
 import com.quizapp.model.dto.quiz.QuizDTO;
+import com.quizapp.model.dto.user.UpdatePasswordDTO;
 import com.quizapp.model.dto.user.UserDTO;
 import com.quizapp.model.dto.user.UserDetailsDTO;
-import com.quizapp.model.dto.user.UserStatisticsDTO;
 import com.quizapp.model.dto.user.UserStatsDTO;
+import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.UserQuizService;
 import com.quizapp.service.interfaces.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,11 +23,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -223,5 +224,123 @@ public class UserControllerTest {
 
         verify(this.userQuizService, never())
                 .getSolvedQuizzesByUsername(anyString(), anyInt(), anyInt());
+    }
+
+    @Test
+    void showUpdatePasswordPage_ShouldAddAttribute_WhenUser() throws Exception {
+        this.mockMvc.perform(get("/users/update-password")
+                        .with(user(this.loggedUser)))
+                .andExpect(status().isOk())
+                .andExpect(view().name("update-password"))
+                .andExpect(model().attributeExists("updatePasswordDTO"));
+    }
+
+    @Test
+    void showUpdatePasswordPage_ShouldAddAttribute_WhenAdmin() throws Exception {
+        this.mockMvc.perform(get("/users/update-password")
+                        .with(user(this.admin)))
+                .andExpect(status().isOk())
+                .andExpect(view().name("update-password"))
+                .andExpect(model().attributeExists("updatePasswordDTO"));
+    }
+
+    @WithAnonymousUser
+    @Test
+    void showUpdatePasswordPage_ShouldAddAttribute_WhenAnonymousUser() throws Exception {
+        this.mockMvc.perform(get("/users/update-password"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/users/login"));
+    }
+
+    @Test
+    void showUpdatePasswordPage_ShouldReturnError_WhenBindingFails() throws Exception {
+        this.mockMvc.perform(post("/users/update-password")
+                        .with(csrf())
+                        .with(user(this.loggedUser))
+                        .param("oldPassword", "")
+                        .param("newPassword", "")
+                        .param("confirmPassword", ""))
+                .andExpect(status().isOk())
+                .andExpect(view().name("update-password"))
+                .andExpect(model().attributeExists("updatePasswordDTO"))
+                .andExpect(model().attributeExists("org.springframework.validation.BindingResult.updatePasswordDTO"));
+
+        verify(this.userService, never())
+                .updatePassword(anyString(), any(UpdatePasswordDTO.class));
+    }
+
+    @Test
+    void showUpdatePasswordPage_ShouldRedirectWithError_WhenDataIsInvalid() throws Exception {
+        when(this.userService.updatePassword(anyString(), any(UpdatePasswordDTO.class)))
+                .thenReturn(new Result(false, "Паролите не съвпадат!"));
+
+        this.mockMvc.perform(post("/users/update-password")
+                        .with(csrf())
+                        .with(user(this.loggedUser))
+                        .param("oldPassword", "Pass1234")
+                        .param("newPassword", "Password123")
+                        .param("confirmPassword", "Password321"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/users/update-password"))
+                .andExpect(flash().attributeExists("error"))
+                .andExpect(flash().attribute("error", "Паролите не съвпадат!"));
+
+        verify(this.userService, times(1))
+                .updatePassword(anyString(), any(UpdatePasswordDTO.class));
+    }
+
+    @Test
+    void showUpdatePasswordPage_ShouldRedirectWithSuccess_WhenDataIsValid() throws Exception {
+        when(this.userService.updatePassword(anyString(), any(UpdatePasswordDTO.class)))
+                .thenReturn(new Result(true, "Успешно променихте паролата си."));
+
+        this.mockMvc.perform(post("/users/update-password")
+                        .with(csrf())
+                        .with(user(this.loggedUser))
+                        .param("oldPassword", "Pass1234")
+                        .param("newPassword", "Password123")
+                        .param("confirmPassword", "Password123"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/users/update-password"))
+                .andExpect(flash().attributeExists("success"))
+                .andExpect(flash().attribute("success", "Успешно променихте паролата си."));
+
+        verify(this.userService, times(1))
+                .updatePassword(anyString(), any(UpdatePasswordDTO.class));
+    }
+
+    @Test
+    void showUpdatePasswordPage_ShouldRedirectWithSuccess_WhenDataIsValidAndAdmin() throws Exception {
+        when(this.userService.updatePassword(anyString(), any(UpdatePasswordDTO.class)))
+                .thenReturn(new Result(true, "Успешно променихте паролата си."));
+
+        this.mockMvc.perform(post("/users/update-password")
+                        .with(csrf())
+                        .with(user(this.admin))
+                        .param("oldPassword", "Pass1234")
+                        .param("newPassword", "Password123")
+                        .param("confirmPassword", "Password123"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/users/update-password"))
+                .andExpect(flash().attributeExists("success"))
+                .andExpect(flash().attribute("success", "Успешно променихте паролата си."));
+
+        verify(this.userService, times(1))
+                .updatePassword(anyString(), any(UpdatePasswordDTO.class));
+    }
+
+    @WithAnonymousUser
+    @Test
+    void showUpdatePasswordPage_ShouldRedirectToLoginPage_WhenAnonymousUser() throws Exception {
+        this.mockMvc.perform(post("/users/update-password")
+                        .with(csrf())
+                        .param("oldPassword", "Pass1234")
+                        .param("newPassword", "Password123")
+                        .param("confirmPassword", "Password123"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/users/login"));
+
+        verify(this.userService, never())
+                .updatePassword(anyString(), any(UpdatePasswordDTO.class));
     }
 }
