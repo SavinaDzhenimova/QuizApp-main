@@ -26,10 +26,10 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("/categories")
-    public ModelAndView showCategories(@RequestParam(defaultValue = "0") int page,
-                                       @RequestParam(defaultValue = "10") int size,
-                                       @RequestParam(required = false) String categoryName,
-                                       Model model) {
+    public ModelAndView showCategoriesPage(@RequestParam(defaultValue = "0") int page,
+                                           @RequestParam(defaultValue = "10") int size,
+                                           @RequestParam(required = false) String categoryName,
+                                           Model model) {
 
         ModelAndView modelAndView = new ModelAndView("categories");
 
