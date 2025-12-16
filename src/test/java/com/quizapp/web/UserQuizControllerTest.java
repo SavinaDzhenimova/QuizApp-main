@@ -1,6 +1,8 @@
 package com.quizapp.web;
 
 import com.quizapp.config.SecurityConfig;
+import com.quizapp.model.dto.quiz.QuizDTO;
+import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.dto.quiz.QuizSubmissionDTO;
 import com.quizapp.model.dto.user.UserDetailsDTO;
 import com.quizapp.service.interfaces.UserQuizService;
@@ -22,6 +24,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -39,6 +42,8 @@ public class UserQuizControllerTest {
     private GlobalController globalController;
 
     private UserDetailsDTO loggedUser;
+    private QuizResultDTO quizResultDTO;
+    private QuizDTO quizDTO;
 
     @BeforeEach
     void setUp() {
@@ -46,6 +51,19 @@ public class UserQuizControllerTest {
                 .username("user")
                 .email("user@gmail.com")
                 .authorities(Set.of(new SimpleGrantedAuthority("ROLE_USER")))
+                .build();
+
+        this.quizResultDTO = QuizResultDTO.builder()
+                .id(1L)
+                .totalQuestions(5)
+                .correctAnswers(4)
+                .scorePercent(80.00)
+                .build();
+
+        this.quizDTO = QuizDTO.builder()
+                .viewToken("token123")
+                .categoryId(1L)
+                .categoryName("Maths")
                 .build();
     }
 
@@ -110,5 +128,42 @@ public class UserQuizControllerTest {
 
         verify(this.userQuizService, never())
                 .evaluateQuiz(any(QuizSubmissionDTO.class), anyString());
+    }
+
+    @Test
+    void showSolvedQuizResult_ShouldReturnPageResult_WhenDataIsValid() throws Exception {
+        when(this.userQuizService.getQuizResult(1L))
+                .thenReturn(this.quizResultDTO);
+
+        this.mockMvc.perform(get("/users/quizzes/1/result")
+                        .with(user(this.loggedUser))
+                        .param("id", "1L"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("result"))
+                .andExpect(model().attributeExists("result"))
+                .andExpect(model().attribute("result", this.quizResultDTO));
+
+        verify(this.userQuizService, times(1)).getQuizResult(1L);
+    }
+
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
+    @Test
+    void showSolvedQuizResult_ShouldReturnError_WhenUser() throws Exception {
+        this.mockMvc.perform(get("/users/quizzes/1/result")
+                        .param("id", "1L"))
+                .andExpect(status().isForbidden());
+
+        verify(this.userQuizService, never()).getQuizResult(anyLong());
+    }
+
+    @WithAnonymousUser
+    @Test
+    void showSolvedQuizResult_ShouldReturnError_WhenAnonymousUser() throws Exception {
+        this.mockMvc.perform(get("/users/quizzes/1/result")
+                        .param("id", "1L"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/users/login"));
+
+        verify(this.userQuizService, never()).getQuizResult(anyLong());
     }
 }
