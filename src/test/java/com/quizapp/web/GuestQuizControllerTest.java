@@ -1,6 +1,7 @@
 package com.quizapp.web;
 
 import com.quizapp.config.SecurityConfig;
+import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.dto.quiz.QuizSubmissionDTO;
 import com.quizapp.service.interfaces.GuestQuizService;
@@ -13,8 +14,6 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -37,6 +36,7 @@ public class GuestQuizControllerTest {
     private GlobalController globalController;
 
     private QuizResultDTO quizResultDTO;
+    private QuizDTO quizDTO;
 
     @BeforeEach
     void setUp() {
@@ -45,6 +45,12 @@ public class GuestQuizControllerTest {
                 .totalQuestions(5)
                 .correctAnswers(4)
                 .scorePercent(80.00)
+                .build();
+
+        this.quizDTO = QuizDTO.builder()
+                .viewToken("token123")
+                .categoryId(1L)
+                .categoryName("Maths")
                 .build();
     }
 
@@ -137,5 +143,41 @@ public class GuestQuizControllerTest {
                 .andExpect(status().isForbidden());
 
         verify(this.guestQuizService, never()).getQuizResult("token123");
+    }
+
+    @WithAnonymousUser
+    @Test
+    void showSolvedGuestQuiz_ShouldReturnSolvedQuizPage_WhenDataIsValid() throws Exception {
+        when(this.guestQuizService.showQuizResult("token123"))
+                .thenReturn(this.quizDTO);
+
+        this.mockMvc.perform(get("/guest/quizzes/token123/review")
+                        .param("token", "token123"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("solved-quiz"))
+                .andExpect(model().attributeExists("solvedQuiz"))
+                .andExpect(model().attribute("solvedQuiz", this.quizDTO));
+
+        verify(this.guestQuizService, times(1)).showQuizResult("token123");
+    }
+
+    @WithMockUser(authorities = {"ROLE_USER"})
+    @Test
+    void showSolvedGuestQuiz_ShouldReturnError_WhenUser() throws Exception {
+        this.mockMvc.perform(get("/guest/quizzes/token123/review")
+                        .param("token", "token123"))
+                .andExpect(status().isForbidden());
+
+        verify(this.guestQuizService, never()).showQuizResult("token123");
+    }
+
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
+    @Test
+    void showSolvedGuestQuiz_ShouldReturnError_WhenAdmin() throws Exception {
+        this.mockMvc.perform(get("/guest/quizzes/token123/review")
+                        .param("token", "token123"))
+                .andExpect(status().isForbidden());
+
+        verify(this.guestQuizService, never()).showQuizResult("token123");
     }
 }
