@@ -23,8 +23,6 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -269,5 +267,34 @@ public class QuestionControllerTest {
 
         verify(this.questionService, never())
                 .updateQuestion(eq(1L), any(UpdateQuestionDTO.class));
+    }
+
+    @Test
+    void showAddQuestionPage_ShouldReturnPage_WhenAdmin() throws Exception {
+        this.mockMvc.perform(get("/questions/add-question")
+                        .with(user(this.admin)))
+                .andExpect(status().isOk())
+                .andExpect(view().name("add-question"))
+                .andExpect(model().attributeExists("addQuestionDTO"));
+    }
+
+    @Test
+    void showAddQuestionPage_ShouldReturnError_WhenUser() throws Exception {
+        this.mockMvc.perform(get("/questions/add-question")
+                        .with(user(this.user)))
+                .andExpect(status().isForbidden());
+    }
+
+    @WithAnonymousUser
+    @Test
+    void showAddQuestionPage_ShouldReturnError_WhenAnonymousUser() throws Exception {
+        this.mockMvc.perform(get("/questions/add-question"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/users/login"));
+    }
+
+    @Test
+    void addQuestion_ShouldReturnError_WhenBindingFails() {
+        
     }
 }
