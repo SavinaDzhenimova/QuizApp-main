@@ -3,7 +3,9 @@ package com.quizapp.web;
 import com.quizapp.config.SecurityConfig;
 import com.quizapp.model.dto.category.CategoryDTO;
 import com.quizapp.model.dto.category.CategoryPageDTO;
+import com.quizapp.model.dto.category.UpdateCategoryDTO;
 import com.quizapp.model.dto.user.UserDetailsDTO;
+import com.quizapp.model.entity.Result;
 import com.quizapp.service.interfaces.CategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -153,5 +155,93 @@ public class CategoryControllerTest {
 
         verify(this.categoryService, never())
                 .getAllCategories("", 0, 10);
+    }
+
+    @Test
+    void updateCategory_ShouldReturnError_WhenBindingFails() throws Exception {
+        this.mockMvc.perform(put("/categories/update/1")
+                        .with(csrf())
+                        .with(user(this.admin))
+                        .param("id", "1")
+                        .param("name", "")
+                        .param("description", ""))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/categories"))
+                .andExpect(flash().attributeExists("updateCategoryDTO"))
+                .andExpect(flash().attributeExists("org.springframework.validation.BindingResult.updateCategoryDTO"))
+                .andExpect(flash().attributeExists("openModal"))
+                .andExpect(flash().attribute("openModal", true));
+
+        verify(this.categoryService, never())
+                .updateCategory(eq(1L), any(UpdateCategoryDTO.class));
+    }
+
+    @Test
+    void updateCategory_ShouldRedirectWithError_WhenDataIsInvalid() throws Exception {
+        when(this.categoryService.updateCategory(eq(1L), any(UpdateCategoryDTO.class)))
+                .thenReturn(new Result(false, "Категорията не можа да бъде добавена!"));
+
+        this.mockMvc.perform(put("/categories/update/1")
+                        .with(csrf())
+                        .with(user(this.admin))
+                        .param("id", "1")
+                        .param("name", "Maths")
+                        .param("description", "New description"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/categories"))
+                .andExpect(flash().attributeExists("error"))
+                .andExpect(flash().attribute("error", "Категорията не можа да бъде добавена!"));
+
+        verify(this.categoryService, times(1))
+                .updateCategory(eq(1L), any(UpdateCategoryDTO.class));
+    }
+
+    @Test
+    void updateCategory_ShouldRedirectWithSuccess_WhenDataIsValid() throws Exception {
+        when(this.categoryService.updateCategory(eq(1L), any(UpdateCategoryDTO.class)))
+                .thenReturn(new Result(true, "Успешно редактирахте категория Maths."));
+
+        this.mockMvc.perform(put("/categories/update/1")
+                        .with(csrf())
+                        .with(user(this.admin))
+                        .param("id", "1")
+                        .param("name", "Maths")
+                        .param("description", "New description"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/categories"))
+                .andExpect(flash().attributeExists("success"))
+                .andExpect(flash().attribute("success", "Успешно редактирахте категория Maths."));
+
+        verify(this.categoryService, times(1))
+                .updateCategory(eq(1L), any(UpdateCategoryDTO.class));
+    }
+
+    @Test
+    void updateCategory_ShouldReturnError_WhenUser() throws Exception {
+        this.mockMvc.perform(put("/categories/update/1")
+                        .with(csrf())
+                        .with(user(this.user))
+                        .param("id", "1")
+                        .param("name", "Maths")
+                        .param("description", "New description"))
+                .andExpect(status().isForbidden());
+
+        verify(this.categoryService, never())
+                .updateCategory(eq(1L), any(UpdateCategoryDTO.class));
+    }
+
+    @WithAnonymousUser
+    @Test
+    void updateCategory_ShouldReturnError_WhenAnonymousUser() throws Exception {
+        this.mockMvc.perform(put("/categories/update/1")
+                        .with(csrf())
+                        .param("id", "1")
+                        .param("name", "Maths")
+                        .param("description", "New description"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/users/login"));
+
+        verify(this.categoryService, never())
+                .updateCategory(eq(1L), any(UpdateCategoryDTO.class));
     }
 }
