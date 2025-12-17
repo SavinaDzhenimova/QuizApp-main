@@ -18,6 +18,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -93,6 +94,64 @@ public class CategoryServiceImplTest {
         Assertions.assertEquals("Description", result.getCategories().get(1).getDescription());
         Assertions.assertEquals(1, result.getTotalPages());
         Assertions.assertEquals(2, result.getTotalElements());
+        Assertions.assertEquals(0, result.getCurrentPage());
+        Assertions.assertEquals(10, result.getSize());
+    }
+
+    @Test
+    void getAllCategories_ShouldReturnCorrectDTO_WhenSortedByCategoryName() {
+        CategoryPageDTO<CategoryApiDTO> apiPage = new CategoryPageDTO<>();
+        apiPage.setCategories(List.of(this.api1));
+        apiPage.setTotalPages(1);
+        apiPage.setTotalElements(1);
+        apiPage.setCurrentPage(0);
+        apiPage.setSize(10);
+
+        ParameterizedTypeReference<CategoryPageDTO<CategoryApiDTO>> typeRef =
+                new ParameterizedTypeReference<>() {};
+
+        when(this.restClient.get()).thenReturn(this.getSpec);
+        when(this.getSpec.uri(anyString())).thenReturn(this.headersSpec);
+        when(this.headersSpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.body(eq(typeRef))).thenReturn(apiPage);
+
+        CategoryPageDTO<CategoryDTO> result =
+                categoryService.getAllCategories("Maths", 0, 10);
+
+        Assertions.assertEquals(1, result.getCategories().size());
+        Assertions.assertEquals(1L, result.getCategories().get(0).getId());
+        Assertions.assertEquals("Maths", result.getCategories().get(0).getName());
+        Assertions.assertEquals("Description", result.getCategories().get(0).getDescription());
+        Assertions.assertEquals(1, result.getTotalPages());
+        Assertions.assertEquals(1, result.getTotalElements());
+        Assertions.assertEquals(0, result.getCurrentPage());
+        Assertions.assertEquals(10, result.getSize());
+    }
+
+    @Test
+    void getAllCategories_ShouldReturnEmptyPage_WhenCategoriesNotFound() {
+        CategoryPageDTO<CategoryApiDTO> apiPage = new CategoryPageDTO<>();
+        apiPage.setCategories(Collections.emptyList());
+        apiPage.setTotalPages(1);
+        apiPage.setTotalElements(0);
+        apiPage.setCurrentPage(0);
+        apiPage.setSize(10);
+
+        ParameterizedTypeReference<CategoryPageDTO<CategoryApiDTO>> typeRef =
+                new ParameterizedTypeReference<>() {};
+
+        when(this.restClient.get()).thenReturn(this.getSpec);
+        when(this.getSpec.uri(anyString())).thenReturn(this.headersSpec);
+        when(this.headersSpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.body(eq(typeRef))).thenReturn(apiPage);
+
+        CategoryPageDTO<CategoryDTO> result =
+                categoryService.getAllCategories("Maths", 0, 10);
+
+        Assertions.assertTrue(result.getCategories().isEmpty());
+        Assertions.assertEquals(0, result.getCategories().size());
+        Assertions.assertEquals(1, result.getTotalPages());
+        Assertions.assertEquals(0, result.getTotalElements());
         Assertions.assertEquals(0, result.getCurrentPage());
         Assertions.assertEquals(10, result.getSize());
     }
