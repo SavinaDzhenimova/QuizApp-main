@@ -292,4 +292,47 @@ public class QuestionServiceImplTest {
         Assertions.assertFalse(result.isSuccess());
         Assertions.assertEquals("Грешка при извикване на REST API", result.getMessage());
     }
+
+    @Test
+    void updateQuestion_ShouldReturnSuccessMessage_WhenDtoIsValid() {
+        when(this.restClient.put()).thenReturn(this.putSpec);
+        when(this.putSpec.uri("/api/questions/{id}", 1L)).thenReturn(this.bodySpec);
+        when(this.bodySpec.body(this.updateQuestionDTO)).thenReturn(this.bodySpec);
+        when(this.bodySpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.toBodilessEntity())
+                .thenReturn(ResponseEntity.ok().build());
+
+        Result result = this.questionService.updateQuestion(1L, this.updateQuestionDTO);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isSuccess());
+        Assertions.assertEquals("Успешно редактирахте въпрос.", result.getMessage());
+    }
+
+    @Test
+    void updateQuestion_ShouldReturnErrorMessage_WhenApiReturnsError() throws JsonProcessingException {
+        ProblemDetailDTO problem = new ProblemDetailDTO();
+        problem.setDetail("Въпросът не можа да бъде редактиран.");
+
+        String jsonBody = new ObjectMapper().writeValueAsString(problem);
+
+        HttpClientErrorException exception = HttpClientErrorException.BadRequest.create(
+                HttpStatus.BAD_REQUEST,
+                "Bad Request",
+                HttpHeaders.EMPTY,
+                jsonBody.getBytes(),
+                null);
+
+        when(this.restClient.put()).thenReturn(this.putSpec);
+        when(this.putSpec.uri("/api/questions/{id}",1L)).thenReturn(this.bodySpec);
+        when(this.bodySpec.body(this.updateQuestionDTO)).thenReturn(this.bodySpec);
+        when(this.bodySpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.toBodilessEntity()).thenThrow(exception);
+
+        Result result = this.questionService.updateQuestion(1L, this.updateQuestionDTO);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertFalse(result.isSuccess());
+        Assertions.assertEquals("Въпросът не можа да бъде редактиран.", result.getMessage());
+    }
 }
