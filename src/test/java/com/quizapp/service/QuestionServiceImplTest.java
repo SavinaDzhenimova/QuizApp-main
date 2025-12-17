@@ -20,6 +20,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.util.ArrayList;
@@ -189,5 +192,38 @@ public class QuestionServiceImplTest {
         Assertions.assertEquals(0, result.getTotalElements());
         Assertions.assertEquals(0, result.getCurrentPage());
         Assertions.assertEquals(10, result.getSize());
+    }
+
+    @Test
+    void getQuestionById_ShouldReturnQuestionDTO_WhenQuestionFound() {
+        when(this.restClient.get()).thenReturn(this.getSpec);
+        when(this.getSpec.uri("/api/questions/{id}", 1L))
+                .thenReturn(this.headersSpec);
+        when(this.headersSpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.body(QuestionApiDTO.class)).thenReturn(this.api1);
+
+        QuestionDTO result = this.questionService.getQuestionById(1L);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1L, result.getId());
+        Assertions.assertEquals("Maths", result.getCategoryName());
+        Assertions.assertEquals("Question 1", result.getQuestionText());
+        Assertions.assertEquals("A", result.getCorrectAnswer());
+        Assertions.assertNotNull(result.getOptions());
+    }
+
+    @Test
+    void getQuestionById_ShouldThrowException_WhenQuestionNotFound() {
+        when(this.restClient.get()).thenReturn(this.getSpec);
+        when(this.getSpec.uri("/api/questions/{id}", 1L))
+                .thenReturn(this.headersSpec);
+        when(this.headersSpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.body(QuestionApiDTO.class))
+                .thenThrow(HttpClientErrorException.NotFound
+                        .create(HttpStatus.NOT_FOUND, "Not Found", HttpHeaders.EMPTY, null, null));
+
+        QuestionDTO result = this.questionService.getQuestionById(1L);
+
+        Assertions.assertNull(result);
     }
 }
