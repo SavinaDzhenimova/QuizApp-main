@@ -186,4 +186,33 @@ public class CategoryServiceImplTest {
 
         Assertions.assertNull(result);
     }
+
+    @Test
+    void getCategoryNameById_ShouldReturnCategoryName_WhenCategoryFound() {
+        when(this.restClient.get()).thenReturn(this.getSpec);
+        when(this.getSpec.uri(eq("/api/categories/{id}"), eq(1L)))
+                .thenReturn(this.headersSpec);
+        when(this.headersSpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.body(CategoryApiDTO.class)).thenReturn(this.api1);
+
+        String result = this.categoryService.getCategoryNameById(1L);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("Maths", result);
+    }
+
+    @Test
+    void getCategoryNameById_ShouldThrowException_WhenCategoryNotFound() {
+        when(this.restClient.get()).thenReturn(this.getSpec);
+        when(this.getSpec.uri(eq("/api/categories/{id}"), eq(1L)))
+                .thenReturn(this.headersSpec);
+        when(this.headersSpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.body(CategoryApiDTO.class))
+                .thenThrow(HttpClientErrorException.NotFound
+                        .create(HttpStatus.NOT_FOUND, "Not Found", HttpHeaders.EMPTY, null, null));
+
+        String result = this.categoryService.getCategoryNameById(1L);
+
+        Assertions.assertNull(result);
+    }
 }
