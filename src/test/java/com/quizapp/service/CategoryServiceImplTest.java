@@ -120,7 +120,7 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    void getAllCategories_ShouldReturnCorrectDTO_WhenSortedByCategoryName() {
+    void getAllCategories_ShouldReturnCorrectDTO_WhenFilteredByCategoryName() {
         CategoryPageDTO<CategoryApiDTO> apiPage = new CategoryPageDTO<>();
         apiPage.setCategories(List.of(this.api1));
         apiPage.setTotalPages(1);
