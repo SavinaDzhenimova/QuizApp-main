@@ -6,6 +6,7 @@ import com.quizapp.model.dto.ProblemDetailDTO;
 import com.quizapp.model.dto.category.AddCategoryDTO;
 import com.quizapp.model.dto.category.CategoryDTO;
 import com.quizapp.model.dto.category.CategoryPageDTO;
+import com.quizapp.model.dto.category.UpdateCategoryDTO;
 import com.quizapp.model.entity.Result;
 import com.quizapp.model.rest.CategoryApiDTO;
 import org.junit.jupiter.api.Assertions;
@@ -49,10 +50,14 @@ public class CategoryServiceImplTest {
     @Mock
     private RestClient.RequestBodyUriSpec postSpec;
     @Mock
+    private RestClient.RequestBodyUriSpec putSpec;
+    @Mock
     private RestClient.RequestBodySpec bodySpec;
 
     private CategoryApiDTO api1;
     private CategoryApiDTO api2;
+    private AddCategoryDTO addCategoryDTO;
+    private UpdateCategoryDTO updateCategoryDTO;
 
     @BeforeEach
     void setUp() {
@@ -62,11 +67,22 @@ public class CategoryServiceImplTest {
                 .description("Description")
                 .questions(new ArrayList<>())
                 .build();
+
         this.api2 = CategoryApiDTO.builder()
                 .id(2L)
                 .name("Music")
                 .description("Description")
                 .questions(new ArrayList<>())
+                .build();
+
+        this.addCategoryDTO = AddCategoryDTO.builder()
+                .name("Maths")
+                .description("Description")
+                .build();
+
+        this.updateCategoryDTO = UpdateCategoryDTO.builder()
+                .name("Maths")
+                .description("Updated")
                 .build();
     }
 
@@ -164,7 +180,7 @@ public class CategoryServiceImplTest {
     @Test
     void getCategoryById_ShouldReturnCategoryDTO_WhenCategoryFound() {
         when(this.restClient.get()).thenReturn(this.getSpec);
-        when(this.getSpec.uri(eq("/api/categories/{id}"), eq(1L)))
+        when(this.getSpec.uri("/api/categories/{id}", 1L))
                 .thenReturn(this.headersSpec);
         when(this.headersSpec.retrieve()).thenReturn(this.responseSpec);
         when(this.responseSpec.body(CategoryApiDTO.class)).thenReturn(this.api1);
@@ -180,7 +196,7 @@ public class CategoryServiceImplTest {
     @Test
     void getCategoryById_ShouldThrowException_WhenCategoryNotFound() {
         when(this.restClient.get()).thenReturn(this.getSpec);
-        when(this.getSpec.uri(eq("/api/categories/{id}"), eq(1L)))
+        when(this.getSpec.uri("/api/categories/{id}", 1L))
                 .thenReturn(this.headersSpec);
         when(this.headersSpec.retrieve()).thenReturn(this.responseSpec);
         when(this.responseSpec.body(CategoryApiDTO.class))
@@ -195,7 +211,7 @@ public class CategoryServiceImplTest {
     @Test
     void getCategoryNameById_ShouldReturnCategoryName_WhenCategoryFound() {
         when(this.restClient.get()).thenReturn(this.getSpec);
-        when(this.getSpec.uri(eq("/api/categories/{id}"), eq(1L)))
+        when(this.getSpec.uri("/api/categories/{id}",1L))
                 .thenReturn(this.headersSpec);
         when(this.headersSpec.retrieve()).thenReturn(this.responseSpec);
         when(this.responseSpec.body(CategoryApiDTO.class)).thenReturn(this.api1);
@@ -209,7 +225,7 @@ public class CategoryServiceImplTest {
     @Test
     void getCategoryNameById_ShouldThrowException_WhenCategoryNotFound() {
         when(this.restClient.get()).thenReturn(this.getSpec);
-        when(this.getSpec.uri(eq("/api/categories/{id}"), eq(1L)))
+        when(this.getSpec.uri("/api/categories/{id}", 1L))
                 .thenReturn(this.headersSpec);
         when(this.headersSpec.retrieve()).thenReturn(this.responseSpec);
         when(this.responseSpec.body(CategoryApiDTO.class))
@@ -223,14 +239,9 @@ public class CategoryServiceImplTest {
 
     @Test
     void addCategory_ShouldReturnSuccess_WhenDtoIsValid() {
-        AddCategoryDTO addCategoryDTO = AddCategoryDTO.builder()
-                .name("Maths")
-                .description("Description")
-                .build();
-
-        when(this.restClient.post()).thenReturn(postSpec);
+        when(this.restClient.post()).thenReturn(this.postSpec);
         when(this.postSpec.uri("/api/categories")).thenReturn(this.bodySpec);
-        when(this.bodySpec.body(addCategoryDTO)).thenReturn(this.bodySpec);
+        when(this.bodySpec.body(this.addCategoryDTO)).thenReturn(this.bodySpec);
         when(this.bodySpec.retrieve()).thenReturn(this.responseSpec);
         when(this.responseSpec.toBodilessEntity())
                 .thenReturn(ResponseEntity.ok().build());
@@ -243,11 +254,6 @@ public class CategoryServiceImplTest {
 
     @Test
     void addCategory_ShouldReturnError_WhenApiReturnsError() throws JsonProcessingException {
-        AddCategoryDTO addCategoryDTO = AddCategoryDTO.builder()
-                .name("Maths")
-                .description("Description")
-                .build();
-
         ProblemDetailDTO problem = new ProblemDetailDTO();
         problem.setDetail("Категорията вече съществува");
 
@@ -262,7 +268,7 @@ public class CategoryServiceImplTest {
 
         when(this.restClient.post()).thenReturn(this.postSpec);
         when(this.postSpec.uri("/api/categories")).thenReturn(this.bodySpec);
-        when(this.bodySpec.body(addCategoryDTO)).thenReturn(this.bodySpec);
+        when(this.bodySpec.body(this.addCategoryDTO)).thenReturn(this.bodySpec);
         when(this.bodySpec.retrieve()).thenReturn(this.responseSpec);
         when(this.responseSpec.toBodilessEntity()).thenThrow(exception);
 
@@ -274,11 +280,6 @@ public class CategoryServiceImplTest {
 
     @Test
     void addCategory_ShouldReturnError_WhenApiThrowsException() {
-        AddCategoryDTO dto = AddCategoryDTO.builder()
-                .name("Math")
-                .description("Desc")
-                .build();
-
         String invalidJson = "this is not json";
 
         HttpClientErrorException exception =
@@ -292,13 +293,56 @@ public class CategoryServiceImplTest {
 
         when(this.restClient.post()).thenReturn(this.postSpec);
         when(this.postSpec.uri("/api/categories")).thenReturn(this.bodySpec);
-        when(this.bodySpec.body(dto)).thenReturn(this.bodySpec);
+        when(this.bodySpec.body(this.addCategoryDTO)).thenReturn(this.bodySpec);
         when(this.bodySpec.retrieve()).thenReturn(this.responseSpec);
         when(this.responseSpec.toBodilessEntity()).thenThrow(exception);
 
-        Result result = categoryService.addCategory(dto);
+        Result result = categoryService.addCategory(addCategoryDTO);
 
         Assertions.assertFalse(result.isSuccess());
         Assertions.assertEquals("Грешка при извикване на REST API", result.getMessage());
+    }
+
+    @Test
+    void updateCategory_ShouldReturnSuccessMessage_WhenDtoIsValid() {
+        when(this.restClient.put()).thenReturn(this.putSpec);
+        when(this.putSpec.uri("/api/categories/{id}", 1L)).thenReturn(this.bodySpec);
+        when(this.bodySpec.body(this.updateCategoryDTO)).thenReturn(this.bodySpec);
+        when(this.bodySpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.toBodilessEntity())
+                .thenReturn(ResponseEntity.ok().build());
+
+        Result result = this.categoryService.updateCategory(1L, this.updateCategoryDTO);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isSuccess());
+        Assertions.assertEquals("Успешно редактирахте категория Maths", result.getMessage());
+    }
+
+    @Test
+    void updateCategory_ShouldReturnErrorMessage_WhenApiReturnsError() throws JsonProcessingException {
+        ProblemDetailDTO problem = new ProblemDetailDTO();
+        problem.setDetail("Категорията не можа да бъде редактирана");
+
+        String jsonBody = new ObjectMapper().writeValueAsString(problem);
+
+        HttpClientErrorException exception = HttpClientErrorException.BadRequest.create(
+                HttpStatus.BAD_REQUEST,
+                "Bad Request",
+                HttpHeaders.EMPTY,
+                jsonBody.getBytes(),
+                null);
+
+        when(this.restClient.put()).thenReturn(this.putSpec);
+        when(this.putSpec.uri("/api/categories/{id}",1L)).thenReturn(this.bodySpec);
+        when(this.bodySpec.body(this.updateCategoryDTO)).thenReturn(this.bodySpec);
+        when(this.bodySpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.toBodilessEntity()).thenThrow(exception);
+
+        Result result = this.categoryService.updateCategory(1L, this.updateCategoryDTO);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertFalse(result.isSuccess());
+        Assertions.assertEquals("Категорията не можа да бъде редактирана", result.getMessage());
     }
 }
