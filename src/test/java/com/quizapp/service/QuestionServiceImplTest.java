@@ -26,6 +26,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -64,6 +65,7 @@ public class QuestionServiceImplTest {
     void setUp() {
         this.api1 = QuestionApiDTO.builder()
                 .id(1L)
+                .categoryId(1L)
                 .categoryName("Maths")
                 .questionText("Question 1")
                 .correctAnswer("A")
@@ -72,7 +74,8 @@ public class QuestionServiceImplTest {
 
         this.api2 = QuestionApiDTO.builder()
                 .id(2L)
-                .categoryName("Music")
+                .categoryId(1L)
+                .categoryName("Maths")
                 .questionText("Question 2")
                 .correctAnswer("B")
                 .options(new ArrayList<>())
@@ -118,9 +121,9 @@ public class QuestionServiceImplTest {
 
         Assertions.assertEquals(2, result.getQuestions().size());
         Assertions.assertEquals(1L, result.getQuestions().get(0).getId());
-        Assertions.assertEquals(2L, result.getQuestions().get(1).getId());
+        Assertions.assertEquals(1L, result.getQuestions().get(1).getId());
         Assertions.assertEquals("Maths", result.getQuestions().get(0).getCategoryName());
-        Assertions.assertEquals("Music", result.getQuestions().get(1).getCategoryName());
+        Assertions.assertEquals("Maths", result.getQuestions().get(1).getCategoryName());
         Assertions.assertEquals("Question 1", result.getQuestions().get(0).getQuestionText());
         Assertions.assertEquals("Question 2", result.getQuestions().get(1).getQuestionText());
         Assertions.assertEquals("A", result.getQuestions().get(0).getCorrectAnswer());
@@ -334,5 +337,36 @@ public class QuestionServiceImplTest {
         Assertions.assertNotNull(result);
         Assertions.assertFalse(result.isSuccess());
         Assertions.assertEquals("Въпросът не можа да бъде редактиран.", result.getMessage());
+    }
+
+    @Test
+    void makeGetRequestByCategoryId_ShouldReturnArrayWithQuestions_WhenQuestionsFound() {
+        QuestionApiDTO[] apiDTOs = new QuestionApiDTO[] {this.api1, this.api2};
+
+        when(this.restClient.get()).thenReturn(this.getSpec);
+        when(this.getSpec.uri("/api/questions/category/{id}", 1L)).thenReturn(this.headersSpec);
+        when(this.headersSpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.body(QuestionApiDTO[].class)).thenReturn(apiDTOs);
+
+        QuestionApiDTO[] result = this.questionService.makeGetRequestByCategoryId(1L);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(2, result.length);
+        Assertions.assertArrayEquals(apiDTOs, result);
+    }
+
+    @Test
+    void makeGetRequestByCategoryId_ShouldReturnEmptyArray_WhenQuestionsNotFound() {
+        QuestionApiDTO[] apiDTOs = new QuestionApiDTO[] {};
+
+        when(this.restClient.get()).thenReturn(this.getSpec);
+        when(this.getSpec.uri("/api/questions/category/{id}", 1L)).thenReturn(this.headersSpec);
+        when(this.headersSpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.body(QuestionApiDTO[].class)).thenReturn(apiDTOs);
+
+        QuestionApiDTO[] result = this.questionService.makeGetRequestByCategoryId(1L);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(0, result.length);
     }
 }
