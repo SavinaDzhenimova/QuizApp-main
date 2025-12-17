@@ -246,7 +246,7 @@ public class CategoryServiceImplTest {
         when(this.responseSpec.toBodilessEntity())
                 .thenReturn(ResponseEntity.ok().build());
 
-        Result result = this.categoryService.addCategory(addCategoryDTO);
+        Result result = this.categoryService.addCategory(this.addCategoryDTO);
 
         Assertions.assertTrue(result.isSuccess());
         Assertions.assertEquals("Успешно добавихте категория Maths", result.getMessage());
@@ -272,7 +272,7 @@ public class CategoryServiceImplTest {
         when(this.bodySpec.retrieve()).thenReturn(this.responseSpec);
         when(this.responseSpec.toBodilessEntity()).thenThrow(exception);
 
-        Result result = this.categoryService.addCategory(addCategoryDTO);
+        Result result = this.categoryService.addCategory(this.addCategoryDTO);
 
         Assertions.assertFalse(result.isSuccess());
         Assertions.assertEquals("Категорията вече съществува", result.getMessage());
@@ -297,7 +297,7 @@ public class CategoryServiceImplTest {
         when(this.bodySpec.retrieve()).thenReturn(this.responseSpec);
         when(this.responseSpec.toBodilessEntity()).thenThrow(exception);
 
-        Result result = categoryService.addCategory(addCategoryDTO);
+        Result result = categoryService.addCategory(this.addCategoryDTO);
 
         Assertions.assertFalse(result.isSuccess());
         Assertions.assertEquals("Грешка при извикване на REST API", result.getMessage());

@@ -1,14 +1,13 @@
 package com.quizapp.service;
 
-import com.quizapp.model.dto.category.AddCategoryDTO;
-import com.quizapp.model.dto.category.CategoryDTO;
-import com.quizapp.model.dto.category.CategoryPageDTO;
-import com.quizapp.model.dto.category.UpdateCategoryDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.quizapp.model.dto.ProblemDetailDTO;
 import com.quizapp.model.dto.question.AddQuestionDTO;
 import com.quizapp.model.dto.question.QuestionDTO;
 import com.quizapp.model.dto.question.QuestionPageDTO;
 import com.quizapp.model.dto.question.UpdateQuestionDTO;
-import com.quizapp.model.rest.CategoryApiDTO;
+import com.quizapp.model.entity.Result;
 import com.quizapp.model.rest.QuestionApiDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
@@ -225,5 +225,71 @@ public class QuestionServiceImplTest {
         QuestionDTO result = this.questionService.getQuestionById(1L);
 
         Assertions.assertNull(result);
+    }
+
+    @Test
+    void addQuestion_ShouldReturnSuccess_WhenDtoIsValid() {
+        when(this.restClient.post()).thenReturn(this.postSpec);
+        when(this.postSpec.uri("/api/questions")).thenReturn(this.bodySpec);
+        when(this.bodySpec.body(this.addQuestionDTO)).thenReturn(this.bodySpec);
+        when(this.bodySpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.toBodilessEntity())
+                .thenReturn(ResponseEntity.ok().build());
+
+        Result result = this.questionService.addQuestion(this.addQuestionDTO);
+
+        Assertions.assertTrue(result.isSuccess());
+        Assertions.assertEquals("Успешно добавихте въпрос.", result.getMessage());
+    }
+
+    @Test
+    void addQuestion_ShouldReturnError_WhenApiReturnsError() throws JsonProcessingException {
+        ProblemDetailDTO problem = new ProblemDetailDTO();
+        problem.setDetail("Въпросът не можа да бъде добавен.");
+
+        String jsonBody = new ObjectMapper().writeValueAsString(problem);
+
+        HttpClientErrorException exception = HttpClientErrorException.BadRequest.create(
+                HttpStatus.BAD_REQUEST,
+                "Bad Request",
+                HttpHeaders.EMPTY,
+                jsonBody.getBytes(),
+                null);
+
+        when(this.restClient.post()).thenReturn(this.postSpec);
+        when(this.postSpec.uri("/api/questions")).thenReturn(this.bodySpec);
+        when(this.bodySpec.body(this.addQuestionDTO)).thenReturn(this.bodySpec);
+        when(this.bodySpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.toBodilessEntity()).thenThrow(exception);
+
+        Result result = this.questionService.addQuestion(this.addQuestionDTO);
+
+        Assertions.assertFalse(result.isSuccess());
+        Assertions.assertEquals("Въпросът не можа да бъде добавен.", result.getMessage());
+    }
+
+    @Test
+    void addQuestion_ShouldReturnError_WhenApiThrowsException() {
+        String invalidJson = "this is not json";
+
+        HttpClientErrorException exception =
+                HttpClientErrorException.BadRequest.create(
+                        HttpStatus.BAD_REQUEST,
+                        "Bad Request",
+                        HttpHeaders.EMPTY,
+                        invalidJson.getBytes(),
+                        null
+                );
+
+        when(this.restClient.post()).thenReturn(this.postSpec);
+        when(this.postSpec.uri("/api/questions")).thenReturn(this.bodySpec);
+        when(this.bodySpec.body(this.addQuestionDTO)).thenReturn(this.bodySpec);
+        when(this.bodySpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.toBodilessEntity()).thenThrow(exception);
+
+        Result result = this.questionService.addQuestion(this.addQuestionDTO);
+
+        Assertions.assertFalse(result.isSuccess());
+        Assertions.assertEquals("Грешка при извикване на REST API", result.getMessage());
     }
 }
