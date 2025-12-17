@@ -1,7 +1,12 @@
 package com.quizapp.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.quizapp.model.dto.ProblemDetailDTO;
+import com.quizapp.model.dto.category.AddCategoryDTO;
 import com.quizapp.model.dto.category.CategoryDTO;
 import com.quizapp.model.dto.category.CategoryPageDTO;
+import com.quizapp.model.entity.Result;
 import com.quizapp.model.rest.CategoryApiDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
@@ -214,5 +219,86 @@ public class CategoryServiceImplTest {
         String result = this.categoryService.getCategoryNameById(1L);
 
         Assertions.assertNull(result);
+    }
+
+    @Test
+    void addCategory_ShouldReturnSuccess_WhenDtoIsValid() {
+        AddCategoryDTO addCategoryDTO = AddCategoryDTO.builder()
+                .name("Maths")
+                .description("Description")
+                .build();
+
+        when(this.restClient.post()).thenReturn(postSpec);
+        when(this.postSpec.uri("/api/categories")).thenReturn(this.bodySpec);
+        when(this.bodySpec.body(addCategoryDTO)).thenReturn(this.bodySpec);
+        when(this.bodySpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.toBodilessEntity())
+                .thenReturn(ResponseEntity.ok().build());
+
+        Result result = this.categoryService.addCategory(addCategoryDTO);
+
+        Assertions.assertTrue(result.isSuccess());
+        Assertions.assertEquals("Успешно добавихте категория Maths", result.getMessage());
+    }
+
+    @Test
+    void addCategory_ShouldReturnError_WhenApiReturnsError() throws JsonProcessingException {
+        AddCategoryDTO addCategoryDTO = AddCategoryDTO.builder()
+                .name("Maths")
+                .description("Description")
+                .build();
+
+        ProblemDetailDTO problem = new ProblemDetailDTO();
+        problem.setDetail("Категорията вече съществува");
+
+        String jsonBody = new ObjectMapper().writeValueAsString(problem);
+
+        HttpClientErrorException exception = HttpClientErrorException.BadRequest.create(
+                        HttpStatus.BAD_REQUEST,
+                        "Bad Request",
+                        HttpHeaders.EMPTY,
+                        jsonBody.getBytes(),
+                        null);
+
+        when(this.restClient.post()).thenReturn(this.postSpec);
+        when(this.postSpec.uri("/api/categories")).thenReturn(this.bodySpec);
+        when(this.bodySpec.body(addCategoryDTO)).thenReturn(this.bodySpec);
+        when(this.bodySpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.toBodilessEntity()).thenThrow(exception);
+
+        Result result = this.categoryService.addCategory(addCategoryDTO);
+
+        Assertions.assertFalse(result.isSuccess());
+        Assertions.assertEquals("Категорията вече съществува", result.getMessage());
+    }
+
+    @Test
+    void addCategory_ShouldReturnError_WhenApiThrowsException() {
+        AddCategoryDTO dto = AddCategoryDTO.builder()
+                .name("Math")
+                .description("Desc")
+                .build();
+
+        String invalidJson = "this is not json";
+
+        HttpClientErrorException exception =
+                HttpClientErrorException.BadRequest.create(
+                        HttpStatus.BAD_REQUEST,
+                        "Bad Request",
+                        HttpHeaders.EMPTY,
+                        invalidJson.getBytes(),
+                        null
+                );
+
+        when(this.restClient.post()).thenReturn(this.postSpec);
+        when(this.postSpec.uri("/api/categories")).thenReturn(this.bodySpec);
+        when(this.bodySpec.body(dto)).thenReturn(this.bodySpec);
+        when(this.bodySpec.retrieve()).thenReturn(this.responseSpec);
+        when(this.responseSpec.toBodilessEntity()).thenThrow(exception);
+
+        Result result = categoryService.addCategory(dto);
+
+        Assertions.assertFalse(result.isSuccess());
+        Assertions.assertEquals("Грешка при извикване на REST API", result.getMessage());
     }
 }
