@@ -1,10 +1,7 @@
 package com.quizapp.web;
 
 import com.quizapp.config.SecurityConfig;
-import com.quizapp.exception.CategoryStatisticsNotFound;
-import com.quizapp.exception.GlobalExceptionHandler;
-import com.quizapp.exception.QuestionStatisticsNotFound;
-import com.quizapp.exception.QuizNotFoundException;
+import com.quizapp.exception.*;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.dto.quiz.QuizSubmissionDTO;
@@ -120,6 +117,25 @@ public class UserQuizControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("error/object-not-found"))
                 .andExpect(model().attribute("message", "Не е намерена статистика за този въпрос."));
+
+        verify(this.userQuizService, times(1))
+                .evaluateQuiz(any(QuizSubmissionDTO.class), anyString());
+    }
+
+    @Test
+    void submitQuiz_ShouldReturnErrorPage_WhenUserNotFound() throws Exception {
+        when(this.userQuizService.evaluateQuiz(any(QuizSubmissionDTO.class), anyString()))
+                .thenThrow(new UserNotFoundException("Потребителят не е намерен."));
+
+        this.mockMvc.perform(post("/users/quizzes/token123/submit")
+                        .with(csrf())
+                        .with(user(this.loggedUser))
+                        .param("token", "token123")
+                        .param("answers[1]", "A")
+                        .param("answers[2]", "B"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("error/object-not-found"))
+                .andExpect(model().attribute("message", "Потребителят не е намерен."));
 
         verify(this.userQuizService, times(1))
                 .evaluateQuiz(any(QuizSubmissionDTO.class), anyString());
