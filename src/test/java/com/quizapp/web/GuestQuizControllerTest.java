@@ -1,6 +1,7 @@
 package com.quizapp.web;
 
 import com.quizapp.config.SecurityConfig;
+import com.quizapp.exception.CategoryStatisticsNotFound;
 import com.quizapp.exception.QuizNotFoundException;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -67,6 +69,25 @@ public class GuestQuizControllerTest {
                 .andExpect(flash().attributeExists("org.springframework.validation.BindingResult.quizSubmissionDTO"));
 
         verify(this.guestQuizService, never()).evaluateQuiz(any());
+    }
+
+    @WithAnonymousUser
+    @Test
+    void submitQuiz_ShouldReturnErrorPage_WhenCategoryStatsNotFound() throws Exception {
+        doThrow(new CategoryStatisticsNotFound("Не е намерена статистика за тази категория."))
+                .when(this.guestQuizService).evaluateQuiz(any(QuizSubmissionDTO.class));
+
+        this.mockMvc.perform(post("/guest/quizzes/token123/submit")
+                        .with(csrf())
+                        .param("viewToken", "token123")
+                        .param("answers[1]", "A")
+                        .param("answers[2]", "B"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("error/object-not-found"))
+                .andExpect(model().attribute("message", "Не е намерена статистика за тази категория."));
+
+        verify(this.guestQuizService, times(1))
+                .evaluateQuiz(any(QuizSubmissionDTO.class));
     }
 
     @WithAnonymousUser

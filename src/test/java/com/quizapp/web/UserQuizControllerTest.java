@@ -1,6 +1,8 @@
 package com.quizapp.web;
 
 import com.quizapp.config.SecurityConfig;
+import com.quizapp.exception.CategoryStatisticsNotFound;
+import com.quizapp.exception.GlobalExceptionHandler;
 import com.quizapp.exception.QuizNotFoundException;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -30,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = UserQuizController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, GlobalExceptionHandler.class})
 public class UserQuizControllerTest {
 
     @Autowired
@@ -84,9 +87,27 @@ public class UserQuizControllerTest {
     }
 
     @Test
+    void submitQuiz_ShouldReturnErrorPage_WhenCategoryStatsNotFound() throws Exception {
+        when(this.userQuizService.evaluateQuiz(any(QuizSubmissionDTO.class), anyString()))
+                .thenThrow(new CategoryStatisticsNotFound("Не е намерена статистика за тази категория."));
+
+        this.mockMvc.perform(post("/users/quizzes/token123/submit")
+                        .with(csrf())
+                        .with(user(this.loggedUser))
+                        .param("token", "token123")
+                        .param("answers[1]", "A")
+                        .param("answers[2]", "B"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("error/object-not-found"))
+                .andExpect(model().attribute("message", "Не е намерена статистика за тази категория."));
+
+        verify(this.userQuizService, times(1))
+                .evaluateQuiz(any(QuizSubmissionDTO.class), anyString());
+    }
+
+    @Test
     void submitQuiz_ShouldEvaluateQuiz_WhenDataIsValid() throws Exception {
-        when(this.userQuizService
-                .evaluateQuiz(any(QuizSubmissionDTO.class), anyString()))
+        when(this.userQuizService.evaluateQuiz(any(QuizSubmissionDTO.class), anyString()))
                 .thenReturn(1L);
 
         this.mockMvc.perform(post("/users/quizzes/token123/submit")

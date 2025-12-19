@@ -1,6 +1,7 @@
 package com.quizapp.web;
 
 import com.quizapp.config.SecurityConfig;
+import com.quizapp.exception.CategoryStatisticsNotFound;
 import com.quizapp.model.dto.category.CategoryStatsDTO;
 import com.quizapp.model.dto.question.QuestionStatsDTO;
 import com.quizapp.model.dto.user.UserStatisticsDTO;
