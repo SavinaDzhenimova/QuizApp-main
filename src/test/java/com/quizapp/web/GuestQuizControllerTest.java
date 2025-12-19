@@ -1,6 +1,7 @@
 package com.quizapp.web;
 
 import com.quizapp.config.SecurityConfig;
+import com.quizapp.exception.QuizNotFoundException;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.dto.quiz.QuizSubmissionDTO;
@@ -110,6 +111,22 @@ public class GuestQuizControllerTest {
 
     @WithAnonymousUser
     @Test
+    void showSolvedGuestQuizResult_ShouldReturnErrorPage_WhenQuizNotFound() throws Exception {
+        when(this.guestQuizService.getQuizResult("missing"))
+                .thenThrow(new QuizNotFoundException("Куизът не е намерен."));
+
+        this.mockMvc.perform(get("/guest/quizzes/missing/result")
+                        .param("token", "missing"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("error/object-not-found"))
+                .andExpect(model().attribute("message", "Куизът не е намерен."));
+
+        verify(this.guestQuizService, times(1))
+                .getQuizResult("missing");
+    }
+
+    @WithAnonymousUser
+    @Test
     void showSolvedGuestQuizResult_ShouldReturnResultPage_WhenDataIsValid() throws Exception {
         when(this.guestQuizService.getQuizResult("token123"))
                 .thenReturn(this.quizResultDTO);
@@ -143,6 +160,22 @@ public class GuestQuizControllerTest {
                 .andExpect(status().isForbidden());
 
         verify(this.guestQuizService, never()).getQuizResult("token123");
+    }
+
+    @WithAnonymousUser
+    @Test
+    void showSolvedGuestQuiz_ShouldReturnErrorPage_WhenQuizNotFound() throws Exception {
+        when(this.guestQuizService.showQuizResult("missing"))
+                .thenThrow(new QuizNotFoundException("Куизът не е намерен."));
+
+        this.mockMvc.perform(get("/guest/quizzes/missing/review")
+                        .param("token", "missing"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("error/object-not-found"))
+                .andExpect(model().attribute("message", "Куизът не е намерен."));
+
+        verify(this.guestQuizService, times(1))
+                .showQuizResult("missing");
     }
 
     @WithAnonymousUser
