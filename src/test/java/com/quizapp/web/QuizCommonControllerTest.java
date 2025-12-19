@@ -2,6 +2,8 @@ package com.quizapp.web;
 
 import com.quizapp.config.SecurityConfig;
 import com.quizapp.exception.CategoryNotFoundException;
+import com.quizapp.exception.GlobalExceptionHandler;
+import com.quizapp.exception.NotEnoughQuestionsException;
 import com.quizapp.model.dto.quiz.QuizSubmissionDTO;
 import com.quizapp.model.dto.user.UserDetailsDTO;
 import com.quizapp.model.entity.Quiz;
@@ -27,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = QuizCommonController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, GlobalExceptionHandler.class})
 public class QuizCommonControllerTest {
 
     @Autowired
@@ -55,6 +57,20 @@ public class QuizCommonControllerTest {
         this.quiz = Quiz.builder()
                 .viewToken("token123")
                 .build();
+    }
+
+    @WithAnonymousUser
+    @Test
+    void createQuiz_ShouldReturnErrorView_WhenNotEnoughQuestions() throws Exception {
+        when(this.quizCommonService.createQuiz(5L, 5))
+                .thenThrow(new NotEnoughQuestionsException("Броят на въпросите налични в тази категория не е достатъчен, за да започнете куиз."));
+
+        this.mockMvc.perform(post("/quizzes/start")
+                        .param("categoryId", "5")
+                        .param("questionsCount", "5"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("error/not-enough-questions"))
+                .andExpect(model().attribute("message", "Броят на въпросите налични в тази категория не е достатъчен, за да започнете куиз."));
     }
 
     @WithAnonymousUser

@@ -26,7 +26,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -121,7 +120,7 @@ public class QuestionServiceImplTest {
 
         Assertions.assertEquals(2, result.getQuestions().size());
         Assertions.assertEquals(1L, result.getQuestions().get(0).getId());
-        Assertions.assertEquals(1L, result.getQuestions().get(1).getId());
+        Assertions.assertEquals(2L, result.getQuestions().get(1).getId());
         Assertions.assertEquals("Maths", result.getQuestions().get(0).getCategoryName());
         Assertions.assertEquals("Maths", result.getQuestions().get(1).getCategoryName());
         Assertions.assertEquals("Question 1", result.getQuestions().get(0).getQuestionText());
