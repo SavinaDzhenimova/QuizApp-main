@@ -1,6 +1,7 @@
 package com.quizapp.web;
 
 import com.quizapp.config.SecurityConfig;
+import com.quizapp.exception.GlobalExceptionHandler;
 import com.quizapp.model.dto.user.AddAdminDTO;
 import com.quizapp.model.dto.user.AdminDTO;
 import com.quizapp.model.dto.user.UserDetailsDTO;
@@ -32,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = AdminController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, GlobalExceptionHandler.class})
 public class AdminControllerTest {
 
     @Autowired
@@ -69,10 +70,6 @@ public class AdminControllerTest {
     @WithMockUser(authorities = {"ROLE_USER"})
     @Test
     void showAdminsPage_ShouldReturnError_WhenUserIsNotAdmin() throws Exception {
-        Page<AdminDTO> page = new PageImpl<>(List.of(this.adminDTO), this.pageable, 1);
-
-        when(this.adminService.getAllAdmins(eq(null), any(Pageable.class))).thenReturn(page);
-
         this.mockMvc.perform(get("/admin"))
                 .andExpect(status().isForbidden());
 
