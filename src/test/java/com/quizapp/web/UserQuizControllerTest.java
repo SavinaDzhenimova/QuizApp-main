@@ -1,6 +1,7 @@
 package com.quizapp.web;
 
 import com.quizapp.config.SecurityConfig;
+import com.quizapp.exception.QuizNotFoundException;
 import com.quizapp.model.dto.quiz.QuizDTO;
 import com.quizapp.model.dto.quiz.QuizResultDTO;
 import com.quizapp.model.dto.quiz.QuizSubmissionDTO;
@@ -131,6 +132,22 @@ public class UserQuizControllerTest {
     }
 
     @Test
+    void showSolvedQuizResult_ShouldReturnErrorPage_WhenQuizNotFound() throws Exception {
+        when(this.userQuizService.getQuizResult(5L))
+                .thenThrow(new QuizNotFoundException("Куизът не е намерен."));
+
+        this.mockMvc.perform(get("/users/quizzes/5/result")
+                        .with(user(this.loggedUser))
+                        .param("id", "5"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("error/object-not-found"))
+                .andExpect(model().attribute("message", "Куизът не е намерен."));
+
+        verify(this.userQuizService, times(1))
+                .getQuizResult(5L);
+    }
+
+    @Test
     void showSolvedQuizResult_ShouldReturnPageResult_WhenDataIsValid() throws Exception {
         when(this.userQuizService.getQuizResult(1L))
                 .thenReturn(this.quizResultDTO);
@@ -165,6 +182,22 @@ public class UserQuizControllerTest {
                 .andExpect(redirectedUrlPattern("**/users/login"));
 
         verify(this.userQuizService, never()).getQuizResult(anyLong());
+    }
+
+    @Test
+    void showSolvedQuizById_ShouldReturnErrorPage_WhenQuizNotFound() throws Exception {
+        when(this.userQuizService.getSolvedQuizById(5L))
+                .thenThrow(new QuizNotFoundException("Куизът не е намерен."));
+
+        this.mockMvc.perform(get("/users/quizzes/5/review")
+                        .with(user(this.loggedUser))
+                        .param("id", "5"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("error/object-not-found"))
+                .andExpect(model().attribute("message", "Куизът не е намерен."));
+
+        verify(this.userQuizService, times(1))
+                .getSolvedQuizById(5L);
     }
 
     @Test
