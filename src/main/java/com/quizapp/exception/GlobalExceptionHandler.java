@@ -46,15 +46,6 @@ public class GlobalExceptionHandler {
         return modelAndView;
     }
 
-    @ExceptionHandler(QuestionNotFoundException.class)
-    public ModelAndView handleQuestionNotFound(QuestionNotFoundException ex) {
-        ModelAndView modelAndView = new ModelAndView("error/object-not-found");
-
-        modelAndView.addObject("message", ex.getMessage());
-
-        return modelAndView;
-    }
-
     @ExceptionHandler(NoQuestionsFoundException.class)
     public ModelAndView handleNoQuestionsFound(NoQuestionsFoundException ex) {
         ModelAndView modelAndView = new ModelAndView("error/object-not-found");
