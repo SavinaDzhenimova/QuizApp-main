@@ -3,6 +3,7 @@ package com.quizapp.web;
 import com.quizapp.config.SecurityConfig;
 import com.quizapp.exception.CategoryNotFoundException;
 import com.quizapp.exception.GlobalExceptionHandler;
+import com.quizapp.exception.NoQuestionsFoundException;
 import com.quizapp.exception.NotEnoughQuestionsException;
 import com.quizapp.model.dto.quiz.QuizSubmissionDTO;
 import com.quizapp.model.dto.user.UserDetailsDTO;
@@ -57,6 +58,20 @@ public class QuizCommonControllerTest {
         this.quiz = Quiz.builder()
                 .viewToken("token123")
                 .build();
+    }
+
+    @WithAnonymousUser
+    @Test
+    void createQuiz_ShouldReturnErrorView_WhenNoQuestionsFound() throws Exception {
+        when(this.quizCommonService.createQuiz(5L, 5))
+                .thenThrow(new NoQuestionsFoundException("Няма налични въпроси в тази категория."));
+
+        this.mockMvc.perform(post("/quizzes/start")
+                        .param("categoryId", "5")
+                        .param("questionsCount", "5"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("error/object-not-found"))
+                .andExpect(model().attribute("message", "Няма налични въпроси в тази категория."));
     }
 
     @WithAnonymousUser
