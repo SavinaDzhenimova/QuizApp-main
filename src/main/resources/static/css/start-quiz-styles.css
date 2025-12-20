@@ -3,6 +3,10 @@
     gap: 2em;
 }
 
+.search-form {
+    width: 50%;
+}
+
 form {
     width: 100%;
     display: flex;
