@@ -23,6 +23,16 @@
                   class="search-form">
                 <input type="hidden" name="page" value="0"/>
 
+                <div id="page-size-selector">
+                    <label for="size">Резултати на страница:</label>
+                    <select id="size" name="size" onchange="this.form.submit()">
+                        <option th:value="10" th:selected="${size == 10}">10</option>
+                        <option th:value="20" th:selected="${size == 20}">20</option>
+                        <option th:value="30" th:selected="${size == 30}">30</option>
+                        <option th:value="40" th:selected="${size == 40}">40</option>
+                    </select>
+                </div>
+
                 <select name="sortBy" id="sortBy" onchange="this.form.submit()">
                     <option value="" th:selected="${sortBy == null}">Сортирай по</option>
                     <option th:each="sortField : ${userSortFields}"

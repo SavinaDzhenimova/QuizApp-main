@@ -230,6 +230,20 @@ table tbody td {
     background-color: rgba(186, 156, 252, 0.4);
 }
 
+.page-size-selector {
+    display: flex;
+    align-items: baseline;
+    width: 40%;
+}
+
+.page-size-selector label {
+    width: 200px;
+}
+
+.page-size-selector select {
+    width: 100px;
+}
+
 .search-form {
     width: 50%;
     display: flex;

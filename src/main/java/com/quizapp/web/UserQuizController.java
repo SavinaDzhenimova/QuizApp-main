@@ -52,8 +52,7 @@ public class UserQuizController {
     }
 
     @GetMapping("/{id}/review")
-    public ModelAndView showSolvedQuizById(@PathVariable Long id,
-                                           @RequestParam(value = "from", defaultValue = "result") String from) {
+    public ModelAndView showSolvedQuizById(@PathVariable Long id) {
         ModelAndView modelAndView = new ModelAndView("solved-quiz");
 
         QuizDTO solvedQuizDTO = this.userQuizService.getSolvedQuizById(id);

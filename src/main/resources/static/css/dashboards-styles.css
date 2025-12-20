@@ -4,17 +4,21 @@
 }
 
 .search-form {
-    width: 80%;
+    width: 100%;
     align-self: flex-start;
+}
+
+.search-form #page-size-selector {
+    width: 30%;
 }
 
 .search-form #sortBy,
 .search-form #categoryId {
-    width: 20%;
+    width: 15%;
 }
 
 .search-form input {
-    width: 50%;
+    width: 40%;
 }
 
 .col-wrong-answers,

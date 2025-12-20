@@ -58,12 +58,14 @@ public class UserController {
 
         ModelAndView modelAndView = new ModelAndView("quizzes");
 
+        modelAndView.addObject("currentPage", page);
+        modelAndView.addObject("totalPages", quizPage.getTotalPages());
+        modelAndView.addObject("size", size);
+
         if (quizPage.isEmpty()) {
             modelAndView.addObject("warning", "Все още нямате решени куизове.");
         } else {
             modelAndView.addObject("quizzes", quizPage.getContent());
-            modelAndView.addObject("currentPage", page);
-            modelAndView.addObject("totalPages", quizPage.getTotalPages());
         }
 
         return modelAndView;
