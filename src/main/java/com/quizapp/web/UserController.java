@@ -51,7 +51,7 @@ public class UserController {
     @GetMapping("/quizzes")
     public ModelAndView viewUserQuizzes(@AuthenticationPrincipal UserDetailsDTO userDetailsDTO,
                                         @RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "5") int size) {
+                                        @RequestParam(defaultValue = "10") int size) {
 
         Page<QuizDTO> quizPage = this.userQuizService
                 .getSolvedQuizzesByUsername(userDetailsDTO.getUsername(), page, size);

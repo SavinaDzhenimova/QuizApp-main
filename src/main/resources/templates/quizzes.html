@@ -16,16 +16,20 @@
         <div class="quizzes-container">
             <h1>Вашите куизове</h1>
 
-            <form class="page-size-selector" th:action="@{/users/quizzes}" th:method="GET">
+            <form th:action="@{/users/quizzes}"
+                  th:method="GET"
+                  class="search-form">
                 <input type="hidden" name="page" value="0"/>
 
-                <label for="size">Резултати на страница:</label>
-                <select id="size" name="size" onchange="this.form.submit()">
-                    <option th:value="5"  th:selected="${size == 10}">10</option>
-                    <option th:value="10" th:selected="${size == 20}">20</option>
-                    <option th:value="20" th:selected="${size == 30}">30</option>
-                    <option th:value="20" th:selected="${size == 40}">40</option>
-                </select>
+                <div id="page-size-selector">
+                    <label for="size">Резултати на страница:</label>
+                    <select id="size" name="size" onchange="this.form.submit()">
+                        <option th:value="5"  th:selected="${size == 10}">10</option>
+                        <option th:value="10" th:selected="${size == 20}">20</option>
+                        <option th:value="20" th:selected="${size == 30}">30</option>
+                        <option th:value="20" th:selected="${size == 40}">40</option>
+                    </select>
+                </div>
             </form>
 
             <div th:if="${warning}" class="warning">
