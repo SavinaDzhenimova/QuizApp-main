@@ -5,20 +5,32 @@
 
 .search-form {
     width: 100%;
-    align-self: flex-start;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 1em;
+}
+
+.search-form > * {
+    flex: 0 1 auto;
+    white-space: nowrap;
 }
 
 .search-form #page-size-selector {
-    width: 30%;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5em;
+    width: 300px;
 }
 
 .search-form #sortBy,
 .search-form #categoryId {
-    width: 15%;
+    width: 150px;
 }
 
 .search-form input {
-    width: 40%;
+    min-width: 350px;
+    max-width: 450px;
 }
 
 .col-wrong-answers,
