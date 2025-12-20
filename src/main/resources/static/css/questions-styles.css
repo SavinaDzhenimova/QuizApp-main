@@ -1,9 +1,6 @@
 .questions-section {
-    gap: 1em;
-}
-
-table {
     width: 90%;
+    gap: 1em;
 }
 
 table td .edit-btn {

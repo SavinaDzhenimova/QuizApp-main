@@ -1,9 +1,6 @@
 .categories-section {
-    gap: 1em;
-}
-
-table {
     width: 70%;
+    gap: 1em;
 }
 
 table td .edit-btn {

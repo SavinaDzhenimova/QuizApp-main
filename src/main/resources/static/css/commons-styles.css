@@ -230,35 +230,38 @@ table tbody td {
     background-color: rgba(186, 156, 252, 0.4);
 }
 
-.page-size-selector {
-    display: flex;
-    align-items: baseline;
-    width: 40%;
-}
-
-.page-size-selector label {
-    width: 200px;
-}
-
-.page-size-selector select {
-    width: 100px;
-}
-
 .search-form {
-    width: 50%;
+    width: 100%;
     display: flex;
-    flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
     gap: 1em;
 }
 
-.search-form select {
-    width: 35%;
+.search-form > * {
+    flex: 0 1 auto;
+    white-space: nowrap;
+}
+
+.search-form #page-size-selector {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5em;
+    width: 270px;
+}
+
+.search-form #page-size-selector select {
+    width: 70px;
+}
+
+.search-form > select {
+    width: 150px;
     background-color: rgba(186, 156, 252, 0.8);
 }
 
-.search-form input {
+.search-form input[type="text"] {
+    min-width: 350px;
+    max-width: 450px;
     background-color: rgba(186, 156, 252, 0.8);
 }
 

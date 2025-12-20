@@ -3,36 +3,6 @@
     gap: 1em;
 }
 
-.search-form {
-    width: 100%;
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    gap: 1em;
-}
-
-.search-form > * {
-    flex: 0 1 auto;
-    white-space: nowrap;
-}
-
-.search-form #page-size-selector {
-    display: flex;
-    align-items: baseline;
-    gap: 0.5em;
-    width: 300px;
-}
-
-.search-form #sortBy,
-.search-form #categoryId {
-    width: 150px;
-}
-
-.search-form input {
-    min-width: 350px;
-    max-width: 450px;
-}
-
 .col-wrong-answers,
 .col-correct-answers,
 .col-attempts,
