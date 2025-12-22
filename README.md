@@ -162,3 +162,5 @@ Quiz App е уеб платформа за решаване на куизове 
 - ```src/main/resources/static``` - статични ресурси (CSS, JS, images);
 - ```src/main/resources/templates``` - Thymeleaf темплейти;
 - ```src/test/java``` - Unit и integration тестове на приложението.
+
+!!! Този проект е изготвен единствено и само с учебна цел.
